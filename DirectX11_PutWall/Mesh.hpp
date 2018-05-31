@@ -1,8 +1,8 @@
-
-
 class Mesh
 {
 public:
+				//CUBEのINは内側法線　OUTは外側法線
+				enum CreateMode{NON,TRIANGLE,PLANE,CUBEIN,CUBEOUT};
 				Float3 position;
 				Float3 angles;
 				Float3 scale;
@@ -30,6 +30,33 @@ public:
 				//そしてテクスチャを適応させたデータをもう一度作成する
 				//てかこれしかない気が。。。。
 
+				//データ作成　テクスチャのUVはここまでに指定しておく
+				//テクスチャを変えるときは再度この関数を呼ぶ必要がある
+				void CreateData(Texture* tex,CreateMode mode)
+				{
+								material.SetTexture(0, tex);
+
+								switch (mode)
+								{
+												case TRIANGLE:
+																CreateTriangle();
+																break;
+												case PLANE:
+																CreatePlane();
+																break;
+												case CUBEIN:
+																CreateCube(tex,-1);
+																break;
+												case CUBEOUT:
+																CreateCube(tex,1);
+																break;
+												default:
+																return;
+																break;
+								}
+								Apply();
+				}
+
 				void CreateTriangle()
 				{
 								vertices.clear();
@@ -38,14 +65,14 @@ public:
 								vertices.push_back({ Float3(1.0f,-1.0f, 0.0f),Float3(0.0f,1.0f,0.0f),Float2(1.0f,1.0f) });
 								vertices.push_back({ Float3(-1.0f,-1.0f,0.0f),Float3(0.0f,0.0f,1.0f),Float2(0.0f,1.0f) });
 				}
-				void CreatePlane(
-								Float2 size = Float2(0.5f, 0.5f),
-								Float3 offset = Float3(0.0f, 0.0f, 0.0f),
-								bool souldClear = true,
-								Float3 leftDirection = Float3(1.0f, 0.0f, 0.0f),
-								Float3 upDirection = Float3(0.0f, 1.0f, 0.0f),
-								Float3 forwardDirection = Float3(0.0f, 0.0f, 1.0f)
-				)
+
+				//板を生成している
+				//uvが1.0以下になるとuvの始まる箇所がおかしくなるのでお勧めしない
+				//numUVは指定した画像の左上座標をとるのでほしい場所 - 1 座標が合う
+				void CreatePlane(Float2 size = Float2(0.5f, 0.5f),Float3 offset = Float3(0.0f, 0.0f, 0.0f),
+								bool souldClear = true,Float3 leftDirection = Float3(1.0f, 0.0f, 0.0f),
+								Float3 upDirection = Float3(0.0f, 1.0f, 0.0f),Float3 forwardDirection = Float3(0.0f, 0.0f, 1.0f),
+								Float2 uv = Float2(1.0f,1.0f),Float2 numUV = Float2(0.0f,0.0f))
 				{
 								if (souldClear)
 								{
@@ -58,13 +85,13 @@ public:
 								forwardDirection = DirectX::XMVector3Normalize(forwardDirection);
 
 								vertices.push_back({ leftDirection*-size.x + upDirection*size.y + offset,
-									-forwardDirection ,Float2(0.0f,0.0f) });
+									-forwardDirection ,Float2(numUV * (1 / uv)) });
 								vertices.push_back({ leftDirection*size.x + upDirection*size.y + offset,
-									-forwardDirection ,Float2(1.0f,0.0f) });
+									-forwardDirection ,Float2((numUV.x + 1) * (1 / uv.x), numUV.y *(1 / uv.y)) });
 								vertices.push_back({ leftDirection*-size.x + upDirection*-size.y + offset,
-									-forwardDirection ,Float2(0.0f,1.0f) });
+									-forwardDirection ,Float2(numUV.x * (1 / uv.x), (numUV.y + 1) *(1 / uv.y)) });
 								vertices.push_back({ leftDirection*size.x + upDirection*-size.y + offset,
-									-forwardDirection ,Float2(1.0f,1.0f) });
+									-forwardDirection ,Float2((numUV + 1) * (1 / uv)) });
 
 								size_t indexOffset = vertices.size() - 4;
 								indices.push_back(indexOffset + 0);
@@ -74,41 +101,56 @@ public:
 								indices.push_back(indexOffset + 2);
 								indices.push_back(indexOffset + 1);
 				}
-				void CreateCube(
-								Float2 size = Float2(0.5f, 0.5f),
-								bool souldClear = true)
+				//normalには1か-1しか入れてはいけない
+				void CreateCube(Texture* tex,int normal = 1,Float2 size = Float2(0.5f, 0.5f),bool souldClear = true)
 				{
 								if (souldClear)
 								{
 												vertices.clear();
 												indices.clear();
 								}
-
 								//前
 								CreatePlane(size, Float3(0.0f, 0.0f, -0.5f), false,
-												Float3(1.0f, 0.0f, 0.0f), Float3(0.0f, 1.0f, 0.0f), Float3(0.0f, 0.0f, 1.0f));
+												Float3(1.0f, 0.0f, 0.0f) * normal,		//x ここに-1かけてやると法線が逆転する
+												Float3(0.0f, 1.0f, 0.0f),											//y
+												Float3(0.0f, 0.0f, 1.0f),											//z
+												tex->uv, tex->numUV[0]);												//uv
 								//後
 								CreatePlane(size, Float3(0.0f, 0.0f, 0.5f), false,
-												Float3(-1.0f, 0.0f, 0.0f), Float3(0.0f, 1.0f, 0.0f), Float3(0.0f, 0.0f, -1.0f));
+												Float3(-1.0f, 0.0f, 0.0f)* normal,
+												Float3(0.0f, 1.0f, 0.0f),
+												Float3(0.0f, 0.0f, -1.0f),
+												tex->uv, tex->numUV[1]);
 								//左
 								CreatePlane(size, Float3(0.5f, 0.0f, 0.0f), false,
-												Float3(0.0f, 0.0f, 1.0f), Float3(0.0f, 1.0f, 0.0f), Float3(-1.0f, 0.0f, 0.0f));
+												Float3(0.0f, 0.0f, 1.0f)* normal, 
+												Float3(0.0f, 1.0f, 0.0f), 
+												Float3(-1.0f, 0.0f, 0.0f),
+												tex->uv, tex->numUV[2]);
 								//右
 								CreatePlane(size, Float3(-0.5f, 0.0f, 0.0f), false,
-												Float3(0.0f, 0.0f, -1.0f), Float3(0.0f, 1.0f, 0.0f), Float3(1.0f, 0.0f, 0.0f));
+												Float3(0.0f, 0.0f, -1.0f)* normal,
+												Float3(0.0f, 1.0f, 0.0f),
+												Float3(1.0f, 0.0f, 0.0f),
+												tex->uv, tex->numUV[3]);
 								//上
 								CreatePlane(size, Float3(0.0f, 0.5f, 0.0f), false,
-												Float3(1.0f, 0.0f, 0.0f), Float3(0.0f, 0.0f, 1.0f), Float3(0.0f, -1.0f, 0.0f));
+												Float3(1.0f, 0.0f, 0.0f)* normal,
+												Float3(0.0f, 0.0f, 1.0f),
+												Float3(0.0f, -1.0f, 0.0f),
+												tex->uv, tex->numUV[4]);
 								//下
 								CreatePlane(size, Float3(0.0f, -0.5f, 0.0f), false,
-												Float3(1.0f, 0.0f, 0.0f), Float3(0.0f, 0.0f, -1.0f), Float3(0.0f, 1.0f, 0.0f));
+												Float3(1.0f, 0.0f, 0.0f)* normal,
+												Float3(0.0f, 0.0f, -1.0f),
+												Float3(0.0f, 1.0f, 0.0f),
+												tex->uv, tex->numUV[5]);
 				}
 
 				Material& GetMaterial()
 				{
 								return material;
 				}
-
 				void Apply()
 				{
 								vertexBuffer.Release();
@@ -142,7 +184,6 @@ public:
 												App::GetGraohicsDevice().CreateBuffer(&indexBufferDesc, &indexSubresourceData,
 																&indexBuffer);
 								}
-
 								material.SetBuffer(1, &constant, sizeof(Constant));
 				}
 				void Draw()
@@ -150,15 +191,15 @@ public:
 								if (vertexBuffer == nullptr)
 												return;
 
-								material.Attach();
-
 								constant.world = DirectX::XMMatrixTranspose(
 												DirectX::XMMatrixScaling(scale.x, scale.y, scale.z)*
-												DirectX::XMMatrixRotationZ(angles.z)*
-												DirectX::XMMatrixRotationY(angles.y)*
 												DirectX::XMMatrixRotationX(angles.x)*
+												DirectX::XMMatrixRotationY(angles.y)*
+											 DirectX::XMMatrixRotationZ(angles.z)*
 												DirectX::XMMatrixTranslation(position.x, position.y, position.z)
 								);
+
+								material.Attach();
 
 								UINT stride = sizeof(Vertex);
 								UINT offset = 0;

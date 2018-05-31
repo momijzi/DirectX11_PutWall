@@ -23,22 +23,22 @@ struct Pixel
 };
 Pixel VS(Vertex vertex)
 {
-	Pixel output;
-	output.position = mul(vertex.position, world);
-	output.position = mul(output.position, view);
-	output.position = mul(output.position, projection);
-	output.normal = mul(vertex.normal, (float3x3)world);
-	output.uv = vertex.uv;
-	return output;
+				Pixel output;
+				output.position = mul(vertex.position, world);
+				output.position = mul(output.position, view);
+				output.position = mul(output.position, projection);
+				output.normal = mul(vertex.normal, (float3x3)world);
+				output.uv = vertex.uv;
+				return output;
 }
 float4 PS(Pixel pixel) : SV_TARGET
 {
-	float3 normal = normalize(pixel.normal);
-	float3 lightDirection = normalize(float3(0.25, -1.0, 0.5));
-	float3 lightColor = float3(1.0, 1.0, 1.0);
-	float4 diffuseColor = texture0.Sample(sampler0, pixel.uv);
+				float3 normal = normalize(pixel.normal);
+				float3 lightDirection = normalize(float3(0.25, -1.0, 0.5));
+			 float3 lightColor = float3(1.0, 1.0, 1.0);
+				float4 diffuseColor = texture0.Sample(sampler0, pixel.uv);
 
-	float3 diffuseIntensity = dot(-lightDirection, normal)*lightColor;
-	float3 ambientIntensity = lightColor*0.2;
-	return diffuseColor * float4(diffuseIntensity + ambientIntensity, 1);
+				//float3 diffuseIntensity = dot(-lightDirection, normal)*lightColor;
+				//float3 ambientIntensity = lightColor*0.2;
+				return diffuseColor; // *float4(diffuseIntensity + ambientIntensity, 1) Ç±Ç±Ç…Ç±Ç¢Ç¬ÇÇ©ÇØÇÈÇ∆åıÇÃèoÇƒÇ≠ÇÈà íuÇê›íËÇ≈Ç´ÇÈ
 }

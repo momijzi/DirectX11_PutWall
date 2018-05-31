@@ -135,8 +135,6 @@ private:
 								}
 				}
 
-
-
 				void CompileShader(const wchar_t* const filePath, const char* const entryPoint,
 								const char* const shaderModel, ID3DBlob** out)
 				{

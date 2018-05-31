@@ -3,7 +3,7 @@ class Camera
 public:
 				Float3 position;
 				Float3 angles;
-				Float4 color;
+				float clearColor[4] = {1.0f,1.0f,1.0f,1.0f};
 				bool isDepthTest;
 
 				Camera()
@@ -12,7 +12,6 @@ public:
 
 								position = Float3(0.0f, 0.0f, 0.0f);
 								angles = Float3(0.0f, 0.0f, 0.0f);
-								color = Float4(1.0f, 1.0f, 1.0f, 1.0f);
 								isDepthTest = true;
 
 								Create();
@@ -45,7 +44,7 @@ public:
 																DirectX::XMConvertToRadians(60.0f),
 																App::GetWindowSize().x / (float)App::GetWindowSize().y,
 																0.1f,
-																100.0f
+																1000.0f
 												)
 								);
 
@@ -78,7 +77,6 @@ public:
 												0, 1, &constantBuffer.p
 								);
 
-								float clearColor[4] = { color.x,color.y,color.z,color.w };
 								App::GetGraphicsContext().ClearRenderTargetView(renderTargetView, clearColor);
 
 								if (isDepthTest)

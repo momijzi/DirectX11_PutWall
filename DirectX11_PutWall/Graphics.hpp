@@ -25,7 +25,7 @@ public:
 								flags |= D3D11_CREATE_DEVICE_DEBUG;
 								#endif
 
-								//ダブルバッファ用スワップチェイン
+								//スワップチェイン
 								DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
 								swapChainDesc.BufferDesc.Width = App::GetWindowSize().x;
 								swapChainDesc.BufferDesc.Height = App::GetWindowSize().y;
@@ -63,7 +63,6 @@ public:
 								viewPort.MinDepth = 0.0f;
 								viewPort.MaxDepth = 1.0f;
 								context->RSSetViewports(1, &viewPort);
-
 				}
 				~Graphics()
 				{
@@ -86,8 +85,14 @@ public:
 				}
 
 private:
+				struct Constant
+				{
+								DirectX::XMMATRIX view;
+								DirectX::XMMATRIX projection;
+				};
+				Constant constant;
+
 				ATL::CComPtr<ID3D11Device> device = nullptr;
 				ATL::CComPtr<IDXGISwapChain> swapChain = nullptr;
 				ATL::CComPtr<ID3D11DeviceContext> context = nullptr;
-				ATL::CComPtr<ID3D11BlendState> blendState = nullptr;
 };

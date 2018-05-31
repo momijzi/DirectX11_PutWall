@@ -1,6 +1,7 @@
 #pragma once
 
 #define OEMRESOURCE//–³‚¢‚ÆƒGƒ‰[‚ªo‚é
+
 #include <memory>
 #include <vector>
 #include <Windows.h>

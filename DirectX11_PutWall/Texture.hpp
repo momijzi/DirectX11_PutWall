@@ -1,6 +1,8 @@
 class Texture
 {
 public:
+				Float2 uv;			//画像分割数 1から分割数-1
+				Float2 numUV[6];	//分割した場合どこを描画するか(四角)
 
 				Texture()
 				{
@@ -10,12 +12,96 @@ public:
 				Texture(const wchar_t* const filePath)
 				{
 								App::Initialize();
+								uv = Float2(1.0f, 1.0f);
+								for (int i = 0; i < 6; i++)
+								{
+												numUV[i] = Float2(0.0f, 0.0f);
+								}
 								Load(filePath);
 				}
 
 				~Texture()
 				{
 
+				}
+
+				//引数分だけ分割して分割一つの大きさを入れる
+				void SetDivide(Float2 uv)
+				{
+								if (uv.x > 0 && uv.y > 0)
+								{
+												this->uv = uv;
+								}
+				}
+				//前面同じuvに設定
+				void SetAll(Float2 numUV)
+				{
+								if (numUV.x >= 0 && numUV.y >= 0)
+								{
+												for (int i = 0; i < 6; i++)
+												{
+																this->numUV[i] = numUV;
+												}
+								}
+				}
+				//上と下以外のuv設定
+				void SetAround(Float2 numUV)
+				{
+								if (numUV.x >= 0 && numUV.y >= 0)
+								{
+												for (int i = 0; i < 4; i++)
+												{
+																this->numUV[i] = numUV;
+												}
+								}
+				}
+				//前面のuv設定
+				void SetFront(Float2 numUV)
+				{
+								if (numUV.x >= 0 && numUV.y >= 0)
+								{
+												this->numUV[0] = numUV;
+								}								
+				}
+				//後面のuv設定
+				void SetBack(Float2 numUV)
+				{
+								if (numUV.x >= 0 && numUV.y >= 0)
+								{
+												this->numUV[1] = numUV;
+								}
+				}
+				//左面のuv設定
+				void SetLeft(Float2 numUV)
+				{
+								if (numUV.x >= 0 && numUV.y >= 0)
+								{
+												this->numUV[2] = numUV;
+								}
+				}
+				//前面のuv設定
+				void SetRight(Float2 numUV)
+				{
+								if (numUV.x >= 0 && numUV.y >= 0)
+								{
+												this->numUV[3] = numUV;
+								}
+				}
+				//上面のuv設定
+				void SetUp(Float2 numUV)
+				{
+								if (numUV.x >= 0 && numUV.y >= 0)
+								{
+												this->numUV[4] = numUV;
+								}
+				}
+				//下面のuv設定
+				void SetDown(Float2 numUV)
+				{
+								if (numUV.x >= 0 && numUV.y >= 0)
+								{
+												this->numUV[5] = numUV;
+								}
 				}
 
 				void Load(const wchar_t* const filePath)
@@ -93,6 +179,7 @@ public:
 								D3D11_SUBRESOURCE_DATA subresourceData = {};
 								subresourceData.pSysMem = buffer.get();
 								subresourceData.SysMemPitch = width * 4;
+								subresourceData.SysMemSlicePitch = width * height * 4;
 
 								texture.Release();
 								App::GetGraohicsDevice().CreateTexture2D(
