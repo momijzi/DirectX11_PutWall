@@ -1,3 +1,5 @@
+#pragma once
+
 #pragma region Float2
 
 struct Float2 : public DirectX::XMFLOAT2
@@ -467,5 +469,4 @@ struct Vertex
 								this->normal = normal;
 								this->uv = uv;
 				}
-
 };

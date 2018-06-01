@@ -21,7 +21,7 @@ public:
 												pos += Float3
 												(
 																cos(DirectX::XMConvertToRadians(-angles.y + 90)) * z + cos(DirectX::XMConvertToRadians(-angles.y)) * x,//xÀ•W‚Ì‰ñ“]
-																sin(DirectX::XMConvertToRadians(-angles.x)) * y,//yÀ•W‚Ì‰ñ“]
+																sin(DirectX::XMConvertToRadians(-angles.x)) * y * z,//yÀ•W‚Ì‰ñ“]
 																sin(DirectX::XMConvertToRadians(-angles.y + 90)) * z + sin(DirectX::XMConvertToRadians(-angles.y)) * x //zÀ•W‚Ì‰ñ“]
 												) * speed;
 								}

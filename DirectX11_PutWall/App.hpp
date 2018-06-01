@@ -46,9 +46,9 @@
 class App final
 {
 public:
-				#include "Window.hpp"
-				#include "Graphics.hpp"
-				#include "Input.hpp"
+				#include "Window.h"
+				#include "Graphics.h"
+				#include "Input.h"
 
 				static constexpr wchar_t* NAME = L"DirectX11";
 
@@ -118,7 +118,6 @@ public:
 				{
 								GetInput().SetShowCursor(isShowCursor);
 				}
-
 private:
 				static Window& GetWindow()
 				{
@@ -137,9 +136,9 @@ private:
 				}
 };
 
-#include "Texture.hpp"
-#include "Material.hpp"
-#include "Mesh.hpp"
-#include "Camera.hpp"
-#include "Model.hpp"
+#include "Texture.h"
+#include "Material.h"
+#include "Mesh.h"
+#include "Camera.h"
+#include "Model.h"
 #include "Move.hpp"
