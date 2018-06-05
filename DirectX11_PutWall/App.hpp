@@ -10,7 +10,7 @@
 #include <d3dcompiler.h>
 #include <DirectXMath.h>
 #include <wincodec.h>
-#include<fbxsdk.h>
+#include <fbxsdk.h>
 
 #pragma comment(lib,"d3d11.lib")
 #pragma comment(lib,"d3dcompiler.lib")
@@ -137,9 +137,12 @@ private:
 				}
 };
 
+
 #include "Texture.hpp"
 #include "Material.hpp"
 #include "Mesh.hpp"
 #include "Camera.hpp"
 #include "Model.hpp"
 #include "Move.hpp"
+#include "Wall.hpp"
+#include "Player.hpp"

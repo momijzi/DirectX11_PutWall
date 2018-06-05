@@ -33,77 +33,7 @@ public:
 												this->uv = uv;
 								}
 				}
-				//前面同じuvに設定
-				void SetAll(Float2 numUV)
-				{
-								if (numUV.x >= 0 && numUV.y >= 0)
-								{
-												for (int i = 0; i < 6; i++)
-												{
-																this->numUV[i] = numUV;
-												}
-								}
-				}
-				//上と下以外のuv設定
-				void SetAround(Float2 numUV)
-				{
-								if (numUV.x >= 0 && numUV.y >= 0)
-								{
-												for (int i = 0; i < 4; i++)
-												{
-																this->numUV[i] = numUV;
-												}
-								}
-				}
-				//前面のuv設定
-				void SetFront(Float2 numUV)
-				{
-								if (numUV.x >= 0 && numUV.y >= 0)
-								{
-												this->numUV[0] = numUV;
-								}								
-				}
-				//後面のuv設定
-				void SetBack(Float2 numUV)
-				{
-								if (numUV.x >= 0 && numUV.y >= 0)
-								{
-												this->numUV[1] = numUV;
-								}
-				}
-				//左面のuv設定
-				void SetLeft(Float2 numUV)
-				{
-								if (numUV.x >= 0 && numUV.y >= 0)
-								{
-												this->numUV[2] = numUV;
-								}
-				}
-				//前面のuv設定
-				void SetRight(Float2 numUV)
-				{
-								if (numUV.x >= 0 && numUV.y >= 0)
-								{
-												this->numUV[3] = numUV;
-								}
-				}
-				//上面のuv設定
-				void SetUp(Float2 numUV)
-				{
-								if (numUV.x >= 0 && numUV.y >= 0)
-								{
-												this->numUV[4] = numUV;
-								}
-				}
-				//下面のuv設定
-				void SetDown(Float2 numUV)
-				{
-								if (numUV.x >= 0 && numUV.y >= 0)
-								{
-												this->numUV[5] = numUV;
-								}
-				}
-
+				
 				void Load(const wchar_t* const filePath)
 				{
 								ATL::CComPtr<IWICImagingFactory> factory = nullptr;

@@ -65,7 +65,6 @@ public:
 								vertices.push_back({ Float3(1.0f,-1.0f, 0.0f),Float3(0.0f,1.0f,0.0f),Float2(1.0f,1.0f) });
 								vertices.push_back({ Float3(-1.0f,-1.0f,0.0f),Float3(0.0f,0.0f,1.0f),Float2(0.0f,1.0f) });
 				}
-
 				//板を生成している
 				//uvが1.0以下になるとuvの始まる箇所がおかしくなるのでお勧めしない
 				//numUVは指定した画像の左上座標をとるのでほしい場所 - 1 座標が合う
@@ -186,7 +185,7 @@ public:
 								}
 								material.SetBuffer(1, &constant, sizeof(Constant));
 				}
-				void Draw()
+				void Draw(Float3 postion = Float3(0.0f, 0.0f, 0.0f), Float3 angles = Float3(0.0f,0.0f,0.0f))
 				{
 								if (vertexBuffer == nullptr)
 												return;

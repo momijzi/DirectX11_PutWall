@@ -467,5 +467,4 @@ struct Vertex
 								this->normal = normal;
 								this->uv = uv;
 				}
-
 };

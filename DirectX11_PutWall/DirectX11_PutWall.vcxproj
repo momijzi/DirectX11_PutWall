@@ -131,8 +131,10 @@
     <ClInclude Include="Mesh.hpp" />
     <ClInclude Include="Model.hpp" />
     <ClInclude Include="Move.hpp" />
+    <ClInclude Include="Player.hpp" />
     <ClInclude Include="Texture.hpp" />
     <ClInclude Include="Utility.hpp" />
+    <ClInclude Include="Wall.hpp" />
     <ClInclude Include="Window.hpp" />
   </ItemGroup>
   <ItemGroup>

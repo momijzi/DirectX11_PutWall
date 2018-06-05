@@ -3,7 +3,7 @@ class Camera
 public:
 				Float3 position;
 				Float3 angles;
-				float clearColor[4] = {1.0f,1.0f,1.0f,1.0f};
+				float clearColor[4] = {0.5f,0.5f,1.0f,1.0f};
 				bool isDepthTest;
 
 				Camera()

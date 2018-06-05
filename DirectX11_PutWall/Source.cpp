@@ -7,7 +7,10 @@ int MAIN()
 				//Texture texture(L"texture/crab.jpg");
 				//texture.Attach(0);
 
-				Texture texture(L"texture/StayBox.png");
+				Texture wallTexture(L"texture/WallTex.png");
+				wallTexture.SetDivide(Float2(11.0f, 1.0f));
+
+				//Wall wall(&wallTexture);
 
 				//プレイヤーの移動スピードかな
 				float playerDistance = 1.0f;
@@ -19,10 +22,11 @@ int MAIN()
 				camera.angles.x = 10.0f;
 
 				Mesh mesh;
-				mesh.CreateData(&texture, Mesh::CreateMode::CUBEOUT);
-				mesh.scale = 5.0f;
+				mesh.CreateData(&wallTexture, Mesh::CreateMode::CUBEOUT);
 
-				Model model(L"texture/crab.fbx");
+				int Count = 0;//仮で作成
+
+				//Model model(L"texture/crab.fbx");
 
 				App::SetMousePosition(0.0f, 0.0f);
 
@@ -68,11 +72,17 @@ int MAIN()
 								{
 												camera.position = move.MovePos(camera.position, false, true, true, false);
 								}
-
 								camera.Update();
 
-								mesh.Draw();
+								mesh.angles.z -= 0.1f;
+								if (mesh.angles.z < -90)
+								{
+												mesh.angles.z = 0.0f;
+								}
+								mesh.position.y = 0.25 * sin(2 * mesh.angles.z);
+								mesh.Draw(mesh.position,mesh.angles);
 
+								//wall.Draw();
 								//model.Draw();
 				}
 
