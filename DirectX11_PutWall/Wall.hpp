@@ -38,7 +38,7 @@ public:
 								if (!height < 8)
 								{
 												//エラー報告
-												return;
+												return false;
 								}
 									return pushWallFlag[surface][width] & (1 << height);//ここにフラグ
 				}
@@ -53,14 +53,83 @@ public:
 								pushWallFlag[surface][x] ^= (1 << y);
 				}
 
+				//現在の位置
+				//X移動方向.x*length+length/2+!移動方向.x*side
+				//Ymap[X][Z]&(1<<i)
+				//Z移動方向.z*length+length/2+!移動方向.z*side
+
+				void Wall::PushWallPos(int direction, int side, int height, int pushLength, Float3 *pos, bool &flag)
+				{
+								if (pos == nullptr)
+								{
+												return;
+								}
+
+								short moveDirection[3] = {};
+								for (int i = 0; i < pushLength; i++)
+								{
+												//移動方向を決める
+												moveDirection[0] = ((direction + 1) & 1)*(~(direction & 2) + 2);    //moveDirection[0] = (((Direction + 1) % 2)*((Direction / 2) * 2 - 1));
+												moveDirection[1] = 0;
+												moveDirection[2] = ((direction & 1))*(~(direction & 2) + 2);
+												//(((Direction & 1) + 1)*(~(Direction & 2) + 2), 0, ((Direction & 1))*(~(Direction & 2) + 2));
+
+												//移動場所を確定させる
+												pos[i] = Float3(
+																(float)(moveDirection[0] * length + (bool)(moveDirection[0]) * (length >> 1) + (bool)(moveDirection[0])*-i + !(bool)(moveDirection[0]) * side),
+																(float)(height),
+																(float)(moveDirection[2] * (float)length + (bool)(moveDirection[2]) * (length >> 1) + (bool)(moveDirection[2])*-i + !(bool)(moveDirection[2]) * side)
+												);
+								}
+
+								flag = true;
+				}
+
+				//指定した箇所のデータを渡す　現在そこにブロックが存在しているかの判断
 				bool GetWallData(unsigned int width, unsigned int depth, unsigned int height)
 				{
-								if (!height < 8)
+								if (width < length || depth < length)
 								{
-												//最上部なためブロックは存在しない
-												return false;
+												//例外処理
+												return true;
 								}
 								return map[width][depth] & (1 << height);
+				}
+				//指定した箇所にデータを入れる　そこにブロックを追加する
+				void Wall::SetWallData(unsigned int width, unsigned int depth, unsigned int height, bool flag)
+				{
+								if (width < length || depth < length)
+								{
+												//例外処理
+								}
+
+								if ((bool)(map[width][depth] & (1 << height)) != flag)
+								{
+												map[width][depth] ^= (1 << height);
+								}
+				}
+				//ブロックの押し出し時の処理
+				void Wall::MoveWall(bool &flag, int direction, int length, int timeCount, Float3* pos)
+				{
+								if (!flag)
+								{
+												return;
+								}
+								//出来ればタイムが取得したかったでござる
+								for (int i = 0; i < length; i++)
+								{
+												pos[i] -= Float3(
+																((direction + 1) & 1)*(~(direction & 2) + 2),
+																0,
+																((direction & 1))*(~(direction & 2) + 2)
+												)*((float)1 / 6);//本来はdeltaTimeを使いたいところ
+								}
+
+								if ((float)timeCount / 6 > length)//ココのif文がおかしいので後で修正
+								{
+												flag = false;
+												//ココで無理やり指定位置にそろえるべきだと思う
+								}
 				}
 
 				//初期化

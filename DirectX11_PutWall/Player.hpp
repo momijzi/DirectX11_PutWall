@@ -1,12 +1,13 @@
 class Player
 {
 public:
-				Player()
+				Player(Texture* tex)
 				{
 								App::Initialize();
 								position = Float3(0.0f, 0.0f, 0.0f);
 								angles = Float3(0.0f, 0.0f, 0.0f);
 								movePosition = Float3(0.0f, 0.0f, 0.0f);
+								mesh.CreateData(tex, Mesh::CreateMode::CUBEOUT);
 				}
 				~Player()
 				{

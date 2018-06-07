@@ -1,90 +1,73 @@
-#include "App.hpp"
+#include"App.hpp"
+
+/*
+これから追加する事
+Rayの追加（視点方向の選択）
+プレイヤーのモデルのサイズ調整
+シェーダ―にalphaを追加したい
+UIの追加だが大きさの設定をどうするか
+キーコンフィグを追加してみたい
+ゲームの流れを作成（早急）
+幸福は義務なのです（重要）
+*/
 
 int MAIN()
 {
-				bool flag = true;
-
-				//Texture texture(L"texture/crab.jpg");
-				//texture.Attach(0);
+				enum GameState { TITLE, CONFIG, PLAY, OVER };
+				GameState game = TITLE;
 
 				Texture wallTexture(L"texture/WallTex.png");
 				wallTexture.SetDivide(Float2(11.0f, 1.0f));
 
-				//Wall wall(&wallTexture);
+				Texture stateUI(L"testTexture.png");
+				stateUI.SetDivide(Float2(2.0f, 2.0f));
 
-				//プレイヤーの移動スピードかな
-				float playerDistance = 1.0f;
-				//移動のための
-				Move move;
+				////プレイヤーの移動スピードかな
+				//float playerDistance = 1.0f;
 
 				Camera camera;
-				camera.position = Float3(0.0f, 3.0f, -5.0f);
-				camera.angles.x = 10.0f;
+				camera.position.z = -3.0f;
 
 				Mesh mesh;
-				mesh.CreateData(&wallTexture, Mesh::CreateMode::CUBEOUT);
-
-				int Count = 0;//仮で作成
-
-				//Model model(L"texture/crab.fbx");
-
-				App::SetMousePosition(0.0f, 0.0f);
 
 				while (App::Refresh())
 				{
-								if (App::GetKey(VK_RETURN))
+								switch (game)
 								{
-												return 0;
-								}
-								if (App::GetKey(VK_LBUTTON))
-								{
-												if (App::GetKeyDown(VK_LBUTTON))
-												{
-																App::SetMousePosition(0.0f, 0.0f);
-												}
-												camera.angles += Float3(
-																-App::GetMousePosition().y,
-																App::GetMousePosition().x,
-																0.0f)*0.1f;
+												case GameState::TITLE:
+																if (App::GetKeyDown(VK_RETURN))
+																{
+																				game = PLAY;
+																}
+																else if (App::GetKeyDown(VK_SPACE))
+																{
+																				game = CONFIG;
+																}
+																break;
+												case GameState::CONFIG:
+																if (App::GetKeyDown(VK_RETURN))
+																{
+																				game = TITLE;
+																}
+																break;
+												case GameState::PLAY:
+																if (App::GetKeyDown(VK_RETURN))
+																{
+																				game = OVER;
+																}
 
-												move.angles += Float3(
-																-App::GetMousePosition().y,
-																App::GetMousePosition().x,
-																0.0f)*0.1f;
-
-												App::SetMousePosition(0.0f, 0.0f);
-								}
-
-								//プレイヤーの移動
-								if (App::GetKey(VK_UP))
-								{
-												camera.position = move.MovePos(camera.position, true, false, true, true);
-								}
-								else if (App::GetKey(VK_DOWN))
-								{
-												camera.position = move.MovePos(camera.position, false, false, true, true);
-								}
-								if (App::GetKey(VK_RIGHT))
-								{
-												camera.position = move.MovePos(camera.position, true, true, true, false);
-								}
-								else if (App::GetKey(VK_LEFT))
-								{
-												camera.position = move.MovePos(camera.position, false, true, true, false);
+																break;
+												case GameState::OVER:
+																if (App::GetKeyDown(VK_RETURN))
+																{
+																				game = TITLE;
+																}
+																break;
+												default:
+																break;
 								}
 								camera.Update();
-
-								mesh.angles.z -= 0.1f;
-								if (mesh.angles.z < -90)
-								{
-												mesh.angles.z = 0.0f;
-								}
-								mesh.position.y = 0.25 * sin(2 * mesh.angles.z);
-								mesh.Draw(mesh.position,mesh.angles);
-
-								//wall.Draw();
-								//model.Draw();
 				}
-
 				return 0;
 }
+

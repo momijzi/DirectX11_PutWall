@@ -41,7 +41,7 @@ public:
 
 								constant.projection = DirectX::XMMatrixTranspose(
 												DirectX::XMMatrixPerspectiveFovLH(
-																DirectX::XMConvertToRadians(60.0f),
+																DirectX::XMConvertToRadians(90.0f),
 																App::GetWindowSize().x / (float)App::GetWindowSize().y,
 																0.1f,
 																1000.0f

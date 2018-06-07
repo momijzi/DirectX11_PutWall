@@ -54,6 +54,9 @@
     <ClInclude Include="Player.hpp">
       <Filter>ソース ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="KeyConfig.hpp">
+      <Filter>ソース ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shader.hlsl">

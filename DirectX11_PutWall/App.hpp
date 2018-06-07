@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <vector>
+#include <fstream>
 #include <Windows.h>
 #include <atlbase.h>
 #include <d3d11.h>
@@ -137,7 +138,6 @@ private:
 				}
 };
 
-
 #include "Texture.hpp"
 #include "Material.hpp"
 #include "Mesh.hpp"
@@ -146,3 +146,4 @@ private:
 #include "Move.hpp"
 #include "Wall.hpp"
 #include "Player.hpp"
+#include "KeyConfig.hpp"

@@ -1,9 +1,6 @@
 class Texture
 {
 public:
-				Float2 uv;			//画像分割数 1から分割数-1
-				Float2 numUV[6];	//分割した場合どこを描画するか(四角)
-
 				Texture()
 				{
 								App::Initialize();
@@ -12,11 +9,7 @@ public:
 				Texture(const wchar_t* const filePath)
 				{
 								App::Initialize();
-								uv = Float2(1.0f, 1.0f);
-								for (int i = 0; i < 6; i++)
-								{
-												numUV[i] = Float2(0.0f, 0.0f);
-								}
+							
 								Load(filePath);
 				}
 
@@ -25,15 +18,82 @@ public:
 
 				}
 
+				#pragma region Uv
+				struct UvData
+				{
+								Float2 uv;			//画像分割数 1から分割数-1
+								Float2 numUv[6];	//分割した場合どこを描画するか(四角の場合に6面違うテクスチャを使う可能性があるため配列6)
+
+								//初期化
+								UvData()
+								{
+												uv = Float2(1.0f, 1.0f);
+												for (int i = 0; i < 6; i++)
+												{
+																numUv[i] = Float2(0.0f, 0.0f);
+												}
+								}
+				};
 				//引数分だけ分割して分割一つの大きさを入れる
 				void SetDivide(Float2 uv)
 				{
-								if (uv.x > 0 && uv.y > 0)
+								if (uv.x < 0 && uv.y < 0)
 								{
-												this->uv = uv;
+												//例外処理
+								}
+								uvData.uv = uv;
+				}
+				void SetNumUvAll(Float2 numUv)
+				{
+								if (numUv.x < 0.0f || numUv.x < uvData.uv.x ||
+												numUv.y < 0.0f || numUv.y < uvData.uv.y)
+								{
+												//例外処理
+								}
+								for (int i = 0; i < 6; i++)
+								{
+												uvData.numUv[i] = numUv;
 								}
 				}
-				
+
+				//前面のuv設定
+				void SetNumUvFront(Float2 numUV)
+				{
+								uvData.numUv[0] = numUV;
+				}
+				//後面のuv設定
+				void SetNumUvBack(Float2 numUV)
+				{
+								uvData.numUv[1] = numUV;
+				}
+				//左面のuv設定
+				void SetNumUvLeft(Float2 numUV)
+				{
+								uvData.numUv[2] = numUV;
+				}
+				//前面のuv設定
+				void SetNumUvRight(Float2 numUV)
+				{
+								uvData.numUv[3] = numUV;
+				}
+				//上面のuv設定
+				void SetNumUvUp(Float2 numUV)
+				{
+								uvData.numUv[4] = numUV;
+				}
+				//下面のuv設定
+				void SetNumUvDown(Float2 numUV)
+				{
+								uvData.numUv[5] = numUV;
+				}
+
+				UvData GetUvData()
+				{
+								return uvData;
+				}
+
+				#pragma endregion
+
 				void Load(const wchar_t* const filePath)
 				{
 								ATL::CComPtr<IWICImagingFactory> factory = nullptr;
@@ -160,6 +220,10 @@ public:
 				}
 
 private:
+				UvData uvData;
+			
+
+
 				ATL::CComPtr<ID3D11Texture2D> texture = nullptr;
 				ATL::CComPtr<ID3D11ShaderResourceView> shaderResourceView = nullptr;
 				ATL::CComPtr<ID3D11SamplerState> samplerState = nullptr;
