@@ -2,27 +2,12 @@
 
 int MAIN()
 {
-				bool flag = true;
-
-				//Texture texture(L"texture/crab.jpg");
-				//texture.Attach(0);
-
-				Texture texture(L"texture/StayBox.png");
-
-				//プレイヤーの移動スピードかな
-				float playerDistance = 1.0f;
 				//移動のための
 				Move move;
 
 				Camera camera;
 				camera.position = Float3(0.0f, 3.0f, -5.0f);
 				camera.angles.x = 10.0f;
-
-				Mesh mesh;
-				mesh.CreateData(&texture, Mesh::CreateMode::CUBEOUT);
-				mesh.scale = 5.0f;
-
-				Model model(L"texture/crab.fbx");
 
 				App::SetMousePosition(0.0f, 0.0f);
 
@@ -71,9 +56,6 @@ int MAIN()
 
 								camera.Update();
 
-								mesh.Draw();
-
-								//model.Draw();
 				}
 
 				return 0;
