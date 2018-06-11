@@ -22,7 +22,7 @@ App::Window::Window()
 				handle = CreateWindowW(App::NAME, App::NAME, WS_OVERLAPPEDWINDOW,
 								0, 0, 0, 0, nullptr, nullptr, instance, nullptr);
 
-				SetSize(640, 480);
+				SetSize(640,640);
 
 				ShowWindow(handle, SW_SHOWNORMAL);
 }

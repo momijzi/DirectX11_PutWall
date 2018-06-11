@@ -4,13 +4,31 @@ public:
 				Float3 position;
 				Float3 angles;
 
-				const float speed = 0.1f;
+				const float speed = 1.0f;
 
 				Move()
 				{
 								App::Initialize();
 				}
 				~Move() {}
+
+				//サイコロの移動のような処理　カタンカタンと 
+				//移動スピードは知らん　まだ特定していない
+				//とりあえず回転時にめり込む分だけ上に上昇させる
+				//void DiseMove()
+				//{
+				//				//基本周期を使用したボックスの回転
+				//				//これで90度回転の基本周期完了　
+				//
+				//		mesh.angles.z += 1.0f;
+				//		if (mesh.angles.z >= 90.0f)
+				//		{
+				//					mesh.angles.z = 0.0f;
+				//		}
+				//		mesh.position.y = sin(2 * DirectX::XMConvertToRadians(mesh.angles.z));
+				//		mesh.Draw(mesh.position, mesh.angles);
+				//		mesh2.Draw(mesh2.position, mesh2.angles);
+				//}
 
 				//初期の移動方向は右である
 				//moveには、0か１を入れる

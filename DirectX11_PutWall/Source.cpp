@@ -2,18 +2,28 @@
 
 int MAIN()
 {
+				//今回コンフィグ使うか不明
+				enum GameState{TITLE,CONFIG,PLAY,OVER};
+				GameState gameState = TITLE;
+
+				Texture stateTex(L"texture/testTex.png");
+				stateTex.SetDivide(Float2(2.0f, 2.0f));
+				Texture wallTex(L"texture/StayBox.png");
+
 				//移動のための
 				Move move;
 
 				Camera camera;
-				camera.position = Float3(0.0f, 3.0f, -5.0f);
-				camera.angles.x = 10.0f;
+				camera.position = Float3(12.0f, 0.0f,-12.0f);
+				camera.angles.y = -45.0f;
+
+				Wall wall(&wallTex);
 
 				App::SetMousePosition(0.0f, 0.0f);
 
 				while (App::Refresh())
 				{
-								if (App::GetKey(VK_RETURN))
+								/*if (App::GetKey(VK_RETURN))
 								{
 												return 0;
 								}
@@ -34,29 +44,21 @@ int MAIN()
 																0.0f)*0.1f;
 
 												App::SetMousePosition(0.0f, 0.0f);
+								}*/
+								switch (gameState)
+								{
+												case PLAY:
+																break;
+												default:
+																//主に描画しか変更がないので一括で変更する
+
+
+																break;
 								}
 
-								//プレイヤーの移動
-								if (App::GetKey(VK_UP))
-								{
-												camera.position = move.MovePos(camera.position, true, false, true, true);
-								}
-								else if (App::GetKey(VK_DOWN))
-								{
-												camera.position = move.MovePos(camera.position, false, false, true, true);
-								}
-								if (App::GetKey(VK_RIGHT))
-								{
-												camera.position = move.MovePos(camera.position, true, true, true, false);
-								}
-								else if (App::GetKey(VK_LEFT))
-								{
-												camera.position = move.MovePos(camera.position, false, true, true, false);
-								}
 
 								camera.Update();
-
+								wall.Draw();
 				}
-
 				return 0;
 }

@@ -43,7 +43,7 @@ void Model::Load(const wchar_t* const filePath)
 
 void Model::Draw()
 {
-				frame++;
+				/*frame++;
 				frame %= animations[animIndex].frames.size();
 
 				for (int i = 0; i < animations[animIndex].frames[frame].bones.size(); i++)
@@ -52,7 +52,7 @@ void Model::Draw()
 												animations[animIndex].frames[frame].bones[i]
 								);
 				}
-
+				*/
 				for (int i = 0; i < meshes.size(); i++)
 				{
 								meshes[i]->position = position;

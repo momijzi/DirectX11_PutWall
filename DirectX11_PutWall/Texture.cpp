@@ -1,91 +1,24 @@
 #include"App.hpp"
 
-Texture::Texture(const wchar_t* const filePath)
-{
-				App::Initialize();
-				uv = Float2(1.0f, 1.0f);
-				for (int i = 0; i < 6; i++)
-				{
-								numUV[i] = Float2(0.0f, 0.0f);
-				}
-				Load(filePath);
-}
-
 void Texture::SetDivide(Float2 uv)
 {
-				if (uv.x > 0 && uv.y > 0)
+				if (uv.x < 0 && uv.y < 0)
 				{
-								this->uv = uv;
+								//—áŠOˆ—
 				}
+				uvData.uv = uv;
 }
 
-void Texture::SetAll(Float2 numUV)
+void Texture::SetNumUvAll(Float2 numUv)
 {
-				if (numUV.x >= 0 && numUV.y >= 0)
+				if (numUv.x < 0.0f || numUv.x < uvData.uv.x ||
+								numUv.y < 0.0f || numUv.y < uvData.uv.y)
 				{
-								for (int i = 0; i < 6; i++)
-								{
-												this->numUV[i] = numUV;
-								}
+								//—áŠOˆ—
 				}
-}
-
-void Texture::SetAround(Float2 numUV)
-{
-				if (numUV.x >= 0 && numUV.y >= 0)
+				for (int i = 0; i < 6; i++)
 				{
-								for (int i = 0; i < 4; i++)
-								{
-												this->numUV[i] = numUV;
-								}
-				}
-}
-
-void Texture::SetFront(Float2 numUV)
-{
-				if (numUV.x >= 0 && numUV.y >= 0)
-				{
-								this->numUV[0] = numUV;
-				}
-}
-
-void Texture::SetBack(Float2 numUV)
-{
-				if (numUV.x >= 0 && numUV.y >= 0)
-				{
-								this->numUV[1] = numUV;
-				}
-}
-
-void Texture::SetLeft(Float2 numUV)
-{
-				if (numUV.x >= 0 && numUV.y >= 0)
-				{
-								this->numUV[2] = numUV;
-				}
-}
-
-void Texture::SetRight(Float2 numUV)
-{
-				if (numUV.x >= 0 && numUV.y >= 0)
-				{
-								this->numUV[3] = numUV;
-				}
-}
-
-void Texture::SetUp(Float2 numUV)
-{
-				if (numUV.x >= 0 && numUV.y >= 0)
-				{
-								this->numUV[4] = numUV;
-				}
-}
-
-void Texture::SetDown(Float2 numUV)
-{
-				if (numUV.x >= 0 && numUV.y >= 0)
-				{
-								this->numUV[5] = numUV;
+								uvData.numUv[i] = numUv;
 				}
 }
 

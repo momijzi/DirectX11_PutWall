@@ -1,47 +1,80 @@
+#pragma once
 class Texture
 {
 public:
-				Float2 uv;			//画像分割数 1から分割数-1
-				Float2 numUV[6];	//分割した場合どこを描画するか(四角)
-
 				Texture()
 				{
 								App::Initialize();
 				}
 
-				Texture(const wchar_t* const filePath);
-			
+				Texture(const wchar_t* const filePath)
+				{
+								App::Initialize();
+								Load(filePath);
+				}
 				~Texture()
 				{
 				}
 
+				#pragma region Uv
+				struct UvData
+				{
+								Float2 uv;			//画像分割数 1から分割数-1
+								Float2 numUv[6];	//分割した場合どこを描画するか(四角の場合に6面違うテクスチャを使う可能性があるため配列6)
+
+																									//初期化
+								UvData()
+								{
+												uv = Float2(1.0f, 1.0f);
+												for (int i = 0; i < 6; i++)
+												{
+																numUv[i] = Float2(0.0f, 0.0f);
+												}
+								}
+				};
 				//引数分だけ分割して分割一つの大きさを入れる
 				void SetDivide(Float2 uv);
+				
+				//6面全部のデータを変更する
+				void SetNumUvAll(Float2 numUv);				
 
-				//前面同じuvに設定
-				void SetAll(Float2 numUV);
-				
-				//上と下以外のuv設定
-				void SetAround(Float2 numUV);
-				
 				//前面のuv設定
-				void SetFront(Float2 numUV);
-
+				void SetNumUvFront(Float2 numUV)
+				{
+								uvData.numUv[0] = numUV;
+				}
 				//後面のuv設定
-				void SetBack(Float2 numUV);
-
+				void SetNumUvBack(Float2 numUV)
+				{
+								uvData.numUv[1] = numUV;
+				}
 				//左面のuv設定
-				void SetLeft(Float2 numUV);
-
+				void SetNumUvLeft(Float2 numUV)
+				{
+								uvData.numUv[2] = numUV;
+				}
 				//前面のuv設定
-				void SetRight(Float2 numUV);
-
+				void SetNumUvRight(Float2 numUV)
+				{
+								uvData.numUv[3] = numUV;
+				}
 				//上面のuv設定
-				void SetUp(Float2 numUV);
-			
+				void SetNumUvUp(Float2 numUV)
+				{
+								uvData.numUv[4] = numUV;
+				}
 				//下面のuv設定
-				void SetDown(Float2 numUV);
-				
+				void SetNumUvDown(Float2 numUV)
+				{
+								uvData.numUv[5] = numUV;
+				}
+
+				UvData GetUvData()
+				{
+								return uvData;
+				}
+
+				#pragma endregion
 				//ロード
 				void Load(const wchar_t* const filePath);
 				
@@ -49,6 +82,8 @@ public:
 				void Attach(int slot);
 
 private:
+				UvData uvData;
+
 				ATL::CComPtr<ID3D11Texture2D> texture = nullptr;
 				ATL::CComPtr<ID3D11ShaderResourceView> shaderResourceView = nullptr;
 				ATL::CComPtr<ID3D11SamplerState> samplerState = nullptr;
