@@ -11,13 +11,12 @@ int MAIN()
 				Texture wallTex(L"texture/StayBox.png");
 				//現在のゲームの状態を表すテクスチャの描画（UI）
 				Plane titleUI;
-				titleUI.scale = 10.0f;
-				titleUI.Create(&stateTex);
+				titleUI.Create(&stateTex,Float2(0.8f,0.6f));
 				//移動のための
 				Move move;
 
 				Camera camera;
-				camera.position = Float3(0.0f, 0.0f,-3.0f);
+				camera.position = Float3(0.0f, 0.0f,-1.0f);
 
 				Wall wall(&wallTex);
 
@@ -43,7 +42,7 @@ int MAIN()
 
 												App::SetMousePosition(0.0f, 0.0f);
 								}
-								
+								camera.Update();
 								switch (gameState)
 								{
 												case PLAY:
@@ -90,7 +89,6 @@ int MAIN()
 																titleUI.Draw();
 																break;
 								}
-								camera.Update();
 				}
 				return 0;
 }

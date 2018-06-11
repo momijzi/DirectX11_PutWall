@@ -51,12 +51,11 @@ class Plane : public Mesh
 public:
 				Plane() 
 				{
-								material = Material(L"Shader.hlsl");
 				};
-				void Create(Texture* tex)
+				void Create(Texture* tex,Float2 size = Float2(0.5f,0.5f))
 				{
 								material.SetTexture(0, tex);
-								CreatePlane(tex->GetUvData().uv,tex->GetUvData().numUv[0]);
+								CreatePlane(tex->GetUvData().uv,tex->GetUvData().numUv[0],size);
 								Apply();
 				}
 				//カメラの手前すぐにUIを配置する必要があるためカメラのデータを引数に
@@ -68,7 +67,6 @@ class Cube : public Mesh
 public:
 				Cube() 
 				{
-								material = Material(L"Shader.hlsl");
 				};
 				void Create(Texture* tex, int normal)
 				{
@@ -86,7 +84,6 @@ class Sphere : public Mesh
 public:
 				Sphere()
 				{
-								material = Material(L"Shader.hlsl");
 				};
 
 				void Create(Texture* tex)
@@ -105,7 +102,6 @@ class Tube : public Mesh
 public:
 				Tube()
 				{
-								material = Material(L"Shader.hlsl");
 				};
 				void Create(Texture* tex)
 				{

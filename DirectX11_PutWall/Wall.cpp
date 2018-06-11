@@ -145,15 +145,15 @@ void Wall::Draw()
 								{
 												for (int y = 0; y < height; y++)
 												{
-																for (int sign = -1; sign < 2; sign += 2)
+																for (int sign = 0; sign < 2; sign++)
 																{
-																				if (!GetPushFlag(i, halfLength + (xz * sign), y))
+																				if (!GetPushFlag(i, xz + (halfLength * sign), y))
 																				{
 																								//length + z@‚Æ@length + x‚ª’[ x‚Æz‚ð0‚©‚ç‚Æ‚·‚é
 																								wall.position = Float3(
-																												halfLength * blockSize * wallDrawDir[i].x + ((xz * blockSize + blockSize/2) * sign) * wallDrawDir[i].y,
+																												halfLength * blockSize * wallDrawDir[i].x + ((xz * blockSize + blockSize/2) * (-2 * sign + 1) * wallDrawDir[i].y),
 																												y * blockSize + 1.0f,
-																												halfLength * blockSize * wallDrawDir[i].z + ((xz * blockSize + blockSize/2) * sign) * wallDrawDir[i].w);
+																												halfLength * blockSize * wallDrawDir[i].z + ((xz * blockSize + blockSize/2) * (-2 * sign + 1) * wallDrawDir[i].w));
 																								wall.Draw();
 																			}
 																}

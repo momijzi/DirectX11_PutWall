@@ -51,7 +51,7 @@ private:
 				Float4 wallDrawDir[4] =
 				{
 								Float4(1.0f,0.0f,0.0f,1.0f),//âE
-								Float4(1.0f,0.0f,0.0f,1.0f),//Float4(0.0f,1.0f,-1.0f,0.0f),//â∫
+								Float4(0.0f,1.0f,-1.0f,0.0f),//â∫
 								Float4(-1.0f,0.0f,0.0f,1.0f),//ç∂
 								Float4(0.0f,1.0f,1.0f,0.0f)//è„
 				};
