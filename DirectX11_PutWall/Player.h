@@ -16,7 +16,7 @@ class Player
 
 private:
 				Wall wall;
-				Mesh mesh;
+
 				//描画用の座標
 				Float3 position;
 				Float3 angles;//要るのか不明

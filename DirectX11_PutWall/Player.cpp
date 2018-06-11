@@ -6,7 +6,6 @@ Player::Player(Texture* tex)
 				position = Float3(0.0f, 0.0f, 0.0f);
 				angles = Float3(0.0f, 0.0f, 0.0f);
 				movePosition = Float3(0.0f, 0.0f, 0.0f);
-				mesh.CreateData(tex, Mesh::CreateMode::CUBEOUT);
 }
 
 void Player::MoveConfirmation(int depth, int side)
@@ -40,14 +39,5 @@ void Player::MoveConfirmation(int depth, int side)
 
 void Player::Draw()
 {
-				//本体の描画
-				mesh.position = position;
-				mesh.angles = angles;
-				mesh.Draw();
-				//仮移動の描画（これには後で条件を付ける）
-				if (true)
-				{
-								mesh.position = position + movePosition;
-								mesh.Draw();
-				}
+				
 }

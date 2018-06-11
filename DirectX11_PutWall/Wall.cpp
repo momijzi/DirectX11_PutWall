@@ -3,10 +3,9 @@
 Wall::Wall(Texture* tex)
 {
 				//事前に使用するテクスチャを貼った面を生成しておく
-				
-				mesh[0].CreateData(tex, Mesh::CreateMode::PLANE);
-				mesh[1].CreateData(tex, Mesh::CreateMode::CUBEOUT);
-				
+				wall.Create(tex);
+				block.Create(tex,1);
+
 				Release();
 }
 
@@ -119,8 +118,8 @@ void Wall::Release()
 void Wall::Draw()
 {
 				int halfLength = length / 2;
-				mesh[0].scale = blockSize;
-				mesh[0].angles = 0.0f;
+				wall.scale = blockSize;
+				wall.angles = 0.0f;
 				//for (int x = 0; x < length; x++)
 				//{
 				//				for (int z = 0; z < length; z++)
@@ -130,8 +129,8 @@ void Wall::Draw()
 				//												//bit分だけ左シフトしてその場所の数値でflag判断
 				//												if (box[x][z] & (1 << y))
 				//												{
-				//																mesh[y].position = Float3((float)x, (float)y, (float)z);
-				//																mesh[y].Draw();
+				//																wall[y].position = Float3((float)x, (float)y, (float)z);
+				//																wall[y].Draw();
 				//												}
 				//								}
 				//				}
@@ -140,30 +139,30 @@ void Wall::Draw()
 				for (int i = 0; i < 4; i++)
 				{
 								//描画する順番  右　下　左　上
-								mesh[0].angles.y = 90.0f * (i + 1);
+								wall.angles.y = 90.0f * (i + 1);
 								//偶数前提のマップで作成
 								for (int xz = 0; xz < halfLength; xz++)
 								{
 												for (int y = 0; y < height; y++)
 												{
 																for (int sign = -1; sign < 2; sign += 2)
-																{/*
+																{
 																				if (!GetPushFlag(i, halfLength + (xz * sign), y))
-																				{*/
+																				{
 																								//length + z　と　length + xが端 xとzを0からとする
-																								mesh[0].position = Float3(
+																								wall.position = Float3(
 																												halfLength * blockSize * wallDrawDir[i].x + ((xz * blockSize + blockSize/2) * sign) * wallDrawDir[i].y,
 																												y * blockSize + 1.0f,
 																												halfLength * blockSize * wallDrawDir[i].z + ((xz * blockSize + blockSize/2) * sign) * wallDrawDir[i].w);
-																								mesh[0].Draw();
-																			//	}
+																								wall.Draw();
+																			}
 																}
 												}
 								}
 				}
 				//最後に底面の描画
-				mesh[0].position = Float3(0.0f, -0.5f * blockSize + 1.0f, 0.0f);
-				mesh[0].angles = Float3(90.0f,0.0f,0.0f);
-				mesh[0].scale = Float3(length, length, 1.0f) * blockSize;
-				mesh[0].Draw();
+				wall.position = Float3(0.0f, -0.5f * blockSize + 1.0f, 0.0f);
+				wall.angles = Float3(90.0f,0.0f,0.0f);
+				wall.scale = Float3(length, length, 1.0f) * blockSize;
+				wall.Draw();
 }

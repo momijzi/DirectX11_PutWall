@@ -40,13 +40,13 @@ private:
 				//マップの高さ　これは9以上にすると壊れるので注意
 				static const unsigned int MaxHeight = 8;
 				unsigned int height = 5;
-
 				//押し出すことのできる場所かどうかの判断に使用  2進数的に管理
 				char pushWallFlag[4][length] = {};
 				//ブロックが詰まっていく場所　ブロックがある箇所をtrueとする
 				char box[length][length] = {};
-				//描画するボックスのデータを作成する//面*2　ボックス*2 底面の順番
-				Mesh mesh[2];
+				//描画するデータを作成する//テクスチャ分作成（今回は処理を高速化するために）
+				Plane wall;
+				Cube block;
 				//壁の描画でその４方向で描画の仕方が変わるのでその変更用
 				Float4 wallDrawDir[4] =
 				{

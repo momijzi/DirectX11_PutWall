@@ -9,13 +9,15 @@ int MAIN()
 				Texture stateTex(L"texture/testTex.png");
 				stateTex.SetDivide(Float2(2.0f, 2.0f));
 				Texture wallTex(L"texture/StayBox.png");
-
+				//現在のゲームの状態を表すテクスチャの描画（UI）
+				Plane titleUI;
+				titleUI.scale = 10.0f;
+				titleUI.Create(&stateTex);
 				//移動のための
 				Move move;
 
 				Camera camera;
-				camera.position = Float3(12.0f, 0.0f,-12.0f);
-				camera.angles.y = -45.0f;
+				camera.position = Float3(0.0f, 0.0f,-3.0f);
 
 				Wall wall(&wallTex);
 
@@ -23,10 +25,6 @@ int MAIN()
 
 				while (App::Refresh())
 				{
-								/*if (App::GetKey(VK_RETURN))
-								{
-												return 0;
-								}
 								if (App::GetKey(VK_LBUTTON))
 								{
 												if (App::GetKeyDown(VK_LBUTTON))
@@ -44,21 +42,55 @@ int MAIN()
 																0.0f)*0.1f;
 
 												App::SetMousePosition(0.0f, 0.0f);
-								}*/
+								}
+								
 								switch (gameState)
 								{
 												case PLAY:
+																if (App::GetKeyDown(VK_RETURN))//ほんとはここにエンドフラグを
+																{
+																				stateTex.SetNumUvFront(Float2(1.0f, 1.0f));
+																				titleUI.Create(&stateTex);
+																				gameState = OVER;
+																}
+																wall.Draw();
 																break;
 												default:
 																//主に描画しか変更がないので一括で変更する
-
-
+																if (App::GetKeyDown(VK_RETURN))
+																{
+																				if (gameState == TITLE)
+																				{
+																								stateTex.SetNumUvFront(Float2(1.0f, 0.0f));
+																								titleUI.Create(&stateTex);
+																								gameState = PLAY;
+																				}
+																				else if (gameState == OVER)
+																				{
+																								stateTex.SetNumUvFront(Float2(0.0f, 0.0f));
+																								titleUI.Create(&stateTex);
+																								gameState = TITLE;
+																				}
+																}
+																else if (App::GetKeyDown(VK_SPACE))
+																{
+																				if (gameState != CONFIG)
+																				{
+																								stateTex.SetNumUvFront(Float2(0.0f, 1.0f));
+																								titleUI.Create(&stateTex);
+																								gameState = CONFIG;
+																				}
+																				else
+																				{
+																								stateTex.SetNumUvFront(Float2(0.0f, 0.0f));
+																								titleUI.Create(&stateTex);
+																								gameState = TITLE;
+																				}
+																}
+																titleUI.Draw();
 																break;
 								}
-
-
 								camera.Update();
-								wall.Draw();
 				}
 				return 0;
 }
