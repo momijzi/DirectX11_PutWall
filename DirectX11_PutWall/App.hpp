@@ -49,7 +49,7 @@ public:
 				#include "Window.h"
 				#include "Graphics.h"
 				#include "Input.h"
-
+				#include "Timer.h"
 				static constexpr wchar_t* NAME = L"DirectX11";
 
 				App() = delete;
@@ -57,6 +57,7 @@ public:
 				{
 								GetGraphics().Update();
 								GetInput().Update();
+								GetTimer().Update();
 								return GetWindow().Update();
 				}
 				static void Initialize()
@@ -70,6 +71,7 @@ public:
 												isInitialized = true;
 								}
 				}
+				//ウィンドウ関係
 				static HWND GetWindowHandle()
 				{
 								return GetWindow().GetHandle();
@@ -82,6 +84,7 @@ public:
 				{
 								GetWindow().SetSize(width, height);
 				}
+				//グラフィック関係
 				static ID3D11Device& GetGraohicsDevice()
 				{
 								return GetGraphics().GetDevice();
@@ -94,6 +97,7 @@ public:
 				{
 								return GetGraphics().GetSwapChain();
 				}
+				//入力関係
 				static bool GetKey(int VK_CODE)
 				{
 								return GetInput().GetKey(VK_CODE);
@@ -118,6 +122,19 @@ public:
 				{
 								GetInput().SetShowCursor(isShowCursor);
 				}
+				//タイム関係
+				static float GetTime()
+				{
+								return GetTimer().GetTime();
+				}
+				static float GetDeltaTime()
+				{
+								return GetTimer().GetDeltaTime();
+				}
+				static int GetFrameRate()
+				{
+								return GetTimer().GetFrameRate();
+				}
 private:
 				static Window& GetWindow()
 				{
@@ -133,6 +150,11 @@ private:
 				{
 								static std::unique_ptr<Input> input(new Input());
 								return *input.get();
+				}
+				static Timer& GetTimer()
+				{
+								static std::unique_ptr<Timer> timer(new Timer());
+								return *timer.get();
 				}
 };
 

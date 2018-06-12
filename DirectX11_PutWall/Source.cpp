@@ -11,14 +11,28 @@ int MAIN()
 				Texture wallTex(L"texture/StayBox.png");
 				//現在のゲームの状態を表すテクスチャの描画（UI）
 				Plane titleUI;
-				titleUI.Create(&stateTex,Float2(0.8f,0.6f));
+				titleUI.Create(&stateTex);
+				titleUI.scale = Float3(App::GetWindowSize().x / 4, App::GetWindowSize().y / 4, 0);
 				//移動のための
 				Move move;
+				//カメラ生成
+				Camera mainCamera;
+				mainCamera.position = Float3(0.0f, 5.0f,-10.0f);
+				Camera uiCamera(false);
+				uiCamera.position = Float3(0.0f, 0.0f, -1.0f);
 
-				Camera camera;
-				camera.position = Float3(0.0f, 0.0f,-1.0f);
+				//Wallの押し出しを行う処理の試験用に使用
+				int testSurface = 0;
+				int testWidth = 3;
+				int testHeight = 4;
+				int testLength = 5;
+				Float3 testPos[5] = {};
+				bool testFlag = false;
+				float testCount = 0.0f;
 
 				Wall wall(&wallTex);
+				Wall::WallData wallData(testSurface, testWidth, testHeight, testLength, testCount);
+				wall.SetInitialPosition(wallData);
 
 				App::SetMousePosition(0.0f, 0.0f);
 
@@ -30,7 +44,7 @@ int MAIN()
 												{
 																App::SetMousePosition(0.0f, 0.0f);
 												}
-												camera.angles += Float3(
+												mainCamera.angles += Float3(
 																-App::GetMousePosition().y,
 																App::GetMousePosition().x,
 																0.0f)*0.1f;
@@ -42,7 +56,26 @@ int MAIN()
 
 												App::SetMousePosition(0.0f, 0.0f);
 								}
-								camera.Update();
+								
+								//プレイヤーの移動
+								if (App::GetKey(VK_UP))
+								{
+												mainCamera.position = move.MovePos(mainCamera.position, true, false, true, true);
+								}
+								else if (App::GetKey(VK_DOWN))
+								{
+												mainCamera.position = move.MovePos(mainCamera.position, false, false, true, true);
+								}
+								if (App::GetKey(VK_RIGHT))
+								{
+												mainCamera.position = move.MovePos(mainCamera.position, true, true, true, false);
+								}
+								else if (App::GetKey(VK_LEFT))
+								{
+												mainCamera.position = move.MovePos(mainCamera.position, false, true, true, false);
+								}
+
+								mainCamera.Update();
 								switch (gameState)
 								{
 												case PLAY:
@@ -52,15 +85,18 @@ int MAIN()
 																				titleUI.Create(&stateTex);
 																				gameState = OVER;
 																}
+																wallData.time += App::GetDeltaTime();
+																wall.MoveWall(wallData);
 																wall.Draw();
 																break;
 												default:
+																
 																//主に描画しか変更がないので一括で変更する
 																if (App::GetKeyDown(VK_RETURN))
 																{
 																				if (gameState == TITLE)
 																				{
-																								stateTex.SetNumUvFront(Float2(1.0f, 0.0f));
+																								stateTex.SetNumUvFront(Float2(0.0f, 1.0f));
 																								titleUI.Create(&stateTex);
 																								gameState = PLAY;
 																				}
@@ -75,7 +111,7 @@ int MAIN()
 																{
 																				if (gameState != CONFIG)
 																				{
-																								stateTex.SetNumUvFront(Float2(0.0f, 1.0f));
+																								stateTex.SetNumUvFront(Float2(1.0f, 0.0f));
 																								titleUI.Create(&stateTex);
 																								gameState = CONFIG;
 																				}
@@ -86,9 +122,13 @@ int MAIN()
 																								gameState = TITLE;
 																				}
 																}
-																titleUI.Draw();
 																break;
 								}
+								uiCamera.Update();
+								titleUI.position.x = App::GetWindowSize().x / 2 - titleUI.scale.x / 2;
+								titleUI.position.y = App::GetWindowSize().y / 2 - titleUI.scale.y / 2;//+は上に行く　何座標系だったか……調べる！
+								titleUI.DrawSprite();
 				}
+				
 				return 0;
 }

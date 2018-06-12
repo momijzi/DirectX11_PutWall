@@ -103,8 +103,7 @@ void Mesh::Draw()
 								DirectX::XMMatrixRotationX(DirectX::XMConvertToRadians(angles.x))*
 								DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(angles.y))*
 								DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(angles.z))*
-								DirectX::XMMatrixTranslation(position.x, position.y, position.z)
-				);
+								DirectX::XMMatrixTranslation(position.x, position.y, position.z));
 
 				material.Attach();
 
@@ -124,18 +123,17 @@ void Mesh::Draw()
 				}
 }
 
-void Plane::DrawUI(Float3 cameraPos, Float3 cameraAngles)
+void Plane::DrawSprite()
 {
 				if (vertexBuffer == nullptr)
 								return;
 				//これ多分axis無いと意味がないと思われ、、、
 				constant.world = DirectX::XMMatrixTranspose(
 								DirectX::XMMatrixScaling(scale.x, scale.y, scale.z)*
-								DirectX::XMMatrixRotationX(DirectX::XMConvertToRadians(angles.x + cameraAngles.x))*
-								DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(angles.y + cameraAngles.y))*
-								DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(angles.z + cameraAngles.z))*
-								DirectX::XMMatrixTranslation(position.x + cameraPos.x, position.y + cameraPos.y, position.z + cameraPos.z)
-				);
+								DirectX::XMMatrixRotationX(DirectX::XMConvertToRadians(angles.x))*
+								DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(angles.y))*
+								DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(angles.z))*
+								DirectX::XMMatrixTranslation(position.x, position.y, position.z));
 
 				material.Attach();
 

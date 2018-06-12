@@ -8,7 +8,8 @@ Player::Player(Texture* tex)
 				movePosition = Float3(0.0f, 0.0f, 0.0f);
 }
 
-void Player::MoveConfirmation(int depth, int side)
+//
+void Player::MoveConfirmation(Wall* wall,int depth, int side)
 {
 				//ちょっと長くなりそうだったのでここで短縮
 				Float3 move = Float3(movePosition.x + side, movePosition.y, movePosition.z + depth);
@@ -17,12 +18,12 @@ void Player::MoveConfirmation(int depth, int side)
 								//移動不可（移動可能上限を超えている）
 								return;
 				}
-				if (wall.GetWallData(move.x, move.z, move.y))
+				if (wall->GetWallData(move.x, move.z, move.y))
 				{
 								//その場所にブロックが存在していた
-								if (wall.GetWallData(move.x, move.z, move.y + 1))
+								if (wall->GetWallData(move.x, move.z, move.y + 1))
 								{
-												if (wall.GetWallData(move.x, move.z, move.y - 1))
+												if (wall->GetWallData(move.x, move.z, move.y - 1))
 												{
 																//特に移動できる場所はなかった
 																return;
@@ -37,7 +38,11 @@ void Player::MoveConfirmation(int depth, int side)
 				return;
 }
 
-void Player::Draw()
+void Player::Draw(bool virtualPlayerDraw)
 {
 				
+				if (virtualPlayerDraw)
+				{
+
+				}
 }

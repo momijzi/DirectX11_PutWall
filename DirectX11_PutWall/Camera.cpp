@@ -1,14 +1,47 @@
 #include"App.hpp"
 
-Camera::Camera()
+Camera::Camera(bool dimensionFlag,Float4 color)
 {
 				App::Initialize();
 
 				position = Float3(0.0f, 0.0f, 0.0f);
 				angles = Float3(0.0f, 0.0f, 0.0f);
+				clearColor[0] = color.x;
+				clearColor[1] = color.y;
+				clearColor[2] = color.z;
+				clearColor[3] = color.w;
+				this->dimensionFlag = dimensionFlag;
 				isDepthTest = true;
-
+				fieldOfView = 60.0f;
+				nearClip = 0.1f;
+				farClip = 1000.0f;
 				Create();
+}
+
+//カメラの設定//3D
+void Camera::SetPerspective()
+{
+				constant.projection = DirectX::XMMatrixTranspose
+				(
+								DirectX::XMMatrixPerspectiveFovLH
+								(
+												DirectX::XMConvertToRadians(fieldOfView),//視野角
+												App::GetWindowSize().x / (float)App::GetWindowSize().y,//ビュー空間のアスペクト比X:Y
+												nearClip,			//クリッピング面の近面
+												farClip					//遠面
+								)
+				);
+}
+//基本的に1.0fでいいと思われる
+void Camera::SetOrthographic(float size)
+{
+				constant.projection = DirectX::XMMatrixTranspose
+				(
+								DirectX::XMMatrixOrthographicLH
+								(
+												App::GetWindowSize().x * size, App::GetWindowSize().y * size, nearClip, farClip
+								)
+				);
 }
 
 void Camera::Update()
@@ -30,15 +63,15 @@ void Camera::Update()
 												)
 								)
 				);
-
-				constant.projection = DirectX::XMMatrixTranspose(
-								DirectX::XMMatrixPerspectiveFovLH(
-												DirectX::XMConvertToRadians(60.0f),
-												App::GetWindowSize().x / (float)App::GetWindowSize().y,
-												0.1f,
-												1000.0f
-								)
-				);
+				//このカメラは3Dを映すのかそれとも2Dを映すのかの判定
+				if (dimensionFlag)
+				{
+								SetPerspective();
+				}
+				else
+				{
+								SetOrthographic(1.0f);
+				}
 
 				App::GetGraphicsContext().UpdateSubresource(
 								constantBuffer, 0, nullptr, &constant, 0, 0
@@ -69,8 +102,11 @@ void Camera::Update()
 								0, 1, &constantBuffer.p
 				);
 
-				App::GetGraphicsContext().ClearRenderTargetView(renderTargetView, clearColor);
-
+				//このカメラが二番目の時画面の更新を行わないようにする
+				if (dimensionFlag)
+				{
+								App::GetGraphicsContext().ClearRenderTargetView(renderTargetView, clearColor);
+				}
 				if (isDepthTest)
 				{
 								App::GetGraphicsContext().ClearDepthStencilView(

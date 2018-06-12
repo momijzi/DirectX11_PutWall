@@ -49,17 +49,17 @@ protected:
 class Plane : public Mesh
 {
 public:
-				Plane() 
+				Plane()
 				{
 				};
-				void Create(Texture* tex,Float2 size = Float2(0.5f,0.5f))
+				void Create(Texture* tex)
 				{
 								material.SetTexture(0, tex);
-								CreatePlane(tex->GetUvData().uv,tex->GetUvData().numUv[0],size);
+								CreatePlane(tex->GetUvData().uv,tex->GetUvData().numUv[0]);
 								Apply();
 				}
-				//カメラの手前すぐにUIを配置する必要があるためカメラのデータを引数に
-				void DrawUI(Float3 cameraPos, Float3 cameraAngles);
+				//2Dのテクスチャを描画するときに使用する
+				void DrawSprite();
 };
 
 class Cube : public Mesh
@@ -68,7 +68,7 @@ public:
 				Cube() 
 				{
 				};
-				void Create(Texture* tex, int normal)
+				void Create(Texture* tex, int normal,Float2 size = Float2(0.5f,0.5f))
 				{
 								material.SetTexture(0, tex);
 								CreateCube(tex->GetUvData(), normal);

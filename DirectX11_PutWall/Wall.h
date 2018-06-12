@@ -12,6 +12,40 @@ public:
 				{
 
 				}
+
+				struct WallData
+				{
+								WallData(int surface, int width, int height, int length, float time);
+								
+								~WallData();
+								
+								int surface = 0;
+								int width = 0;
+								int height = 0;
+								int length = 0;
+								Float3 *position;
+								Float3 initPosition = Float3(0, 0, 0);
+								bool flag = false;
+								float time = 0.0f;
+				};
+
+				/*
+				struct WallData2
+				{
+								Float3 position;//押し出すブロックの先頭座標
+								int length;//押し出す長さ
+								int pushDirection;//押し出す方向
+								bool activeFlag;//現在押し出す処理をしているか
+								Float2 Direction[4] = {
+												Float2(-1.0f, 0.0f),//左
+												Float2(0.0f, 1.0f), //前
+												Float2(1.0f, 0.0f), //右
+												Float2(0.0f, -1.0f)	//後
+								};
+				};
+				void CreateBlock();
+				*/
+
 				//4方面の壁から現在ブロックが出ているかの判断に使用する
 				bool GetPushFlag(int surface, unsigned int width, unsigned int height);
 				//押し出した時に指定した場所をtrueに変換する
@@ -22,9 +56,9 @@ public:
 				void SetWallData(unsigned int width, unsigned int depth, unsigned int height, bool flag);
 				
 				//押し出す壁の初期地点の設定
-				void SetInitialPosition(int direction, int side, int height, int pushLength, Float3 *createWallPos, bool &flag);
+				void SetInitialPosition(WallData &wallData);
 				//ブロックの押し出し時の処理
-				void MoveWall(bool &flag, int direction, int length, int timeCount, Float3* pos);
+				void MoveWall(WallData &wallData);
 
 				//初期化関数
 				void Release();
@@ -50,14 +84,10 @@ private:
 				//壁の描画でその４方向で描画の仕方が変わるのでその変更用
 				Float4 wallDrawDir[4] =
 				{
-								Float4(1.0f,0.0f,0.0f,1.0f),//右
-								Float4(0.0f,1.0f,-1.0f,0.0f),//下
-								Float4(-1.0f,0.0f,0.0f,1.0f),//左
-								Float4(0.0f,1.0f,1.0f,0.0f)//上
+								Float4(1.0f,0.0f,0.0f,1.0f),				//右
+								Float4(0.0f,1.0f,1.0f,0.0f),					//上
+								Float4(-1.0f,0.0f,0.0f,1.0f),			//左
+								Float4(0.0f,1.0f,-1.0f,0.0f)			//下
 				};
 };
 
-/*
-
-mesh[][]
-*/
