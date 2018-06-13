@@ -165,5 +165,4 @@ private:
 #include "Model.h"
 #include "Move.hpp"
 #include "Wall.h"
-#include "Player.h"
 #include "PlayerManager.h"

@@ -9,6 +9,7 @@ int MAIN()
 				Texture stateTex(L"texture/testTex.png");
 				stateTex.SetDivide(Float2(2.0f, 2.0f));
 				Texture wallTex(L"texture/StayBox.png");
+				wallTex.SetDivide(Float2(2.0f, 1.0f));
 				//現在のゲームの状態を表すテクスチャの描画（UI）
 				Plane titleUI;
 				titleUI.Create(&stateTex);
@@ -33,6 +34,8 @@ int MAIN()
 				Wall wall(&wallTex);
 				Wall::WallData wallData(testSurface, testWidth, testHeight, testLength, testCount);
 				wall.SetInitialPosition(wallData);
+
+				PlayerManager playerManager;
 
 				App::SetMousePosition(0.0f, 0.0f);
 
@@ -85,8 +88,12 @@ int MAIN()
 																				titleUI.Create(&stateTex);
 																				gameState = OVER;
 																}
-																wallData.time += App::GetDeltaTime();
-																wall.MoveWall(wallData);
+																if (App::GetKeyDown('A'))
+																{
+																			wall.ResetPlayerMoveFlag();
+																			playerManager.NewTurn();
+																			playerManager.MovementRange(&wall);
+																}
 																wall.Draw();
 																break;
 												default:

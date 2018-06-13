@@ -4,40 +4,95 @@ PlayerManager::PlayerManager()
 {
 				App::Initialize();
 				turn = false;
+
+				Release();
 }
 
 void PlayerManager::Behavior()
 {
 				
 }
-
-void PlayerManager::MovementRange(Wall* wall)
+//プレイヤーがこのターン移動することのできる場所を設定
+//mocePosが現在の座標の位置からどれだけ変化した地点から見るのかの判定用
+//Directionが判定を行う方向を示す//右に行った後に再度元の位置を調べる必要はないんで・・
+//flagはこのループの中でさらに奥深く調べる必要があるのかどうか、今回は階層１こ分しか見ないのでboolで判断
+//再帰使います
+void PlayerManager::MovementRange(Wall* wall, Float3 movePos, int Direction, bool flag)
 {
-				bool upFlag = true;//プレイヤーの上にブロックが存在していた時上に上ることができないので処理を少なくする
-				if (wall->GetBoxData(player[turn].position.x, player[turn].position.z, player[turn].position.y + 1))
+				//このスコープで複数回扱うのでここでまとめる
+				Float3 currentPos = Float3(player[turn].position.x + movePos.x,
+								player[turn].position.y + movePos.y, player[turn].position.z + movePos.z);
+
+				bool upFlag = false;//プレイヤーの上にブロックが存在していた時上に上ることができないので処理を少なくする
+				if (wall->GetBlockData(currentPos.x, currentPos.z, currentPos.y + 1))
 				{
-								upFlag = false;
+								upFlag = true;
 				}
-				//前後左右行けるかどうかの判定 右から時計回りに　行けるなら入る
-				if (wall->GetBoxData(player[turn].position.x + 1, player[turn].position.z, player[turn].position.y))
+				//ここから索敵を開始する・・//Dirは索敵する方向 0が上と
+				for (int Dir = 0; Dir < 4; Dir++)
 				{
-								if (upFlag)//上にブロックがあるかの確認
+								//ここで調べる必要のある方向かどうかを調べる
+								if (Dir != Direction)
 								{
-												//上に行くことができるか確認
-								}
-				}
-				else
-				{
-								//高さは同じの移動
-								if (wall->GetBoxData(player[turn].position.x + 1, player[turn].position.z, player[turn].position.y - 1))
-								{
-												
+												if (wall->GetBlockData(currentPos.x + SearchDirection[Dir].x,
+																currentPos.z + SearchDirection[Dir].y, currentPos.y))
+												{
+																//調べた場所にブロックが存在していた・・これは上に行くチャンス
+																//ただ調べた場所の上にブロックがあった時移動できない
+																if (!upFlag)
+																{
+																				//上に何もなかったため調べる
+																				if (!wall->GetBlockData(currentPos.x + SearchDirection[Dir].x,
+																								currentPos.z + SearchDirection[Dir].y, currentPos.y + 1))
+																				{
+																								//なんと上に行くことができることが判明した
+																								wall->SetPlayerMoveFlag(currentPos.x + SearchDirection[Dir].x,
+																												currentPos.z + SearchDirection[Dir].y, currentPos.y + 1, true);
+																								if (flag)
+																								{
+																												//そして更なる先を求めて旅に出る・・
+																												MovementRange(wall, Float3(currentPos.x + SearchDirection[Dir].x,
+																																currentPos.y + 1, currentPos.z + SearchDirection[Dir].y), (Dir ^ 2), false);
+																								}
+																				}
+																}
+												}
+												else
+												{
+																//何もなかったということは現状維持かそれとも落ち込むかの二択
+																//上に何もなかったため調べる
+																for (int j = 1; j < 3; j++)
+																{
+																				//ここに入る時点でその方向への移動ができることは確定なので床の部分にたどり着いた時は移動可能とする
+																				if (wall->GetBlockData(currentPos.x + SearchDirection[Dir].x,
+																								currentPos.z + SearchDirection[Dir].y, currentPos.y - j) ||
+																								currentPos.y - j < 0)
+																				{
+																								//高さ　基点 - jの位置に行くことができることが判明した
+																								wall->SetPlayerMoveFlag(currentPos.x + SearchDirection[Dir].x,
+																												currentPos.z + SearchDirection[Dir].y, currentPos.y - j + 1, true);
+																								if (flag)
+																								{
+																												//そして更なる先を求めて旅に出る・・
+																												MovementRange(wall, Float3(movePos.x + SearchDirection[Dir].x,
+																																movePos.y - j + 1, movePos.z + SearchDirection[Dir].y), (Dir ^ 2), false);
+																								}
+																								break;
+																				}
+																}
+												}
 								}
 				}
 }
-
-void PlayerManager::Release()
+void PlayerManager::Release(Float3 positionA, Float3 positionB)
 {
+				player[0].position = positionA;
+				player[0].angles = 0.0f;
+				player[0].movePosition = 0.0f;
+				player[1].position = positionB;
+				player[1].angles = 0.0f;
+				player[1].movePosition = 0.0f;
+
 				turn = false;
 }
 
