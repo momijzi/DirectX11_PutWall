@@ -34,14 +34,14 @@ Wall::WallData::~WallData()
 				}
 }
 //--------------------------------------------------------------------------------------------
-bool Wall::GetPushFlag(int surface, unsigned int width, unsigned int height)
+bool Wall::GetPushFlag(int surface, unsigned int x, unsigned int y)
 {
 				if (!(height < 8))
 				{
 								//エラー報告
 								return false;
 				}
-				return pushWallFlag[surface][width] & (1 << height);//ここにフラグ
+				return pushWallFlag[surface][x] & (1 << y);//ここにフラグ
 }
 
 void Wall::SetPushFlag(int surface, unsigned int x, unsigned int y)
@@ -54,7 +54,7 @@ void Wall::SetPushFlag(int surface, unsigned int x, unsigned int y)
 				pushWallFlag[surface][x] ^= (1 << y);
 }
 
-bool Wall::GetWallData(unsigned int width, unsigned int depth, unsigned int height)
+bool Wall::GetBoxData(unsigned int width, unsigned int depth, unsigned int height)
 {
 				if (!(width < length) || !(depth < length))
 				{
@@ -64,7 +64,7 @@ bool Wall::GetWallData(unsigned int width, unsigned int depth, unsigned int heig
 				return box[width][depth] & (1 << height);
 }
 
-void Wall::SetWallData(unsigned int width, unsigned int depth, unsigned int height, bool flag)
+void Wall::SetBoxData(unsigned int width, unsigned int depth, unsigned int height, bool flag)
 {
 				if (!(width < length) || !(depth < length))
 				{
@@ -93,9 +93,9 @@ void Wall::SetInitialPosition(WallData &wallData)
 				{
 								//移動場所を確定させる
 								wallData.position[i] = Float3(
-												(float)(moveDirection[0] * (float)length + (float)(moveDirection[0]) *wallData.length*blockSize + (float)(moveDirection[0])*-i*blockSize - moveDirection[0] + !(bool)(moveDirection[0]) * wallData.width),
+												(float)(moveDirection[0] * (float)length + (float)(moveDirection[0]) *wallData.length*blockSize + (float)(moveDirection[0])*-i*blockSize - moveDirection[0] + !(bool)(moveDirection[0]) * (wallData.width - ((int)length >> 1) + 0.5f)*blockSize),
 												(float)((wallData.height + 0.5f)*blockSize),
-												(float)(moveDirection[2] * (float)length + (float)(moveDirection[2]) *wallData.length*blockSize + (float)(moveDirection[2])*-i*blockSize - moveDirection[2] + !(bool)(moveDirection[2]) * wallData.width)
+												(float)(moveDirection[2] * (float)length + (float)(moveDirection[2]) *wallData.length*blockSize + (float)(moveDirection[2])*-i*blockSize - moveDirection[2] + !(bool)(moveDirection[2]) * (wallData.width - ((int)length >> 1) + 0.5f)*blockSize)
 								);
 				}
 				wallData.initPosition = wallData.position[0];
@@ -145,15 +145,17 @@ void Wall::MoveWall(WallData &wallData)
 
 								for (int i = 0; i < wallData.length; i++)
 								{
-												//移動場所を確定させる
 												createPos[i] = wallData.initPosition;
 
-												createPos[i] -= Float3(moveDirection[0], 0, moveDirection[2])*length*blockSize - Float3((bool)moveDirection[0], 0, (bool)moveDirection[2]);
+												//移動場所を確定させる
+												createPos[i] = Float3((int)createPos[i].x >> 1, (int)createPos[i].y >> 1, (int)createPos[i].z >> 1);
 
-												createPos[i].y = (int)createPos[i].y >> 1;
+												createPos[i] -= -Float3(moveDirection[0], moveDirection[1], moveDirection[2])*(((int)length - (wallData.length + 1)) >> 1) + Float3(moveDirection[0], moveDirection[1], moveDirection[2])*(i + (wallData.length >> 1));
+												
+												createPos[i] = Float3(((int)length >> 1) * !(bool)moveDirection[0] + createPos[i].x + moveDirection[0] + ((int)wallData.surface >> 1) * (int)length*(bool)moveDirection[0], createPos[i].y, ((int)length >> 1) * !(bool)moveDirection[2] + createPos[i].z + moveDirection[2] + ((int)wallData.surface >> 1) * (int)length*(bool)moveDirection[2]);
 
 												//createPos[i] += Float3(length*moveDirection[0], 0, length*moveDirection[2]);
-												SetWallData((unsigned int)createPos[i].x, (unsigned int)createPos[i].z, (unsigned int)createPos[i].y, true);
+												SetBoxData((unsigned int)createPos[i].x, (unsigned int)createPos[i].z, (unsigned int)createPos[i].y, true);
 								}
 								delete[] createPos;
 				}
@@ -209,7 +211,7 @@ void Wall::Draw()
 																for (int i = 0; i < 2; i++)
 																{
 																				//bit分だけ左シフトしてその場所の数値でflag判断
-																				if (GetWallData(x + halfLength, z + halfLength, y))
+																				if (GetBoxData(x + halfLength, z + halfLength, y))
 																				{
 																								block.position = (Float3(x,y,z) + 0.5f) * blockSize;
 																								block.Draw();

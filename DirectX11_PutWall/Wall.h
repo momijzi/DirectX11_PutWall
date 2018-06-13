@@ -47,13 +47,13 @@ public:
 				*/
 
 				//4方面の壁から現在ブロックが出ているかの判断に使用する
-				bool GetPushFlag(int surface, unsigned int width, unsigned int height);
+				bool GetPushFlag(int surface, unsigned int x, unsigned int y);
 				//押し出した時に指定した場所をtrueに変換する
 				void SetPushFlag(int surface, unsigned int x, unsigned int y);
 				//指定した箇所のデータを渡す　現在そこにブロックが存在しているかの判断
-				bool GetWallData(unsigned int width, unsigned int depth, unsigned int height);
+				bool GetBoxData(unsigned int width, unsigned int depth, unsigned int height);
 				//指定した箇所にデータを入れる　そこにブロックを追加する 主に押し出したブロックが静止したときにその場所にtrueを入れまくる
-				void SetWallData(unsigned int width, unsigned int depth, unsigned int height, bool flag);
+				void SetBoxData(unsigned int width, unsigned int depth, unsigned int height, bool flag);
 				
 				//押し出す壁の初期地点の設定
 				void SetInitialPosition(WallData &wallData);

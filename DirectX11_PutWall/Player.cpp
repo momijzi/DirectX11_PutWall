@@ -7,8 +7,7 @@ Player::Player(Texture* tex)
 				angles = Float3(0.0f, 0.0f, 0.0f);
 				movePosition = Float3(0.0f, 0.0f, 0.0f);
 }
-
-//
+/*
 void Player::MoveConfirmation(Wall* wall,int depth, int side)
 {
 				//ÇøÇÂÇ¡Ç∆í∑Ç≠Ç»ÇËÇªÇ§ÇæÇ¡ÇΩÇÃÇ≈Ç±Ç±Ç≈íZèk
@@ -45,4 +44,4 @@ void Player::Draw(bool virtualPlayerDraw)
 				{
 
 				}
-}
+}*/

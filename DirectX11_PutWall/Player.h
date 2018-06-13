@@ -9,10 +9,10 @@ class Player
 				}
 
 				//移動できるかの確認 ただし 1 or -1 しか入れてはいけない
-				void MoveConfirmation(Wall* wall,int depth, int side);
+				//void MoveConfirmation(Wall* wall,int depth, int side);
 				
 				//プレイヤーの描画 //移動先の描画をするかしないかを判定　基本描画しない
-				void Draw(bool virtualPlayerDraw = false);
+				//void Draw(bool virtualPlayerDraw = false);
 
 private:
 
