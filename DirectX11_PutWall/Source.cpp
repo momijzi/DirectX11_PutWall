@@ -3,6 +3,7 @@
 int MAIN()
 {
 				GameScene gameScene;
+
 				while (App::Refresh())
 				{
 								gameScene.SceneManager();

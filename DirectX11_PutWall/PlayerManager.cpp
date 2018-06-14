@@ -5,9 +5,12 @@ PlayerManager::PlayerManager()
 				App::Initialize();
 				turn = false;
 
-				Texture playerTex(L"texture/playerTex.png");
-				playerCube.SetTexture(&playerTex);
-				playerCube.Create(1);
+				playerTex.Load(L"texture/playerTex.png");
+				playerTex.SetDivide(Float2(2.0f, 1.0f));
+				playerCube[0].Create(&playerTex, 1);
+				playerTex.SetNumUv(Float2(1.0f,0.0f),0);
+				playerCube[1].Create(&playerTex, 1);
+
 				Release();
 }
 
@@ -78,7 +81,7 @@ void PlayerManager::MovementRange(Wall* wall, Float3 movePos, int Direction, int
 																								{
 																												//そして更なる先を求めて旅に出る・・
 																												MovementRange(wall, Float3(movePos.x + SearchDirection[Dir].x,
-																																movePos.y - j + 1, movePos.z + SearchDirection[Dir].y), (Dir ^ 2), moveCount++);
+																																movePos.y - j + 1, movePos.z + SearchDirection[Dir].y), (Dir ^ 2), moveCount + 1);
 																								}
 																								break;
 																				}
@@ -118,10 +121,8 @@ bool PlayerManager::MoveFlagChack()
 void PlayerManager::Release(Float3 positionA, Float3 positionB)
 {
 				player[0].position = positionA;
-				player[0].angles = 0.0f;
 				player[0].movePosition = 0.0f;
 				player[1].position = positionB;
-				player[1].angles = 0.0f;
 				player[1].movePosition = 0.0f;
 
 				turn = false;
@@ -130,6 +131,5 @@ void PlayerManager::Release(Float3 positionA, Float3 positionB)
 PlayerManager::Player::Player()
 {
 				position = Float3(0.0f,0.0f,0.0f);
-			 angles = Float3(0.0f, 0.0f, 0.0f);
 				movePosition = Float3(0.0f, 0.0f, 0.0f);
 }

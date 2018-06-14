@@ -21,9 +21,13 @@ public:
 				//一マス以上の移動をしているか
 				bool MoveFlagChack();
 
-				void Draw()
+				void Draw(int boxLength)
 				{
-
+								for (int i = 0; i < 2; i++)
+								{
+												playerCube[i].position = player[i].position;
+												playerCube[i].Draw();
+								}
 				}
 
 				//リプレイ時に初期地点に戻すために使う
@@ -36,8 +40,6 @@ private:
 								Player();
 								//描画用の座標
 								Float3 position;
-								//要るのか不明//プレイヤーがボックスより円状で小さい場合使用する
-								Float3 angles;
 								//仮の移動する座標を描画するのに使用（判別にも使用）
 								Float3 movePosition;
 				};
@@ -47,7 +49,8 @@ private:
 				//現在どちらのターンかの判別
 				bool turn;
 
-				Cube playerCube;
+				Texture playerTex;
+				Cube playerCube[2];
 
 				//MovementRangeで確認する方向に合わせて確認する位置をずらすための配列
 				//初期Directionは右です//また見る方向は反時計回りに変化します

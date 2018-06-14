@@ -86,6 +86,8 @@ public:
 				void Draw();
 				
 private:
+				Texture wallTex;
+
 				//押し出すことのできる場所かどうかの判断に使用  2進数的に管理
 				char pushWallFlag[4][length] = {};
 				//ブロックが詰まっていく場所　ブロックがある箇所をtrueとする

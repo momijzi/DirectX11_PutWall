@@ -50,5 +50,4 @@ private:
 				bool testFlag = false;
 				float testCount = 0.0f;
 
-				
 };

@@ -12,16 +12,24 @@ GameScene::GameScene()
 void GameScene::SceneManager()
 {
 				mainCamera.Update();
+				wall.Draw();
 				switch (gameState)
 				{
 								case GameState::PLAY:
-												MainTurn();
+												//MainTurn();
 												if (App::GetKeyDown(VK_RETURN))//ほんとはここにエンドフラグを//てかここはMainTurnに書かれるべき
 												{
-																uiData.stateUi.Create(Float2(1.0f, 1.0f));
+																uiData.CreateStateUi(Float2(1.0f, 1.0f));
 																gameState = OVER;
 												}
+												if (App::GetKeyDown('A'))
+												{
+																wall.ResetPlayerMoveFlag();
+																playerManager.NextTurn();
+																playerManager.MovementRange(&wall);
+												}
 												wall.Draw();
+												playerManager.Draw();
 												break;
 								default:
 												//主に描画しか変更がないので一括で変更する
@@ -29,12 +37,12 @@ void GameScene::SceneManager()
 												{
 																if (gameState == TITLE)
 																{
-																				uiData.stateUi.Create(Float2(0.0f, 1.0f));
+																				uiData.CreateStateUi(Float2(0.0f, 1.0f));
 																				gameState = PLAY;
 																}
 																else if (gameState == OVER)
 																{
-																				uiData.stateUi.Create(Float2(0.0f, 0.0f));
+																				uiData.CreateStateUi(Float2(0.0f, 0.0f));
 																				gameState = TITLE;
 																}
 												}
@@ -42,12 +50,12 @@ void GameScene::SceneManager()
 												{
 																if (gameState != CONFIG)
 																{
-																				uiData.stateUi.Create(Float2(1.0f, 0.0f));
+																				uiData.CreateStateUi(Float2(1.0f, 0.0f));
 																				gameState = CONFIG;
 																}
 																else
 																{
-																				uiData.stateUi.Create(Float2(0.0f, 0.0f));
+																				uiData.CreateStateUi(Float2(0.0f, 0.0f));
 																				gameState = TITLE;
 																}
 												}
@@ -70,13 +78,14 @@ void GameScene::MainTurn()
 												break;
 								case GameScene::PLAYER_MOVE:
 												//十字キーで移動とする移動方向の入力は配列順守とする
+								{
 												int moveDirection = KeyMoveData();
 
 												if (moveDirection != -1)
 												{
 																playerManager.MoveableChack(&wall, moveDirection);
 												}
-												
+
 												if (App::GetKeyDown(VK_RETURN))
 												{
 																if (playerManager.MoveFlagChack())
@@ -85,6 +94,7 @@ void GameScene::MainTurn()
 																}
 																//まだ移動を完了してないです。みたいなの欲しいな～
 												}
+								}
 												break;
 								case GameScene::PUSH_WALL_SELECT:
 												//押し出す壁を選択する　十字で選択になると思われる
@@ -145,6 +155,11 @@ void GameScene::MainTurn()
 												wall.SetInitialPosition(wallData);
 								}
 
+								if (false)//押し出しの処理が終わったかどうか
+								{
+												
+								}
+
 								break;
 				}
 }
@@ -161,10 +176,10 @@ void GameScene::CameraAnglesChangeMouse()
 												-App::GetMousePosition().y,
 												App::GetMousePosition().x,
 												0.0f)*0.1f;
-								/*move.angles += Float3(
+								move.angles += Float3(
 								-App::GetMousePosition().y,
 								App::GetMousePosition().x,
-								0.0f)*0.1f;*/
+								0.0f)*0.1f;
 
 								App::SetMousePosition(0.0f, 0.0f);
 				}

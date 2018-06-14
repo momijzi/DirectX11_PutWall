@@ -3,22 +3,20 @@
 Wall::Wall()
 {
 				App::Initialize();
-				Texture wallTex(L"texture/StayBox.png");
+				wallTex.Load(L"texture/StayBox.png");
+				wallTex.SetDivide(Float2(2.0f, 1.0f));
 
 				//事前に使用するテクスチャを貼った面を生成しておく
-				wall.SetTexture(&wallTex, Float2(2.0f, 1.0f));
-				wall.Create();
+				wall.Create(&wallTex);
 
 				//処理を軽くするために各テクスチャを貼ったボックスを用意
-				block[0].SetTexture(&wallTex);
-				block[0].Create(1);
+				block[0].Create(&wallTex,1);
 
-				block[1].SetTexture(&wallTex);
-				block[1].uvData.SetNumUvAll(Float2(1.0f, 0.0f));
-				block[1].Create(1);
+				wallTex.SetNumUvAll(Float2(1.0f, 0.0f));
+				block[1].Create(&wallTex,1);
 
 				block[0].scale = blockSize;
-				block[1].scale = blockSize / 2;
+				block[1].scale = blockSize;
 
 				Release();
 }

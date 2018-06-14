@@ -11,11 +11,10 @@ Mesh::Mesh()
 
 				material = Material(L"Shader.hlsl");
 }
-
 //球体生成用の三角形生成
-void Mesh::CreateTriangle(Float3 vertices1,Float3 vertices2,Float3 vertices3,
-				bool souldClear,Float2 uv,Float2 numUv)
-{			
+void Mesh::CreateTriangle(Float3 vertices1, Float3 vertices2, Float3 vertices3,
+				bool souldClear, Float2 uv, Float2 numUv)
+{
 				if (souldClear)
 				{
 								vertices.clear();
@@ -27,8 +26,8 @@ void Mesh::CreateTriangle(Float3 vertices1,Float3 vertices2,Float3 vertices3,
 }
 
 void Mesh::CreatePlane(Float2 uv, Float2 numUv,
-				Float2 size , Float3 offset,bool souldClear,
-				Float3 leftDirection,Float3 upDirection,Float3 forwardDirection)
+				Float2 size, Float3 offset, bool souldClear,
+				Float3 leftDirection, Float3 upDirection, Float3 forwardDirection)
 {
 				if (souldClear)
 				{
@@ -154,7 +153,7 @@ void Plane::DrawSprite()
 				}
 }
 
-void Cube::CreateCube(int normal, Float2 size, bool souldClear)
+void Cube::CreateCube(Texture::UvData uvData, int normal, Float2 size, bool souldClear)
 {
 				if (souldClear)
 				{
@@ -200,57 +199,8 @@ void Cube::CreateCube(int normal, Float2 size, bool souldClear)
 								Float3(0.0f, 1.0f, 0.0f));
 }
 
-//球体の生成
-void Sphere::CreateSphere(bool souldClear,
-				int heightRaito, int widthRaito,//何度で分割するか ※90の約数でないとあかんです・・
-				Float3 StartAngle,	//開始角指定用の引数,半球などの作成時に使用する
-				Float3 EndAngle)			//終了角指定用の引数,半球などの作成時に使用する
-{
-				if (souldClear)
-				{
-								vertices.clear();
-								indices.clear();
-				}
-
-				float heightStart = StartAngle.y / heightRaito;
-				float widthStart = StartAngle.x / widthRaito;
-
-				//何回分割するか
-				float heightSplit = EndAngle.y / heightRaito;
-				float widthSplit = EndAngle.x / widthRaito;
-
-				for (float n = heightSplit / 4 + heightStart / 2; n < (heightSplit * 3) / 4; n++)
-				{
-								for (float i = widthStart; i < widthSplit; i++)
-								{
-												CreateTriangle(
-																Float3(cos(DirectX::XMConvertToRadians(i * widthRaito)) * (cos(DirectX::XMConvertToRadians(n * heightRaito))),
-																				-(sin(DirectX::XMConvertToRadians((n)* heightRaito))),
-																				sin(DirectX::XMConvertToRadians(i * widthRaito))* (cos(DirectX::XMConvertToRadians(n * heightRaito))))*0.5f,
-
-																Float3(cos(DirectX::XMConvertToRadians(i * widthRaito)) * (cos(DirectX::XMConvertToRadians((n + 1) * heightRaito))),
-																				-(sin(DirectX::XMConvertToRadians((n + 1) * heightRaito))),
-																				sin(DirectX::XMConvertToRadians(i * widthRaito))* (cos(DirectX::XMConvertToRadians((n + 1) * heightRaito))))*0.5f,
-
-																Float3(cos(DirectX::XMConvertToRadians((i + 1) * widthRaito)) * (cos(DirectX::XMConvertToRadians(n * heightRaito))),
-																				-(sin(DirectX::XMConvertToRadians((n)* heightRaito))),
-																				sin(DirectX::XMConvertToRadians((i + 1) * widthRaito)) * (cos(DirectX::XMConvertToRadians(n * heightRaito))))*0.5f,
-																false
-												);
-
-												CreateTriangle(
-																Float3(cos(DirectX::XMConvertToRadians((i + 1) * widthRaito)) * (cos(DirectX::XMConvertToRadians(n * heightRaito))), -(sin(DirectX::XMConvertToRadians((n)* heightRaito))), sin(DirectX::XMConvertToRadians((i + 1) * widthRaito)) * (cos(DirectX::XMConvertToRadians(n * heightRaito))))*0.5f,
-																Float3(cos(DirectX::XMConvertToRadians(i * widthRaito)) * (cos(DirectX::XMConvertToRadians((n + 1) * heightRaito))), -(sin(DirectX::XMConvertToRadians((n + 1) * heightRaito))), sin(DirectX::XMConvertToRadians(i * widthRaito)) * (cos(DirectX::XMConvertToRadians((n + 1) * heightRaito))))*0.5f,
-																Float3(cos(DirectX::XMConvertToRadians((i + 1) * widthRaito)) * (cos(DirectX::XMConvertToRadians((n + 1) * heightRaito))), -(sin(DirectX::XMConvertToRadians((n + 1) * heightRaito))), sin(DirectX::XMConvertToRadians((i + 1) * widthRaito)) * (cos(DirectX::XMConvertToRadians((n + 1) * heightRaito))))*0.5f,
-																false
-												);
-								}
-				}
-}
-
-
 //筒状のオブジェクトを作成する
-void Tube::CreateTube( bool souldClear,
+void Tube::CreateTube(Texture::UvData uvData, bool souldClear,
 				int heightRaito, int widthRaito,				//何度で分割するか 90の約数で頼む
 				Float3 StartAngle,	//開始角指定用の引数,半球などの作成時に使用する
 				Float3 EndAngle)//終了角指定用の引数,半球などの作成時に使用する
@@ -320,3 +270,50 @@ void Tube::CreateTube( bool souldClear,
 				}
 }
 
+//球体の生成
+void Sphere::CreateSphere(Texture::UvData uvData, bool souldClear,
+				int heightRaito, int widthRaito,//何度で分割するか ※90の約数でないとあかんです・・
+				Float3 StartAngle,	//開始角指定用の引数,半球などの作成時に使用する
+				Float3 EndAngle)			//終了角指定用の引数,半球などの作成時に使用する
+{
+				if (souldClear)
+				{
+								vertices.clear();
+								indices.clear();
+				}
+
+				float heightStart = StartAngle.y / heightRaito;
+				float widthStart = StartAngle.x / widthRaito;
+
+				//何回分割するか
+				float heightSplit = EndAngle.y / heightRaito;
+				float widthSplit = EndAngle.x / widthRaito;
+
+				for (float n = heightSplit / 4 + heightStart / 2; n < (heightSplit * 3) / 4; n++)
+				{
+								for (float i = widthStart; i < widthSplit; i++)
+								{
+												CreateTriangle(
+																Float3(cos(DirectX::XMConvertToRadians(i * widthRaito)) * (cos(DirectX::XMConvertToRadians(n * heightRaito))),
+																				-(sin(DirectX::XMConvertToRadians((n)* heightRaito))),
+																				sin(DirectX::XMConvertToRadians(i * widthRaito))* (cos(DirectX::XMConvertToRadians(n * heightRaito))))*0.5f,
+
+																Float3(cos(DirectX::XMConvertToRadians(i * widthRaito)) * (cos(DirectX::XMConvertToRadians((n + 1) * heightRaito))),
+																				-(sin(DirectX::XMConvertToRadians((n + 1) * heightRaito))),
+																				sin(DirectX::XMConvertToRadians(i * widthRaito))* (cos(DirectX::XMConvertToRadians((n + 1) * heightRaito))))*0.5f,
+
+																Float3(cos(DirectX::XMConvertToRadians((i + 1) * widthRaito)) * (cos(DirectX::XMConvertToRadians(n * heightRaito))),
+																				-(sin(DirectX::XMConvertToRadians((n)* heightRaito))),
+																				sin(DirectX::XMConvertToRadians((i + 1) * widthRaito)) * (cos(DirectX::XMConvertToRadians(n * heightRaito))))*0.5f,
+																false
+												);
+
+												CreateTriangle(
+																Float3(cos(DirectX::XMConvertToRadians((i + 1) * widthRaito)) * (cos(DirectX::XMConvertToRadians(n * heightRaito))), -(sin(DirectX::XMConvertToRadians((n)* heightRaito))), sin(DirectX::XMConvertToRadians((i + 1) * widthRaito)) * (cos(DirectX::XMConvertToRadians(n * heightRaito))))*0.5f,
+																Float3(cos(DirectX::XMConvertToRadians(i * widthRaito)) * (cos(DirectX::XMConvertToRadians((n + 1) * heightRaito))), -(sin(DirectX::XMConvertToRadians((n + 1) * heightRaito))), sin(DirectX::XMConvertToRadians(i * widthRaito)) * (cos(DirectX::XMConvertToRadians((n + 1) * heightRaito))))*0.5f,
+																Float3(cos(DirectX::XMConvertToRadians((i + 1) * widthRaito)) * (cos(DirectX::XMConvertToRadians((n + 1) * heightRaito))), -(sin(DirectX::XMConvertToRadians((n + 1) * heightRaito))), sin(DirectX::XMConvertToRadians((i + 1) * widthRaito)) * (cos(DirectX::XMConvertToRadians((n + 1) * heightRaito))))*0.5f,
+																false
+												);
+								}
+				}
+}

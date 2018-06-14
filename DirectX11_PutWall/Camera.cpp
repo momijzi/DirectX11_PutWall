@@ -1,6 +1,6 @@
 #include"App.hpp"
 
-Camera::Camera(bool dimensionFlag,Float4 color)
+Camera::Camera(Float4 color)
 {
 				App::Initialize();
 
@@ -10,7 +10,6 @@ Camera::Camera(bool dimensionFlag,Float4 color)
 				clearColor[1] = color.y;
 				clearColor[2] = color.z;
 				clearColor[3] = color.w;
-				this->dimensionFlag = dimensionFlag;
 				isDepthTest = true;
 				fieldOfView = 60.0f;
 				nearClip = 0.1f;
@@ -73,7 +72,7 @@ void Camera::SetCameraLookAt(Float3 playerPos)
 				);
 }
 
-void Camera::Update(bool cameraView,Float3 playerPos)
+void Camera::Update(bool dimensionFlag,bool cameraView,Float3 playerPos)
 {
 				if (cameraView)
 				{
