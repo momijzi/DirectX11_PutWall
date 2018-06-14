@@ -229,13 +229,13 @@ void Wall::Release()
 				pushWallFlag[3][5] ^= (1 << 3);
 				pushWallFlag[3][6] ^= (1 << 0);
 				*/
-				/*
-				box[2][1] ^= (1 << 2);
-				box[1][3] ^= (1 << 3);
-				box[3][1] ^= (1 << 2);
-				box[5][1] ^= (1 << 2);
-				box[2][6] ^= (1 << 2);
-				*/
+				
+				box[2][3].block ^= (1 << 0);
+				box[1][4].block ^= (1 << 0);
+				box[3][3].block ^= (1 << 0);
+				box[5][5].block ^= (1 << 0);
+				box[2][2].block ^= (1 << 0);
+				
 }
 
 void Wall::Draw()

@@ -44,7 +44,7 @@ void Camera::SetOrthographic(float size)
 				);
 }
 
-void Camera::Update()
+void Camera::SetCameraInverse()
 {
 				constant.view = DirectX::XMMatrixTranspose(
 								DirectX::XMMatrixInverse(
@@ -63,6 +63,27 @@ void Camera::Update()
 												)
 								)
 				);
+}
+
+void Camera::SetCameraLookAt(Float3 playerPos)
+{
+				constant.view = DirectX::XMMatrixTranspose
+				(
+								DirectX::XMMatrixLookAtLH(position, playerPos, Float3(0.0f, 1.0f, 0.0f))
+				);
+}
+
+void Camera::Update(bool cameraView,Float3 playerPos)
+{
+				if (cameraView)
+				{
+								SetCameraLookAt(playerPos);
+				}
+				else
+				{
+								SetCameraInverse();
+				}
+
 				//‚±‚ÌƒJƒƒ‰‚Í3D‚ğ‰f‚·‚Ì‚©‚»‚ê‚Æ‚à2D‚ğ‰f‚·‚Ì‚©‚Ì”»’è
 				if (dimensionFlag)
 				{

@@ -51,8 +51,8 @@ void PlayerManager::MovementRange(Wall* wall, Float3 movePos, int Direction, boo
 																								if (flag)
 																								{
 																												//そして更なる先を求めて旅に出る・・
-																												MovementRange(wall, Float3(currentPos.x + SearchDirection[Dir].x,
-																																currentPos.y + 1, currentPos.z + SearchDirection[Dir].y), (Dir ^ 2), false);
+																												MovementRange(wall, Float3(movePos.x + SearchDirection[Dir].x,
+																																movePos.y + 1, movePos.z + SearchDirection[Dir].y),(Dir ^ 2), false);
 																								}
 																				}
 																}
@@ -68,7 +68,7 @@ void PlayerManager::MovementRange(Wall* wall, Float3 movePos, int Direction, boo
 																								currentPos.z + SearchDirection[Dir].y, currentPos.y - j) ||
 																								currentPos.y - j < 0)
 																				{
-																								//高さ　基点 - jの位置に行くことができることが判明した
+																								//高さ　基点 - j + 1の位置に行くことができることが判明した
 																								wall->SetPlayerMoveFlag(currentPos.x + SearchDirection[Dir].x,
 																												currentPos.z + SearchDirection[Dir].y, currentPos.y - j + 1, true);
 																								if (flag)

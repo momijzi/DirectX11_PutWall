@@ -10,10 +10,14 @@ public:
 				Camera(bool dimensionFlag = true,Float4 color = Float4(1.0f, 1.0f, 1.0f, 1.0f));
 				~Camera() {}
 
+				//カメラの視野の見方 3Dなら上の方を2Dなら下を使う
 				void SetPerspective();
 				void SetOrthographic(float size = 1.0f);
+				//カメラの対象の見方 
+				void SetCameraInverse();//カメラ視点なのでカメラのangleを使用
+				void SetCameraLookAt(Float3 playerPos);//カメラから対象に視点を向けるので対象のpositionが必要
 
-				void Update();
+				void Update(bool cameraView = false, Float3 playerPos = Float3(0.0f,0.0f,0.0f));
 private:
 				struct Constant
 				{
