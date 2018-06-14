@@ -51,15 +51,36 @@ class Plane : public Mesh
 public:
 				Plane()
 				{
+								uv = Float2(0.0f, 0.0f);
 				};
-				void Create(Texture* tex)
+
+				void SetTexture(Texture* tex, Float2 uv = Float2(0.0f, 0.0f))
 				{
 								material.SetTexture(0, tex);
-								CreatePlane(tex->GetUvData().uv,tex->GetUvData().numUv[0]);
-								Apply();
+								if (uv.x < 0.0f || uv.y < 0.0f)
+								{
+												return;
+								}
+								this->uv = uv;
+				}
+
+				//板の作成　ただあくまでテクスチャを設定した後に行う処理、間違えるべからず
+				void Create(Float2 numUv = Float2(1.0f, 1.0f))
+				{
+								if (numUv.x > uv.x || numUv.y > uv.y)
+								{
+												//何もない場所を描画することになる
+												//それを良しとするのであればここはコメントアウト
+												//ただ非推奨である
+												return;
+								}
+								CreatePlane(this->uv, numUv);
 				}
 				//2Dのテクスチャを描画するときに使用する
 				void DrawSprite();
+
+private:
+				Float2 uv;
 };
 
 class Cube : public Mesh
@@ -68,32 +89,46 @@ public:
 				Cube() 
 				{
 				};
-				void Create(Texture* tex, int normal,Float2 size = Float2(0.5f,0.5f))
+				//テクスチャの描画する位置を変えるときはこの値を変更すること
+				UvData uvData;
+
+				void SetTexture(Texture* tex)
 				{
 								material.SetTexture(0, tex);
-								CreateCube(tex->GetUvData(), normal);
+				}
+
+				void Create(int normal,Float2 size = Float2(0.5f,0.5f))
+				{
+								CreateCube(normal);
 								Apply();
 				}
 private:
 				//normalには1か-1しか入れてはいけない
-				void CreateCube(Texture::UvData uvData, int normal = 1, Float2 size = Float2(0.5f, 0.5f), bool souldClear = true);
+				void CreateCube(int normal = 1, Float2 size = Float2(0.5f, 0.5f), bool souldClear = true);
 };
 
+
+//今回は使わなかった
 class Sphere : public Mesh
 {
 public:
 				Sphere()
 				{
 				};
+				UvData uvData;
 
-				void Create(Texture* tex)
+				void SetTexture(Texture* tex)
 				{
 								material.SetTexture(0, tex);
-								CreateSphere(tex->GetUvData());
+				}
+
+				void Create()
+				{
+								CreateSphere();
 								Apply();
 				}
 private:
-				void CreateSphere(Texture::UvData uvData, bool souldClear = true, int heightRaito = 30, int widthRaito = 30,
+				void CreateSphere(bool souldClear = true, int heightRaito = 30, int widthRaito = 30,
 								Float3 StartAngle = Float3(0, 0, 0), Float3 EndAngle = Float3(360, 360, 360));
 };
 
@@ -103,13 +138,21 @@ public:
 				Tube()
 				{
 				};
+
+				UvData uvData;
+
+				void SetTexture(Texture* tex)
+				{
+								material.SetTexture(0, tex);
+				}
+
 				void Create(Texture* tex)
 				{
 								material.SetTexture(0, tex);
-								CreateTube(tex->GetUvData());
+								CreateTube();
 								Apply();
 				}
 private:
-				void CreateTube(Texture::UvData uvData, bool souldClear = true, int heightRaito = 30, int widthRaito = 30,
+				void CreateTube(bool souldClear = true, int heightRaito = 30, int widthRaito = 30,
 								Float3 StartAngle = Float3(0, 0, 0), Float3 EndAngle = Float3(360, 360, 360));
 };

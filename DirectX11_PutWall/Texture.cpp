@@ -1,27 +1,5 @@
 #include"App.hpp"
 
-void Texture::SetDivide(Float2 uv)
-{
-				if (uv.x < 0 && uv.y < 0)
-				{
-								//—áŠOˆ—
-				}
-				uvData.uv = uv;
-}
-
-void Texture::SetNumUvAll(Float2 numUv)
-{
-				if (numUv.x < 0.0f || numUv.x < uvData.uv.x ||
-								numUv.y < 0.0f || numUv.y < uvData.uv.y)
-				{
-								//—áŠOˆ—
-				}
-				for (int i = 0; i < 6; i++)
-				{
-								uvData.numUv[i] = numUv;
-				}
-}
-
 void Texture::Load(const wchar_t* const filePath)
 {
 				ATL::CComPtr<IWICImagingFactory> factory = nullptr;

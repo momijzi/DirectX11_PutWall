@@ -8,16 +8,8 @@
 class Wall
 {
 public:
-				Wall()
-				{
-								App::Initialize();
-				}
-				Wall(Texture* tex);
-
-				~Wall()
-				{
-
-				}
+				Wall();
+				~Wall() {};
 private:
 				//ブロックの基本サイズ
 				const float blockSize = 2.0f;
@@ -69,9 +61,11 @@ public:
 				//BoxDataのblockの指定したデータを呼び出すまたは設定する
 				bool GetBlockData(unsigned int width, unsigned int depth, unsigned int height);
 				void SetBlockData(unsigned int width, unsigned int depth, unsigned int height, bool flag);
+				
 				//BoxDataのplayerMoveFlagの指定したデータを呼び出すまたは設定する
 				bool GetPlayerMoveFlag(unsigned int width, unsigned int depth, unsigned int height);
 				void SetPlayerMoveFlag(unsigned int width, unsigned int depth, unsigned int height,bool flag);
+				
 				//次のターンになった時に次のプレイヤーの移動場所を設定するために初期化
 				void ResetPlayerMoveFlag();
 

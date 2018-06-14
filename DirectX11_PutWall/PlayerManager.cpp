@@ -5,6 +5,8 @@ PlayerManager::PlayerManager()
 				App::Initialize();
 				turn = false;
 
+				Texture playerTex(L"texture/playerTex.png");
+				playerCube.Create(&playerTex,1);
 				Release();
 }
 
@@ -15,9 +17,9 @@ void PlayerManager::Behavior()
 //プレイヤーがこのターン移動することのできる場所を設定
 //mocePosが現在の座標の位置からどれだけ変化した地点から見るのかの判定用
 //Directionが判定を行う方向を示す//右に行った後に再度元の位置を調べる必要はないんで・・
-//flagはこのループの中でさらに奥深く調べる必要があるのかどうか、今回は階層１こ分しか見ないのでboolで判断
+//countMoveは現在どの移動をしているのかを示す　現在はmoveCount目の移動である
 //再帰使います
-void PlayerManager::MovementRange(Wall* wall, Float3 movePos, int Direction, bool flag)
+void PlayerManager::MovementRange(Wall* wall, Float3 movePos, int Direction, int moveCount)
 {
 				//このスコープで複数回扱うのでここでまとめる
 				Float3 currentPos = Float3(player[turn].position.x + movePos.x,
@@ -48,11 +50,11 @@ void PlayerManager::MovementRange(Wall* wall, Float3 movePos, int Direction, boo
 																								//なんと上に行くことができることが判明した
 																								wall->SetPlayerMoveFlag(currentPos.x + SearchDirection[Dir].x,
 																												currentPos.z + SearchDirection[Dir].y, currentPos.y + 1, true);
-																								if (flag)
+																								if (moveCount != MaxMove)
 																								{
 																												//そして更なる先を求めて旅に出る・・
 																												MovementRange(wall, Float3(movePos.x + SearchDirection[Dir].x,
-																																movePos.y + 1, movePos.z + SearchDirection[Dir].y),(Dir ^ 2), false);
+																																movePos.y + 1, movePos.z + SearchDirection[Dir].y),(Dir ^ 2), moveCount++);
 																								}
 																				}
 																}
@@ -71,11 +73,11 @@ void PlayerManager::MovementRange(Wall* wall, Float3 movePos, int Direction, boo
 																								//高さ　基点 - j + 1の位置に行くことができることが判明した
 																								wall->SetPlayerMoveFlag(currentPos.x + SearchDirection[Dir].x,
 																												currentPos.z + SearchDirection[Dir].y, currentPos.y - j + 1, true);
-																								if (flag)
+																								if (moveCount != MaxMove)
 																								{
 																												//そして更なる先を求めて旅に出る・・
 																												MovementRange(wall, Float3(movePos.x + SearchDirection[Dir].x,
-																																movePos.y - j + 1, movePos.z + SearchDirection[Dir].y), (Dir ^ 2), false);
+																																movePos.y - j + 1, movePos.z + SearchDirection[Dir].y), (Dir ^ 2), moveCount++);
 																								}
 																								break;
 																				}
@@ -84,6 +86,24 @@ void PlayerManager::MovementRange(Wall* wall, Float3 movePos, int Direction, boo
 								}
 				}
 }
+
+void PlayerManager::MoveChack(Wall* wall, int Direction)
+{
+				for (int y = -1; y < 2; y++)
+				{
+								if (wall->GetPlayerMoveFlag(
+												player[turn].position.x + player[turn].movePosition.x + SearchDirection[Direction].x,
+												player[turn].position.z + player[turn].movePosition.z + SearchDirection[Direction].y,
+												player[turn].position.y + player[turn].movePosition.y + y))
+								{
+												player[turn].movePosition = player[turn].movePosition
+																+ Float3(SearchDirection[Direction].x, y, SearchDirection[Direction].y);
+												break;
+								}
+				}
+}
+
+
 void PlayerManager::Release(Float3 positionA, Float3 positionB)
 {
 				player[0].position = positionA;

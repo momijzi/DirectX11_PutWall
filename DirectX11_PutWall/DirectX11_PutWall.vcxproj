@@ -127,6 +127,7 @@
   <ItemGroup>
     <ClInclude Include="App.hpp" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="GameScene.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="Material.h" />
@@ -136,6 +137,7 @@
     <ClInclude Include="PlayerManager.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Timer.h" />
+    <ClInclude Include="UIData.h" />
     <ClInclude Include="Utility.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </ExcludedFromBuild>
@@ -165,6 +167,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Material.cpp" />
@@ -174,6 +177,7 @@
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Timer.cpp" />
+    <ClCompile Include="UIData.cpp" />
     <ClCompile Include="Wall.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>

@@ -5,18 +5,25 @@ class PlayerManager
 public:
 				PlayerManager();
 				~PlayerManager() {};
-				
+
 				//プレイヤーの行動　引数にどちらのターンかをboolで入れる
 				void Behavior();
 				//プレイヤーがこのターン移動できる場所を検索
 				void MovementRange(Wall* wall, Float3 movePos = Float3(0.0f,0.0f,0.0f),
-								int Direction = -1, bool flag = true);
+								int Direction = -1, int moveCount = 1);
+
+				void MoveChack(Wall* wall, int Direction);
+				
+				void NewTurn() { turn = !turn;}
+
+				void Draw()
+				{
+
+				}
 
 				//リプレイ時に初期地点に戻すために使う
 				void Release(Float3 positionA = Float3(3.0, 0.0f, 4.0f),
 								Float3 positionB = Float3(4.0, 0.0f, 3.0f));
-
-				void NewTurn() { turn = !turn; }
 
 private:
 				struct Player
@@ -31,9 +38,11 @@ private:
 				};
 				Player player[2];
 				//プレイヤーが一ターンに動くことのできるマス数
-				const int Maxmove = 2;
+				const int MaxMove = 2;
 				//現在どちらのターンかの判別
 				bool turn;
+
+				Cube playerCube;
 
 				//MovementRangeで確認する方向に合わせて確認する位置をずらすための配列
 				//初期Directionは右です//また見る方向は反時計回りに変化します

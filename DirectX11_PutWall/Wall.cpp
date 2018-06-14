@@ -1,17 +1,28 @@
 #include"App.hpp"
 
-Wall::Wall(Texture* tex)
+Wall::Wall()
 {
+				App::Initialize();
+				Texture wallTex(L"texture/StayBox.png");
+
 				//事前に使用するテクスチャを貼った面を生成しておく
-				wall.Create(tex);
-				tex->SetNumUvAll(Float2(0.0f, 0.0f));
-				block[0].Create(tex, 1);
-				tex->SetNumUvAll(Float2(1.0f, 0.0f));
-				block[1].Create(tex, 1);
-				block[0].scale = block[1].scale = blockSize;
+				wall.SetTexture(&wallTex, Float2(2.0f, 1.0f));
+				wall.Create();
+
+				//処理を軽くするために各テクスチャを貼ったボックスを用意
+				block[0].SetTexture(&wallTex);
+				block[0].Create(1);
+
+				block[1].SetTexture(&wallTex);
+				block[1].uvData.SetNumUvAll(Float2(1.0f, 0.0f));
+				block[1].Create(1);
+
+				block[0].scale = blockSize;
+				block[1].scale = blockSize / 2;
 
 				Release();
 }
+
 //構造体WallDataのコンストラクタ-----------------------------------------------------------
 Wall::WallData::WallData(int surface, int width, int height, int length, float time)
 {
@@ -90,7 +101,7 @@ bool Wall::GetPlayerMoveFlag(unsigned int width, unsigned int depth, unsigned in
 				if (!(width < length) || !(depth < length))
 				{
 								//例外処理
-								return true;
+								return false;
 				}
 				return box[width][depth].playerMoveBlock[height];
 }
@@ -150,31 +161,23 @@ void Wall::MoveWall(WallData &wallData)
 				{
 								return;
 				}
-				//if (wallData.flag)
-				//{
-				//出来ればタイムが取得したかったでござる
 				for (int i = 0; i < wallData.length; i++)
 				{
 								wallData.position[i] -= Float3(
 												((wallData.surface + 1) & 1)*(~(wallData.surface & 2) + 2),
 												0,
 												((wallData.surface & 1))*(~(wallData.surface & 2) + 2)
-								)*App::GetDeltaTime()*blockSize;//本来はdeltaTimeを使いたいところ
+								)*App::GetDeltaTime()*blockSize;
 				}
-				//}
 				for (int i = 0; i < wallData.length; i++)
 				{
 								block[0].scale = blockSize;
 								block[0].position = wallData.position[i];
 								block[0].Draw();
 				}
-				if (wallData.time > wallData.length)//ココのif文がおかしいので後で修正
+				if (wallData.time > wallData.length)
 				{
 								wallData.flag = false;
-
-								//SetWallData(wallData.width, wallData.depth, unsigned int height, bool flag)
-								//ココで無理やり指定位置にそろえるべきだと思う
-
 								short moveDirection[3] = {};
 								Float3 *createPos;
 								createPos = new Float3[wallData.length];
@@ -222,6 +225,7 @@ void Wall::Release()
 												box[x][z].Release();
 								}
 				}
+				//試験的に設定している
 				/*
 				pushWallFlag[3][2] ^= (1 << 1);
 				pushWallFlag[3][4] ^= (1 << 2);
@@ -229,13 +233,13 @@ void Wall::Release()
 				pushWallFlag[3][5] ^= (1 << 3);
 				pushWallFlag[3][6] ^= (1 << 0);
 				*/
-				
+				/*
 				box[2][3].block ^= (1 << 0);
 				box[1][4].block ^= (1 << 0);
 				box[3][3].block ^= (1 << 0);
 				box[5][5].block ^= (1 << 0);
 				box[2][2].block ^= (1 << 0);
-				
+				*/
 }
 
 void Wall::Draw()
@@ -253,11 +257,13 @@ void Wall::Draw()
 												{
 																for (int i = 0; i < 2; i++)
 																{
+																				//プレイヤーの行くことのできる場所を描画
 																				if (GetPlayerMoveFlag(x + halfLength, z + halfLength, y))
 																				{
 																								block[1].position = (Float3(x, y, z) + 0.5f) * blockSize;
 																								block[1].Draw();
 																				}
+																				//中に存在しているブロックを生成する
 																				//bit分だけ左シフトしてその場所の数値でflag判断
 																				else if(GetBlockData(x + halfLength, z + halfLength, y))
 																				{

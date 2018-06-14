@@ -163,6 +163,8 @@ private:
 #include "Mesh.h"
 #include "Camera.h"
 #include "Model.h"
+#include "UIData.h"
 #include "Move.hpp"
 #include "Wall.h"
 #include "PlayerManager.h"
+#include "GameScene.h"
