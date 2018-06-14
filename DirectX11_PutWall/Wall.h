@@ -24,7 +24,9 @@ public:
 
 				struct WallData
 				{
-								WallData(int surface, int width, int height, int length, float time);
+								WallData() {};
+
+								void SetWallData(int surface, int width, int height, int length, float time);
 								
 								~WallData();
 								
@@ -95,8 +97,10 @@ private:
 				//ブロックが詰まっていく場所　ブロックがある箇所をtrueとする
 				BoxData box[length][length] = {};
 				//描画するデータを作成する//テクスチャ分作成（今回は処理を高速化するために）
-				Plane wall;
+				Plane wall[3];
 				Cube block[2];
+
+				WallData pushWallData;
 				//壁の描画でその４方向で描画の仕方が変わるのでその変更用
 				Float4 wallDrawDirection[4] =
 				{

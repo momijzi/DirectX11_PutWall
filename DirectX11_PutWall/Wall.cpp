@@ -4,16 +4,21 @@ Wall::Wall()
 {
 				App::Initialize();
 				wallTex.Load(L"texture/StayBox.png");
-				wallTex.SetDivide(Float2(2.0f, 1.0f));
+				wallTex.SetDivide(Float2(4.0f, 1.0f));
 
 				//事前に使用するテクスチャを貼った面を生成しておく
-				wall.Create(&wallTex);
+				wall[0].Create(&wallTex);
 
 				//処理を軽くするために各テクスチャを貼ったボックスを用意
 				block[0].Create(&wallTex,1);
 
 				wallTex.SetNumUvAll(Float2(1.0f, 0.0f));
 				block[1].Create(&wallTex,1);
+
+				wallTex.SetNumUvAll(Float2(2.0f, 0.0f));
+				wall[1].Create(&wallTex);
+				wallTex.SetNumUvAll(Float2(3.0f, 0.0f));
+				wall[2].Create(&wallTex);
 
 				block[0].scale = blockSize;
 				block[1].scale = blockSize;
@@ -22,7 +27,7 @@ Wall::Wall()
 }
 
 //構造体WallDataのコンストラクタ-----------------------------------------------------------
-Wall::WallData::WallData(int surface, int width, int height, int length, float time)
+void Wall::WallData::SetWallData(int surface, int width, int height, int length, float time)
 {
 				this->surface = surface;
 				this->width = width;
@@ -227,6 +232,7 @@ void Wall::MoveWall(WallData &wallData)
 												((wallData.surface & 1))*(~(wallData.surface & 2) + 2)
 								)*App::GetDeltaTime()*blockSize;
 				}
+				//Draw
 				for (int i = 0; i < wallData.length; i++)
 				{
 								block[0].scale = blockSize;
@@ -304,8 +310,8 @@ void Wall::Draw(bool playerMovePosDrawFlag)
 {
 				int halfLength = length >> 1;
 
-				wall.scale = blockSize;
-				wall.angles = 0.0f;
+				wall[0].scale = blockSize;
+				wall[0].angles.x = 90.0f;
 				//中のブロックの描画
 				for (int x = -halfLength; x < halfLength; x++)
 				{
@@ -323,20 +329,25 @@ void Wall::Draw(bool playerMovePosDrawFlag)
 																				}
 																				//中に存在しているブロックを生成する
 																				//bit分だけ左シフトしてその場所の数値でflag判断
-																				else if(GetBlockData(x + halfLength, z + halfLength, y))
+																				else if (GetBlockData(x + halfLength, z + halfLength, y))
 																				{
 																								block[0].position = (Float3(x, y, z) + 0.5f) * blockSize;
 																								block[0].Draw();
 																				}
 																}
 												}
+												wall[0].position = Float3(x + 0.5f, 0, z + 0.5f) * blockSize;
+												wall[0].Draw();
 								}
 				}
+
+				wall[0].angles.x = 0.0f;
+
 				//外壁の描画 まず周りをまるっと描画
 				for (int surface = 0; surface < 4; surface++)
 				{
 								//描画する順番  右　下　左　上
-								wall.angles.y = 90.0f * (-surface + 1);
+								wall[0].angles.y = 90.0f * (-surface + 1);
 								//偶数前提のマップで作成
 								for (int xz = 0; xz < halfLength; xz++)
 								{
@@ -347,21 +358,16 @@ void Wall::Draw(bool playerMovePosDrawFlag)
 																				if (!GetPushFlag(surface, xz + (halfLength * i), y))
 																				{
 																								//length + z　と　length + xが端 xとzを0からとする
-																								wall.position = Float3(
+																								wall[0].position = Float3(
 																												(halfLength * wallDrawDirection[surface].x + //x軸が固定値の時に使われる
 																												(xz + halfLength * (i - 1) + 0.5f) * wallDrawDirection[surface].y) * blockSize ,//x軸が変動するときに使用する
 																												y * blockSize + 1.0f,
 																												(halfLength * wallDrawDirection[surface].z + //z軸が固定値の時に使われる
 																												(xz + halfLength * (i - 1) + 0.5f) * wallDrawDirection[surface].w) * blockSize);//z軸が固定値の時に使われる
-																								wall.Draw();
+																								wall[0].Draw();
 																				}
 																}
 												}
 								}
 				}
-				//最後に底面の描画
-				wall.position = Float3(0.0f, -0.5f * blockSize + 1.0f, 0.0f);
-				wall.angles = Float3(90.0f, 0.0f, 0.0f);
-				wall.scale = Float3(length, length, 1.0f) * blockSize;
-				wall.Draw();
 }

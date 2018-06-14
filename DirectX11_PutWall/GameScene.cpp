@@ -91,6 +91,7 @@ void GameScene::MainTurn()
 																if (playerManager.MoveFlagChack())
 																{
 																				playerManager.SetPlayerDrawFlag(false);
+																				wall.SelectLookWall(testHeight, mainCamera.angles.y, testSurface, testWidth, testFlag);
 																				scene = PUSH_WALL_SELECT;
 																}
 																//まだ移動を完了してないです。みたいなの欲しいな～
@@ -100,19 +101,28 @@ void GameScene::MainTurn()
 								case GameScene::PUSH_WALL_SELECT:
 												//押し出す壁を選択する　十字で選択になると思われる
 												//選択するときはy軸だけ移動の中心から壁を確認する
-												if (true)
+												testDirection = KeyMoveData() + 1;
+												if (testDirection != 0)
 												{
-																//選択した場所で押し出すことが可能なことがわかりました
-																
+																wall.SelectToWall(testSurface, testHeight, testWidth, testDirection, testWallFlag);
 												}
-												else
+												
+												if (App::GetKeyDown(VK_RETURN))
 												{
-																//選択した場所がすでに押し出されていた箇所であった
-																//ぶっぶー的な？
+																if (testWallFlag)
+																{
+																				//選択した場所で押し出すことが可能なことがわかりました
+																				scene = SET_PUSH_WALL_LENGTH;
+																}
+																else
+																{
+																				//選択した場所がすでに押し出されていた箇所であった
+																				//ぶっぶー的な？
+																}
 												}
 												if (App::GetKeyDown(VK_RETURN))
 												{
-																scene = SET_PUSH_WALL_LENGTH;
+																//scene = SET_PUSH_WALL_LENGTH;
 												}
 
 												if (App::GetKeyDown(VK_ESCAPE))
@@ -128,13 +138,31 @@ void GameScene::MainTurn()
 																//押し出す長さをまだ決めていない
 																if (true)//なにかで壁から押し出すブロックの長さを決める
 																{
-
+																				if (App::GetKeyDown(VK_UP))
+																				{
+																								if (!wall.GetBlockData(testWidth >> 1, (testLength) >> 1, testHeight >> 1))
+																								{
+																												testLength++;
+																								}
+																				}
+																				else if (App::GetKeyDown(VK_DOWN))
+																				{
+																								if (testLength > 1)
+																								{
+																												testLength--;
+																								}
+																				}
 																}
 
 																if (App::GetKeyDown(VK_RETURN))
 																{
 																				//押しだす長さも決まりましたので確認を行います
 																				//ここは短いシーンになるのでフラグ管理でいいと思います
+
+																				//検証用、後で消すこと_久保田
+																				wallData.SetWallData(testSurface, testWidth, testHeight, testLength, testCount);
+																				wall.SetInitialPosition(wallData);
+																				scene = TURN_END;
 																}
 												}
 												else
@@ -161,8 +189,7 @@ void GameScene::MainTurn()
 												//ターンエンドの宣言をする場所　ここでfalseを返せばMoveChackに移動
 								{
 												//引数に選択している情報を入れればおけ
-												Wall::WallData wallData(testSurface, testWidth, testHeight, testLength, testCount);
-												wall.SetInitialPosition(wallData);
+												wall.MoveWall(wallData);
 								}
 
 								if (false)//押し出しの処理が終わったかどうか
@@ -197,7 +224,7 @@ void GameScene::CameraAnglesChangeMouse()
 
 void GameScene::CameraPositionMove()
 {
-				//プレイヤーの移動
+				//カメラの移動
 				if (App::GetKey(VK_UP))
 				{
 								mainCamera.position = move.MovePos(mainCamera.position, true, false, true, true);
@@ -218,19 +245,19 @@ void GameScene::CameraPositionMove()
 
 int GameScene::KeyMoveData()
 {
-				if (App::GetKeyDown(VK_RIGHT))
+				if (App::GetKeyDown(VK_UP))
 				{
 								return 0;
 				}
-				else if (App::GetKeyDown(VK_UP))
+				else if (App::GetKeyDown(VK_LEFT))
 				{
 								return 1;
 				}
-				else if (App::GetKeyDown(VK_LEFT))
+				else if (App::GetKeyDown(VK_DOWN))
 				{
 								return 2;
 				}
-				else if (App::GetKeyDown(VK_DOWN))
+				if (App::GetKeyDown(VK_RIGHT))
 				{
 								return 3;
 				}

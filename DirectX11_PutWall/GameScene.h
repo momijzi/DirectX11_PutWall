@@ -40,6 +40,8 @@ private:
 				UIData uiData;
 				//カメラの移動を行う（完全ではないｙ軸が明らかおかしいので）
 				Move move;
+
+				Wall::WallData wallData;
 				
 				//Wallの押し出しを行う処理の試験用に使用
 				int testSurface = 0;
@@ -50,4 +52,6 @@ private:
 				bool testFlag = false;
 				float testCount = 0.0f;
 
+				int testDirection = 0;
+				bool testWallFlag = false;
 };

@@ -65,9 +65,9 @@ private:
 				//また問題としてyをzとして扱うことになるので注意が必要
 				Float2 SearchDirection[4] =
 				{
-								Float2(1.0f, 0.0f), //右
 								Float2(0.0f, 1.0f), //上
 								Float2(-1.0f, 0.0f),//左
-								Float2(0.0f,-1.0f) //下
+								Float2(0.0f,-1.0f), //下
+								Float2(1.0f, 0.0f)  //右
 				};
 };
