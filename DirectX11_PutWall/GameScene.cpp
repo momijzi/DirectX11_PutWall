@@ -6,30 +6,24 @@ GameScene::GameScene()
 				//マウスを使う処理がある場合は初期化を最初にしておくことを推奨する
 				App::SetMousePosition(0.0f, 0.0f);
 
-				mainCamera.position = Float3(0.0f, 5.0f, -10.0f);
+				mainCamera.position = Float3(0.0f, 10.0f, 0.0f);
 }
 
 void GameScene::SceneManager()
 {
+				CameraAnglesChangeMouse();
 				mainCamera.Update();
-				wall.Draw();
 				switch (gameState)
 				{
 								case GameState::PLAY:
-												//MainTurn();
-												if (App::GetKeyDown(VK_RETURN))//ほんとはここにエンドフラグを//てかここはMainTurnに書かれるべき
-												{
-																uiData.CreateStateUi(Float2(1.0f, 1.0f));
-																gameState = OVER;
-												}
-												if (App::GetKeyDown('A'))
-												{
-																wall.ResetPlayerMoveFlag();
-																playerManager.NextTurn();
-																playerManager.MovementRange(&wall);
-												}
-												wall.Draw();
-												playerManager.Draw();
+												MainTurn();
+												//if (App::GetKeyDown(VK_RETURN))//ほんとはここにエンドフラグを//てかここはMainTurnに書かれるべき
+												//{
+												//				uiData.CreateStateUi(Float2(1.0f, 1.0f));
+												//				gameState = OVER;
+												//}
+												playerManager.Draw(wall.length, wall.blockSize);
+												wall.Draw(playerManager.GetPlayerDrawFlag());
 												break;
 								default:
 												//主に描画しか変更がないので一括で変更する
@@ -69,12 +63,18 @@ void GameScene::MainTurn()
 				switch (scene)
 				{
 								case GameScene::TURN_FIRST:
-												//次のプレイヤーが移動できる場所を格納
-												wall.ResetPlayerMoveFlag();
-												playerManager.NextTurn();
-												playerManager.MovementRange(&wall);
-												scene = PLAYER_MOVE;
 												//ここにアニメーション（先攻のターンみたいな）を入れたい所
+
+												//次のプレイヤーが移動できる場所を格納
+												//ここにアニメーションが終わった時にsceneが変わるようにするflagを入れる
+												if (true)
+												{
+																wall.ResetPlayerMoveFlag();
+																playerManager.NextTurn();
+																playerManager.MovementRange(&wall);
+																playerManager.SetPlayerDrawFlag(true);
+																scene = PLAYER_MOVE;
+												}
 												break;
 								case GameScene::PLAYER_MOVE:
 												//十字キーで移動とする移動方向の入力は配列順守とする
@@ -90,6 +90,7 @@ void GameScene::MainTurn()
 												{
 																if (playerManager.MoveFlagChack())
 																{
+																				playerManager.SetPlayerDrawFlag(false);
 																				scene = PUSH_WALL_SELECT;
 																}
 																//まだ移動を完了してないです。みたいなの欲しいな～
@@ -102,14 +103,24 @@ void GameScene::MainTurn()
 												if (true)
 												{
 																//選択した場所で押し出すことが可能なことがわかりました
-																scene = SET_PUSH_WALL_LENGTH;
+																
 												}
 												else
 												{
 																//選択した場所がすでに押し出されていた箇所であった
 																//ぶっぶー的な？
 												}
+												if (App::GetKeyDown(VK_RETURN))
+												{
+																scene = SET_PUSH_WALL_LENGTH;
+												}
 
+												if (App::GetKeyDown(VK_ESCAPE))
+												{
+																playerManager.SetPlayerDrawFlag(true);
+																playerManager.ReturnMovePos();
+																scene = PLAYER_MOVE;
+												}
 												break;
 								case GameScene::SET_PUSH_WALL_LENGTH:
 												if (true)
@@ -145,7 +156,6 @@ void GameScene::MainTurn()
 																//今回は箱の中しか移動しない予定なので
 																//制限はしっかりと
 												}
-
 												break;
 								case GameScene::TURN_END:
 												//ターンエンドの宣言をする場所　ここでfalseを返せばMoveChackに移動

@@ -8,7 +8,7 @@ PlayerManager::PlayerManager()
 				playerTex.Load(L"texture/playerTex.png");
 				playerTex.SetDivide(Float2(2.0f, 1.0f));
 				playerCube[0].Create(&playerTex, 1);
-				playerTex.SetNumUv(Float2(1.0f,0.0f),0);
+				playerTex.SetNumUvAll(Float2(1.0f,0.0f));
 				playerCube[1].Create(&playerTex, 1);
 
 				Release();
@@ -93,6 +93,17 @@ void PlayerManager::MovementRange(Wall* wall, Float3 movePos, int Direction, int
 
 void PlayerManager::MoveableChack(Wall* wall, int Direction)
 {
+				//現在地にも戻れるようにするのだが・・
+				//これは汚い気がする・・どうにか修正をしていくなりよ
+				if (player[turn].position.x + player[turn].movePosition.x + SearchDirection[Direction].x == player[turn].position.x &&
+								player[turn].position.z + player[turn].movePosition.z + SearchDirection[Direction].y == player[turn].position.z &&
+								player[turn].position.y + player[turn].movePosition.y - player[turn].position.y <  2 &&
+								player[turn].position.y + player[turn].movePosition.y - player[turn].position.y > -2)
+				{
+								player[turn].movePosition = player[turn].movePosition
+												+ Float3(SearchDirection[Direction].x, 0, SearchDirection[Direction].y);
+								return;
+				}
 				for (int y = -1; y < 2; y++)
 				{
 								if (wall->GetPlayerMoveFlag(
@@ -102,30 +113,58 @@ void PlayerManager::MoveableChack(Wall* wall, int Direction)
 								{
 												player[turn].movePosition = player[turn].movePosition
 																+ Float3(SearchDirection[Direction].x, y, SearchDirection[Direction].y);
-												break;
+												return;
 								}
 				}
 }
-
 bool PlayerManager::MoveFlagChack()
 {
-				if (player[turn].movePosition.x + player[turn].movePosition.y != 0)
+				if (fabs(player[turn].movePosition.x) + fabs(player[turn].movePosition.y) + fabs(player[turn].movePosition.z) != 0 &&
+								(player[turn].movePosition.x + player[turn].position.x != player[!turn].position.x ||
+												player[turn].movePosition.y + player[turn].position.y != player[!turn].position.y ||
+												player[turn].movePosition.z + player[turn].position.z != player[!turn].position.z))
 				{
 								//移動を一マス以上行っている
+								player[turn].position += player[turn].movePosition;
 								return true;
 				}
 				return false;
 }
 
+void PlayerManager::ReturnMovePos()
+{
+				player[turn].position -= player[turn].movePosition;
+				player[turn].movePosition = 0.0f;
+}
 
 void PlayerManager::Release(Float3 positionA, Float3 positionB)
 {
 				player[0].position = positionA;
 				player[0].movePosition = 0.0f;
+				player[0].moveFlag = false;
 				player[1].position = positionB;
 				player[1].movePosition = 0.0f;
+				player[0].moveFlag = false;
 
 				turn = false;
+}
+
+void PlayerManager::Draw(int boxLength, int blockSize)
+{
+				for (int i = 0; i < 2; i++)
+				{
+								playerCube[i].scale = blockSize;
+								playerCube[i].position = (player[i].position -
+												Float3(boxLength / 2, 0, boxLength / 2) + 0.5f) * blockSize;
+								playerCube[i].Draw();
+								if (player[i].moveFlag)
+								{
+												playerCube[i].position = (player[i].position + player[i].movePosition -
+																Float3(boxLength / 2, 0, boxLength / 2) + 0.5f) * blockSize;
+												playerCube[i].Draw();
+								}
+				}
+
 }
 
 PlayerManager::Player::Player()

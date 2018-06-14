@@ -40,7 +40,7 @@ private:
 				UIData uiData;
 				//カメラの移動を行う（完全ではないｙ軸が明らかおかしいので）
 				Move move;
-
+				
 				//Wallの押し出しを行う処理の試験用に使用
 				int testSurface = 0;
 				int testWidth = 3;

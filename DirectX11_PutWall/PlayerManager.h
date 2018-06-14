@@ -15,20 +15,24 @@ public:
 				//次のプレイヤーのターンにする
 				void NextTurn() { turn = !turn; }
 
+				void SetPlayerDrawFlag(bool flag)
+				{
+								player[turn].moveFlag = flag;
+				}
+				bool GetPlayerDrawFlag()
+				{
+								return player[turn].moveFlag;
+				}
+
 				//移動が完了していたら
 				void MoveableChack(Wall* wall, int Direction);
 				
 				//一マス以上の移動をしているか
 				bool MoveFlagChack();
+				//移動した後に再度移動場所を変更したいときこの関数を呼んで戻す
+				void ReturnMovePos();
 
-				void Draw(int boxLength)
-				{
-								for (int i = 0; i < 2; i++)
-								{
-												playerCube[i].position = player[i].position;
-												playerCube[i].Draw();
-								}
-				}
+				void Draw(int boxLength, int blockSize);
 
 				//リプレイ時に初期地点に戻すために使う
 				void Release(Float3 positionA = Float3(3.0, 0.0f, 4.0f),
@@ -42,6 +46,10 @@ private:
 								Float3 position;
 								//仮の移動する座標を描画するのに使用（判別にも使用）
 								Float3 movePosition;
+								//移動を決めている最中かどうかのフラグ
+								//これで仮のプレイヤーを描画するかを決める
+								//ただしAlphaを半透明にしたいができないのでなんとも・・
+								bool moveFlag;
 				};
 				Player player[2];
 				//プレイヤーが一ターンに動くことのできるマス数

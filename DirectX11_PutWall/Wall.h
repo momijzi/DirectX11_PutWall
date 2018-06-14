@@ -3,6 +3,8 @@
 /*
 壁の描画、中のブロックの描画、押し出すブロックの描画と処理を主に行う
 もうすこし分割したほうがいい気もする
+またblockSizeやlengthを使う位置が複数あるので
+これをどうにかうまく使いたいが……
 */
 
 class Wall
@@ -10,7 +12,7 @@ class Wall
 public:
 				Wall();
 				~Wall() {};
-private:
+				
 				//ブロックの基本サイズ
 				const float blockSize = 2.0f;
 				//このゲームで使用される最大のボックスの大きさ
@@ -19,7 +21,7 @@ private:
 				static const unsigned int MaxHeight = 8;
 				//現在のゲームクリア条件の高さ
 				unsigned int height = 5;
-public:
+
 				struct WallData
 				{
 								WallData(int surface, int width, int height, int length, float time);
@@ -83,7 +85,7 @@ public:
 				void Release();
 				
 				//ボックスの描画
-				void Draw();
+				void Draw(bool playerMovePosDrawFlag);
 				
 private:
 				Texture wallTex;

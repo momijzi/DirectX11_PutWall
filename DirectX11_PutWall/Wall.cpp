@@ -300,7 +300,7 @@ void Wall::Release()
 				*/
 }
 
-void Wall::Draw()
+void Wall::Draw(bool playerMovePosDrawFlag)
 {
 				int halfLength = length >> 1;
 
@@ -316,7 +316,7 @@ void Wall::Draw()
 																for (int i = 0; i < 2; i++)
 																{
 																				//プレイヤーの行くことのできる場所を描画
-																				if (GetPlayerMoveFlag(x + halfLength, z + halfLength, y))
+																				if (GetPlayerMoveFlag(x + halfLength, z + halfLength, y) && playerMovePosDrawFlag)
 																				{
 																								block[1].position = (Float3(x, y, z) + 0.5f) * blockSize;
 																								block[1].Draw();
