@@ -69,6 +69,11 @@ public:
 				//次のターンになった時に次のプレイヤーの移動場所を設定するために初期化
 				void ResetPlayerMoveFlag();
 
+				//初期の選択
+				void SelectLookWall(float height, float angleY, int& surface, int& width, bool& flag);
+				//十字キーでの選択
+				void SelectToWall(int& surface, int& height, int& widht, int moveDirection, bool& flag);
+
 				//押し出す壁の初期地点の設定
 				void SetInitialPosition(WallData &wallData);
 				//ブロックの押し出し時の処理
@@ -96,5 +101,18 @@ private:
 								Float4(-1.0f, 0.0f, 0.0f, 1.0f),//左
 								Float4( 0.0f, 1.0f,-1.0f, 0.0f)	//下
 				};
+				/*
+				//壁の描画は風車方式にした方がいいのではないか説
+				//壁を選択する時に現在の方式だとかなりめんどくさい処理をしなければいけない
+				//ただ修正しようにも現在の方式で進めていたため非常に変えるのが時間がかかる
+				//処理としては問題ないので現在の状態で進行
+				//時間ができた時に風車方式に変えていきたい
+				Float4 wallDrawDirection[4] =
+				{
+								Float4(1.0f, 0.0f, 0.0f, 1.0f),//右
+								Float4(0.0f, 1.0f, 1.0f, 0.0f),//上
+								Float4(-1.0f, 0.0f, 0.0f, 1.0f),//左
+								Float4(0.0f, 1.0f,-1.0f, 0.0f)	//下
+				}*/
 };
 

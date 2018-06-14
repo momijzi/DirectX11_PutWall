@@ -128,6 +128,66 @@ void Wall::ResetPlayerMoveFlag()
 				}
 }
 
+void Wall::SelectLookWall(float height, float angleY, int& surface, int& width, bool& flag)
+{
+				//対角線で判定するので+135
+				surface = (((int)angleY % 360) + 135) / 90;
+				width = length >> 1;
+				height = (int)height >> 1;
+				flag = GetPushFlag(surface, width, height);
+				if (flag == false)
+				{
+								SetPushFlag(surface, width, height);
+				}
+}
+
+void Wall::SelectToWall(int& surface, int& height, int& width, int moveDirection, bool& flag)
+{
+				if (flag == false)
+				{
+								SetPushFlag(surface, width, height);
+				}
+
+				height -= ((moveDirection & 2)*(moveDirection & 1)) - (moveDirection & 1);
+				width -= ((((moveDirection - 1) & 2)*((moveDirection - 1) & 1)) - ((moveDirection - 1) & 1)) * -(((((surface + 1) & 3) >> 1) << 1) - 1);
+
+				if (width < 0)
+				{
+								width = (!(bool)(surface & 2))*(length - 1);
+								surface += ((((surface + 1) & 3) >> 1) << 1) - 1;
+				}
+				else if (width >= length)
+				{
+								width = (!(bool)(surface & 2))*(length - 1);
+								surface -= ((((surface + 1) & 3) >> 1) << 1) - 1;
+				}
+
+				if (surface < 0)
+				{
+								surface = 3;
+				}
+				else if (surface > 3)
+				{
+								surface = 0;
+				}
+
+				if (height < 0)
+				{
+								height = 0;
+				}
+				else if (height > this->height - 1)
+				{
+								height = this->height - 1;
+				}
+
+				flag = GetPushFlag(surface, width, height);
+				if (flag == false)
+				{
+								SetPushFlag(surface, width, height);
+				}
+}
+
+
 //移動させるブロックの初期位置の設定
 void Wall::SetInitialPosition(WallData &wallData)
 {

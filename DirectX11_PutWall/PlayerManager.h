@@ -12,9 +12,14 @@ public:
 				void MovementRange(Wall* wall, Float3 movePos = Float3(0.0f,0.0f,0.0f),
 								int Direction = -1, int moveCount = 1);
 
-				void MoveChack(Wall* wall, int Direction);
+				//次のプレイヤーのターンにする
+				void NextTurn() { turn = !turn; }
+
+				//移動が完了していたら
+				void MoveableChack(Wall* wall, int Direction);
 				
-				void NewTurn() { turn = !turn;}
+				//一マス以上の移動をしているか
+				bool MoveFlagChack();
 
 				void Draw()
 				{

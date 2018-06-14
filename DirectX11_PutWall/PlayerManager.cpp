@@ -6,7 +6,8 @@ PlayerManager::PlayerManager()
 				turn = false;
 
 				Texture playerTex(L"texture/playerTex.png");
-				playerCube.Create(&playerTex,1);
+				playerCube.SetTexture(&playerTex);
+				playerCube.Create(1);
 				Release();
 }
 
@@ -87,7 +88,7 @@ void PlayerManager::MovementRange(Wall* wall, Float3 movePos, int Direction, int
 				}
 }
 
-void PlayerManager::MoveChack(Wall* wall, int Direction)
+void PlayerManager::MoveableChack(Wall* wall, int Direction)
 {
 				for (int y = -1; y < 2; y++)
 				{
@@ -101,6 +102,16 @@ void PlayerManager::MoveChack(Wall* wall, int Direction)
 												break;
 								}
 				}
+}
+
+bool PlayerManager::MoveFlagChack()
+{
+				if (player[turn].movePosition.x + player[turn].movePosition.y != 0)
+				{
+								//ˆÚ“®‚ðˆêƒ}ƒXˆÈãs‚Á‚Ä‚¢‚é
+								return true;
+				}
+				return false;
 }
 
 
