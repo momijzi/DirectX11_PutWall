@@ -13,7 +13,9 @@ public:
 								int Direction = -1, int moveCount = 1);
 
 				//次のプレイヤーのターンにする
-				void NextTurn() { turn = !turn; }
+				void NextTurn() { 
+								player[turn].movePosition = 0.0f;
+								turn = !turn; }
 
 				void SetPlayerDrawFlag(bool flag)
 				{

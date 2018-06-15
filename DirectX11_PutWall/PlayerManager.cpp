@@ -58,7 +58,7 @@ void PlayerManager::MovementRange(Wall* wall, Float3 movePos, int Direction, int
 																								{
 																												//そして更なる先を求めて旅に出る・・
 																												MovementRange(wall, Float3(movePos.x + SearchDirection[Dir].x,
-																																movePos.y + 1, movePos.z + SearchDirection[Dir].y),(Dir ^ 2), moveCount++);
+																																movePos.y + 1, movePos.z + SearchDirection[Dir].y),(Dir ^ 2), moveCount + 1);
 																								}
 																				}
 																}
@@ -69,10 +69,23 @@ void PlayerManager::MovementRange(Wall* wall, Float3 movePos, int Direction, int
 																//上に何もなかったため調べる
 																for (int j = 1; j < 3; j++)
 																{
+																				if (currentPos.y - j < 0)
+																				{
+																								//高さ　基点 - j + 1の位置に行くことができることが判明した
+																								wall->SetPlayerMoveFlag(currentPos.x + SearchDirection[Dir].x,
+																												currentPos.z + SearchDirection[Dir].y, currentPos.y - j + 1, true);
+																								if (moveCount != MaxMove)
+																								{
+																												//そして更なる先を求めて旅に出る・・
+																												MovementRange(wall, Float3(movePos.x + SearchDirection[Dir].x,
+																																movePos.y - j + 1, movePos.z + SearchDirection[Dir].y), (Dir ^ 2), moveCount + 1);
+																								}
+																								break;
+																				}
 																				//ここに入る時点でその方向への移動ができることは確定なので床の部分にたどり着いた時は移動可能とする
 																				if (wall->GetBlockData(currentPos.x + SearchDirection[Dir].x,
-																								currentPos.z + SearchDirection[Dir].y, currentPos.y - j) ||
-																								currentPos.y - j < 0)
+																								currentPos.z + SearchDirection[Dir].y, currentPos.y - j)
+																								)
 																				{
 																								//高さ　基点 - j + 1の位置に行くことができることが判明した
 																								wall->SetPlayerMoveFlag(currentPos.x + SearchDirection[Dir].x,
@@ -100,20 +113,26 @@ void PlayerManager::MoveableChack(Wall* wall, int Direction)
 								player[turn].position.y + player[turn].movePosition.y - player[turn].position.y <  2 &&
 								player[turn].position.y + player[turn].movePosition.y - player[turn].position.y > -2)
 				{
-								player[turn].movePosition = player[turn].movePosition
-												+ Float3(SearchDirection[Direction].x, 0, SearchDirection[Direction].y);
+								player[turn].movePosition = 0.0f;
 								return;
 				}
 				for (int y = -1; y < 2; y++)
 				{
-								if (wall->GetPlayerMoveFlag(
-												player[turn].position.x + player[turn].movePosition.x + SearchDirection[Direction].x,
-												player[turn].position.z + player[turn].movePosition.z + SearchDirection[Direction].y,
-												player[turn].position.y + player[turn].movePosition.y + y))
+								if (player[turn].position.y + player[turn].movePosition.y + y > -1)
 								{
-												player[turn].movePosition = player[turn].movePosition
-																+ Float3(SearchDirection[Direction].x, y, SearchDirection[Direction].y);
-												return;
+												if (wall->GetPlayerMoveFlag(
+																player[turn].position.x + player[turn].movePosition.x + SearchDirection[Direction].x,
+																player[turn].position.z + player[turn].movePosition.z + SearchDirection[Direction].y,
+																player[turn].position.y + player[turn].movePosition.y + y))
+												{
+																player[turn].movePosition +=
+																				Float3(
+																								SearchDirection[Direction].x,
+																								y,
+																								SearchDirection[Direction].y
+																				);
+																return;
+												}
 								}
 				}
 }
@@ -172,7 +191,6 @@ void PlayerManager::Draw(int boxLength, int blockSize)
 												playerCube[i].Draw();
 								}
 				}
-
 }
 
 PlayerManager::Player::Player()

@@ -28,14 +28,10 @@ public:
 
 								void SetWallData(int surface = 0, int width = 0, int height = 0, float time = 0.0f);
 								
-								~WallData();
-								
 								int surface = 0;
 								int width = 0;
 								int height = 0;
 								int length = 1;
-								//描画用のポジション
-								Float3 *position;
 								//位置が確定したときに押し出して出てくる最初のブロックの位置を入れる
 								Float3 initPosition = Float3(0, 0, 0);
 								//MoveWallで主に使用 移動が完了したらfalse また描画でも使用

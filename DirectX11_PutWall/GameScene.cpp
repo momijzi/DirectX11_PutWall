@@ -99,8 +99,6 @@ void GameScene::MainTurn()
 																{
 																				playerManager.SetPlayerDrawFlag(false);
 
-																				
-
 																				wall.wallData.SetWallData();
 																				wall.wallData.length = 1;
 
@@ -127,8 +125,8 @@ void GameScene::MainTurn()
 																if (!wall.wallData.drawTexFlag)
 																{
 																				//選択した場所で押し出すことが可能なことがわかりました
+																				wall.SetInitialPosition();
 																				wall.wallData.checkLengthFlag = true;
-																				
 																				scene = SET_PUSH_WALL_LENGTH;
 																}
 																else
@@ -145,7 +143,6 @@ void GameScene::MainTurn()
 												}
 												break;
 								case GameScene::SET_PUSH_WALL_LENGTH:
-
 												//押し出す長さをまだ決めていない
 
 												if (App::GetKeyDown(VK_UP))
@@ -167,8 +164,8 @@ void GameScene::MainTurn()
 																//押しだす長さも決まりましたので確認を行います
 																//ここは短いシーンになるのでフラグ管理でいいと思います
 
-																//検証用、後で消すこと_久保田
-																wall.SetInitialPosition();
+																wall.wallData.checkLengthFlag = false;
+																wall.wallData.moveFlag = true;
 																
 																playerManager.DeliverLength(wall.wallData.length);
 																scene = TURN_END;
