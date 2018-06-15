@@ -6,8 +6,13 @@ UIData::UIData()
 
 				gameStateTex.Load(L"texture/testTex.png");
 				gameStateTex.SetDivide(Float2(2.0f, 2.0f));
-				stateUi.Create(&gameStateTex);
-				stateUi.scale = Float3(App::GetWindowSize().x / 4, App::GetWindowSize().y / 4, 0);
+				CreateStateUi();
+				gameStateUi.scale = Float3(App::GetWindowSize().x / 4, App::GetWindowSize().y / 4, 0);
+
+				numberTex.Load(L"texture/number.png");
+				numberTex.SetDivide(Float2(10.0f, 1.0f));
+				CreateNumberUi();
+				numberUi.scale = Float3(App::GetWindowSize().x / 6, App::GetWindowSize().y / 4, 0);
 
 				uiCamera.position = Float3(0.0f, 0.0f, -1.0f);
 }
@@ -15,13 +20,41 @@ UIData::UIData()
 void UIData::CreateStateUi(Float2 numUv)
 {
 				gameStateTex.SetNumUv(numUv, 0);
-				stateUi.Create(&gameStateTex);
+				gameStateUi.Create(&gameStateTex);
 }
 
-void UIData::Draw()
+void UIData::CreateNumberUi(Float2 numUv)
+{
+				numberTex.SetNumUv(numUv, 0);
+				numberUi.Create(&numberTex);
+}
+
+void UIData::DrawStateUi()
+{
+				//この中で画面のどの位置に描画するか決めること
+				//ウィンドウサイズの変更にも対応できるように
+				gameStateUi.position.x = 0.0f;
+				gameStateUi.position.y = App::GetWindowSize().y / 2 - numberUi.scale.y / 2;//+は上に行く　何座標系だったか……調べる！
+				gameStateUi.DrawSprite();
+}
+void UIData::DrawNumberUi(Float2 playerPushLength)
+{
+				//現在のプレイヤーの残り押し出せる量
+				//プレイヤーAのデータ左上に
+				CreateNumberUi(Float2((float)playerPushLength.x, 0.0f));
+				numberUi.position.x = -App::GetWindowSize().x / 2 + numberUi.scale.x / 2;
+				numberUi.position.y = App::GetWindowSize().y / 2 - numberUi.scale.y / 2;
+				numberUi.DrawSprite();
+
+				CreateNumberUi(Float2((float)playerPushLength.y, 0.0f));
+				numberUi.position.x = App::GetWindowSize().x / 2 - numberUi.scale.x / 2;
+				numberUi.position.y = App::GetWindowSize().y / 2 - numberUi.scale.y / 2;
+				numberUi.DrawSprite();
+}
+
+void UIData::Draw(Float2 playerPushLength)
 {
 				uiCamera.Update(false);
-				stateUi.position.x = App::GetWindowSize().x / 2 - stateUi.scale.x / 2;
-				stateUi.position.y = App::GetWindowSize().y / 2 - stateUi.scale.y / 2;//+は上に行く　何座標系だったか……調べる！
-				stateUi.DrawSprite();
+				DrawStateUi();
+				DrawNumberUi(playerPushLength);
 }

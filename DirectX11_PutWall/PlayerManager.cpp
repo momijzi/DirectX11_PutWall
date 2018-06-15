@@ -137,14 +137,22 @@ void PlayerManager::ReturnMovePos()
 				player[turn].movePosition = 0.0f;
 }
 
+void PlayerManager::DeliverLength(int length)
+{
+				player[turn].length -= length;
+				player[!turn].length += length;
+}
+
 void PlayerManager::Release(Float3 positionA, Float3 positionB)
 {
 				player[0].position = positionA;
 				player[0].movePosition = 0.0f;
 				player[0].moveFlag = false;
+				player[0].length = 6.0f;
 				player[1].position = positionB;
 				player[1].movePosition = 0.0f;
-				player[0].moveFlag = false;
+				player[1].moveFlag = false;
+				player[1].length = 6.0f;
 
 				turn = false;
 }

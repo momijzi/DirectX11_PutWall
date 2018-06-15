@@ -72,7 +72,7 @@ void Camera::SetCameraLookAt(Float3 playerPos)
 				);
 }
 
-void Camera::Update(bool dimensionFlag,bool cameraView,Float3 playerPos)
+void Camera::Update(bool dimensionFlag,bool cameraView, Float3 playerPos)
 {
 				if (cameraView)
 				{

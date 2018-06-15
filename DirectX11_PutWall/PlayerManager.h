@@ -23,6 +23,13 @@ public:
 				{
 								return player[turn].moveFlag;
 				}
+				//現在ターンが来ているプレイヤーの押し出せる量
+				int GetCurrentPlayerPushLength() { return player[turn].length; }
+				//UIを描画するために使用
+				Float2 GetPlayerPushLength()
+				{
+								return Float2((float)player[0].length, (float)player[1].length);
+				}
 
 				//移動が完了していたら
 				void MoveableChack(Wall* wall, int Direction);
@@ -31,6 +38,9 @@ public:
 				bool MoveFlagChack();
 				//移動した後に再度移動場所を変更したいときこの関数を呼んで戻す
 				void ReturnMovePos();
+
+				//押し出しをしましたので押し出した分を相手に譲渡します
+				void DeliverLength(int length);
 
 				void Draw(int boxLength, int blockSize);
 
@@ -50,6 +60,8 @@ private:
 								//これで仮のプレイヤーを描画するかを決める
 								//ただしAlphaを半透明にしたいができないのでなんとも・・
 								bool moveFlag;
+								//押し出せるブロックの量
+								int length;
 				};
 				Player player[2];
 				//プレイヤーが一ターンに動くことのできるマス数

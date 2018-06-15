@@ -26,19 +26,27 @@ public:
 				{
 								WallData() {};
 
-								void SetWallData(int surface, int width, int height, int length, float time);
+								void SetWallData(int surface = 0, int width = 0, int height = 0, float time = 0.0f);
 								
 								~WallData();
 								
 								int surface = 0;
 								int width = 0;
 								int height = 0;
-								int length = 0;
+								int length = 1;
+								//描画用のポジション
 								Float3 *position;
+								//位置が確定したときに押し出して出てくる最初のブロックの位置を入れる
 								Float3 initPosition = Float3(0, 0, 0);
-								bool flag = false;
+								//MoveWallで主に使用 移動が完了したらfalse また描画でも使用
+								bool moveFlag = false;
 								float time = 0.0f;
+								//このデータが現在存在しているか falseで存在している・・直そう
+								bool drawTexFlag = true;
+								bool checkLengthFlag = false;
+								short moveDirection[3] = {};
 				};
+				WallData wallData;
 
 				struct BoxData
 				{
@@ -58,9 +66,9 @@ public:
 				};
 
 				//4方面の壁から現在ブロックが出ているかの判断に使用する
-				bool GetPushFlag(int surface, unsigned int x, unsigned int y);
+				bool GetPushFlag(int surface, unsigned int width, unsigned int height);
 				//押し出した時に指定した場所をtrueに変換する
-				void SetPushFlag(int surface, unsigned int x, unsigned int y);
+				void SetPushFlag(int surface, unsigned int width, unsigned int height, bool flag);
 
 				//BoxDataのblockの指定したデータを呼び出すまたは設定する
 				bool GetBlockData(unsigned int width, unsigned int depth, unsigned int height);
@@ -74,14 +82,18 @@ public:
 				void ResetPlayerMoveFlag();
 
 				//初期の選択
-				void SelectLookWall(float height, float angleY, int& surface, int& width, bool& flag);
+				void SelectLookWall(float height, float angleY);
 				//十字キーでの選択
-				void SelectToWall(int& surface, int& height, int& widht, int moveDirection, bool& flag);
+				void SelectToWall(int moveDirection = 0);
+		
+				void MoveDirectionUpdate();
+
+				Float3 GetWallSelectPosition();
 
 				//押し出す壁の初期地点の設定
-				void SetInitialPosition(WallData &wallData);
+				void SetInitialPosition();
 				//ブロックの押し出し時の処理
-				void MoveWall(WallData &wallData);
+				void MoveWall();
 
 				//初期化関数
 				void Release();
@@ -97,7 +109,7 @@ private:
 				//ブロックが詰まっていく場所　ブロックがある箇所をtrueとする
 				BoxData box[length][length] = {};
 				//描画するデータを作成する//テクスチャ分作成（今回は処理を高速化するために）
-				Plane wall[3];
+				Plane wall[2];
 				Cube block[2];
 
 				WallData pushWallData;

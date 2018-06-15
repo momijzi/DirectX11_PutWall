@@ -4,7 +4,8 @@ public:
 				Float3 position;
 				Float3 angles;
 
-				const float speed = 1.0f;
+				//‚±‚ê‚Íg‚¤‘¤‚Åİ’è‚·‚×‚«
+				const float speed = 0.1f;
 
 				Move()
 				{
