@@ -152,6 +152,7 @@ bool PlayerManager::MoveFlagChack()
 
 void PlayerManager::ReturnMovePos()
 {
+				SetPlayerDrawFlag(true);
 				player[turn].position -= player[turn].movePosition;
 				player[turn].movePosition = 0.0f;
 }

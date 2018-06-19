@@ -2,12 +2,6 @@
 
 //Camera をLookPosで統一してみてもいいかも？
 
-//現在のバグ
-//プレイヤーの移動をしてから選択に移動するときにバグが発生する
-//なぜか不明
-//ただ配列外に行くことが悪いことはわかった
-
-
 GameScene::GameScene()
 {
 				App::Initialize();
@@ -131,8 +125,9 @@ void GameScene::MainTurn()
 																if (wall.wallData.drawTexFlag)
 																{
 																				//選択した場所で押し出すことが可能なことがわかりました
-																				wall.SetInitialPosition();
+																				wall.wallData.drawTexFlag = false;
 																				wall.wallData.checkLengthFlag = true;
+																				wall.MoveDirectionUpdate();
 																				scene = SET_PUSH_WALL_LENGTH;
 																}
 																else
@@ -143,7 +138,6 @@ void GameScene::MainTurn()
 												}
 												if (App::GetKeyDown(VK_ESCAPE))
 												{
-																playerManager.SetPlayerDrawFlag(true);
 																playerManager.ReturnMovePos();
 																scene = PLAYER_MOVE;
 												}
@@ -176,7 +170,6 @@ void GameScene::MainTurn()
 																playerManager.DeliverLength(wall.wallData.length);
 																scene = TURN_END;
 												}
-
 												break;
 								case GameScene::TURN_END:
 												//ターンエンドの宣言をする場所　ここでfalseを返せばMoveChackに移動
