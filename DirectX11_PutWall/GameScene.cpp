@@ -2,6 +2,11 @@
 
 //Camera をLookPosで統一してみてもいいかも？
 
+//現在のバグ
+//プレイヤーの移動をしてから選択に移動するときにバグが発生する
+//なぜか不明
+//ただ配列外に行くことが悪いことはわかった
+
 
 GameScene::GameScene()
 {
@@ -101,6 +106,7 @@ void GameScene::MainTurn()
 
 																				wall.wallData.SetWallData();
 																				wall.wallData.length = 1;
+																				wall.wallData.drawTexFlag = true;
 
 																				wall.SelectLookWall(4.0f, mainCamera.angles.y);
 																				testDirection = 0;
@@ -122,7 +128,7 @@ void GameScene::MainTurn()
 												}
 												if (App::GetKeyDown(VK_RETURN))
 												{
-																if (!wall.wallData.drawTexFlag)
+																if (wall.wallData.drawTexFlag)
 																{
 																				//選択した場所で押し出すことが可能なことがわかりました
 																				wall.SetInitialPosition();
@@ -147,7 +153,7 @@ void GameScene::MainTurn()
 
 												if (App::GetKeyDown(VK_UP))
 												{
-																if (/*!wall.GetBlockData() &&*/wall.wallData.length != playerManager.GetCurrentPlayerPushLength())
+																if (wall.wallData.length != playerManager.GetCurrentPlayerPushLength())
 																{
 																				wall.wallData.length++;
 																}
@@ -181,7 +187,6 @@ void GameScene::MainTurn()
 												{
 																scene = TURN_FIRST;
 												}
-
 								break;
 				}
 }

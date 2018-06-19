@@ -18,7 +18,7 @@ Wall::Wall()
 				wallTex.SetNumUvAll(Float2(2.0f, 0.0f));
 				wall[1].Create(&wallTex);
 
-
+				wall[0].scale = blockSize;
 				wall[1].scale = blockSize;
 
 				block[0].scale = blockSize;
@@ -34,9 +34,10 @@ void Wall::WallData::SetWallData(int surface, int width, int height, float time)
 				this->width = width;
 				this->height = height;
 				moveFlag = false;
+				drawTexFlag = false;
 				checkLengthFlag = false;
 				this->time = time;
-
+				Float3 moveDirection = 0.0f;
 				//SetInitialPosition(this->surface, this->width, this->height, this->length, *this->position, &this->flag);
 }
 
@@ -48,7 +49,6 @@ bool Wall::GetPushFlag(int surface, unsigned int x, unsigned int y)
 								//エラー報告
 								return false;
 				}
-		
 								return pushWallFlag[surface][x] & (1 << y);//ここにフラグ
 }
 
@@ -135,10 +135,13 @@ void Wall::SelectLookWall(float height, float angleY)
 				wallData.surface = (((int)angleY % 360) + 135) / 90;
 				wallData.width = length / (int)blockSize;
 				wallData.height = (int)height / (int)blockSize;
+				MoveDirectionUpdate();
 }
 
 void Wall::SelectToWall(int moveDirection)
 {
+				//ここの変更処理には無駄がある可能性がある気がします
+				//もう少し短縮できる気がする
 				if (moveDirection != 0)
 				{
 								SetPushFlag(wallData.surface, wallData.width, wallData.height, false);
@@ -176,32 +179,39 @@ void Wall::SelectToWall(int moveDirection)
 												wallData.height = this->height - 1;
 								}
 				}
-				wallData.drawTexFlag = GetPushFlag(wallData.surface, wallData.width, wallData.height);
-				if (wallData.drawTexFlag != true)
+				wallData.drawTexFlag = !GetPushFlag(wallData.surface, wallData.width, wallData.height);
+				if (wallData.drawTexFlag != false)
 				{
-								SetPushFlag(wallData.surface, wallData.width, wallData.height,true);
+								SetPushFlag(wallData.surface, wallData.width, wallData.height, true);
 				}
 }
-
+void Wall::MoveDirectionUpdate()
+{
+				wallData.moveDirection.x = ((wallData.surface + 1) & 1)*(~(wallData.surface & 2) + 2);//moveDirection[0] = (((Direction + 1) % 2)*((Direction / 2) * 2 - 1));
+				wallData.moveDirection.y = 0;//今は縦にブロックを伸ばすことが無いため0を格納している
+				wallData.moveDirection.z = ((wallData.surface & 1))*(~(wallData.surface & 2) + 2);
+}
 
 //移動させるブロックの初期位置の設定
 void Wall::SetInitialPosition()
 {
-				wallData.drawTexFlag = true;
+				wallData.drawTexFlag = false;
 
 				MoveDirectionUpdate();
 				//(((Direction & 1) + 1)*(~(Direction & 2) + 2), 0, ((Direction & 1))*(~(Direction & 2) + 2));
 
-								//移動場所を確定させる
+				//移動場所を確定させる
 				wallData.initPosition = Float3(
-								(((length >> 1) + (wallData.length - 1))* wallData.moveDirection[0] +
-								(wallData.width - ((int)length >> 1)) * !(bool)(wallData.moveDirection[0]))* blockSize,
+								((length >> 1) + (wallData.length - 1))* wallData.moveDirection.x +
+								(wallData.width - ((int)length >> 1)) * !(bool)(wallData.moveDirection.x),
 
-								(float)((wallData.height) * blockSize * !wallData.moveDirection[1]),
+								(float)((wallData.height) * !wallData.moveDirection.y),
 
-								(((length >> 1) + (wallData.length - 1)) * wallData.moveDirection[2] +
-								(wallData.width - ((int)length >> 1)) * !(bool)wallData.moveDirection[2])* blockSize
+								((length >> 1) + (wallData.length - 1)) * wallData.moveDirection.z +
+								(wallData.width - ((int)length >> 1)) * !(bool)wallData.moveDirection.z
 				);
+				//第一象限のみ成功
+				wallData.checkLengthFlag = true;
 }
 //設定したブロックの移動
 void Wall::MoveWall()
@@ -221,8 +231,7 @@ void Wall::MoveWall()
 								{
 												//+1をする理由はinitPositionがボックスの１つ外の場所のため格納のためににずらす
 												//initPositionのあり方を変えてもいい
-												createPos = wallData.initPosition / blockSize - 
-																Float3(wallData.moveDirection[0], wallData.moveDirection[1], wallData.moveDirection[2]) * (i + 1);
+												createPos = wallData.initPosition - wallData.moveDirection	* (i + 1);
 												
 												createPos += Float3(length / 2 ,0.0f, length / 2);
 
@@ -230,25 +239,6 @@ void Wall::MoveWall()
 								}
 								wallData.moveFlag = false;
 				}
-}
-
-void Wall::MoveDirectionUpdate()
-{
-				wallData.moveDirection[0] = ((wallData.surface + 1) & 1)*(~(wallData.surface & 2) + 2);//moveDirection[0] = (((Direction + 1) % 2)*((Direction / 2) * 2 - 1));
-				wallData.moveDirection[1] = 0;
-				wallData.moveDirection[2] = ((wallData.surface & 1))*(~(wallData.surface & 2) + 2);
-}
-
-Float3 Wall::GetWallSelectPosition()
-{
-				MoveDirectionUpdate();
-				return Float3(
-								(float)(wallData.moveDirection[0] * (float)length + (float)(wallData.moveDirection[0]) *wallData.length*blockSize + !(bool)(wallData.moveDirection[0]) * (wallData.width - ((int)length >> 1) + 0.5f)*blockSize),
-								
-								(float)((wallData.height + 0.5f)*blockSize),
-								
-(float)(wallData.moveDirection[2] * (float)length + (float)(wallData.moveDirection[2]) *wallData.length*blockSize + !(bool)(wallData.moveDirection[2]) * (wallData.width - ((int)length >> 1) + 0.5f)*blockSize)
-				);
 }
 
 void Wall::Release()
@@ -287,33 +277,37 @@ void Wall::Draw(bool playerMovePosDrawFlag)
 {
 				int halfLength = length >> 1;
 
-				wall[0].scale = blockSize;
 				wall[0].angles.x = 90.0f;
 
-				if (!wallData.drawTexFlag)
+				if (wallData.drawTexFlag)
 				{
 								wall[1].angles.y = 90.0f * (-wallData.surface + 1);
 								//物理的に座標変えます
-								wall[1].position = GetWallSelectPosition();
+								wall[1].position = Float3(
+												(halfLength * wallDrawDirection[wallData.surface].x + //x軸が固定値の時に使われる
+												(wallData.width - halfLength + 0.5f) * wallDrawDirection[wallData.surface].y),//x軸が変動するときに使用する
+												wallData.height + 0.5f,
+												halfLength * wallDrawDirection[wallData.surface].z + //z軸が固定値の時に使われる
+												((wallData.width - halfLength + 0.5f) * wallDrawDirection[wallData.surface].w)) * blockSize;
+
 								wall[1].Draw();
 				}
 
-				//押し出す場所を描画する
+				//押し出す場所を描画する//これを分けている理由は始まる地点がまるっきり違うため
 				if (wallData.checkLengthFlag)
 				{
 								for (int i = 1; i <= wallData.length; i++)
 								{
-												block[0].position = wallData.initPosition + (0.5f -
-																Float3(wallData.moveDirection[0], wallData.moveDirection[1], wallData.moveDirection[2]) * i) * blockSize;
+												block[0].position = (wallData.initPosition + 0.5f -	wallData.moveDirection * i) * blockSize;
 												block[0].Draw();
 								}
 				}
+				//動いている最中のブロックの描画
 				else if (wallData.moveFlag)
 				{
 								for (int i = 0; i < wallData.length; i++)
 								{
-												block[0].position = wallData.initPosition + 
-																(0.5f + Float3(wallData.moveDirection[0], wallData.moveDirection[1], wallData.moveDirection[2]) *
+												block[0].position = (wallData.initPosition + 0.5f + wallData.moveDirection * 
 																(i - wallData.time))* blockSize;
 												block[0].Draw();
 								}

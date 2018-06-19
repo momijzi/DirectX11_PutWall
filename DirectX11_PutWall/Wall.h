@@ -38,9 +38,11 @@ public:
 								bool moveFlag = false;
 								float time = 0.0f;
 								//このデータが現在存在しているか falseで存在している・・直そう
-								bool drawTexFlag = true;
+								bool drawTexFlag = false;
 								bool checkLengthFlag = false;
-								short moveDirection[3] = {};
+								
+								Float3 moveDirection = 0.0f;
+								//short moveDirection[3] = {};
 				};
 				WallData wallData;
 
@@ -109,6 +111,7 @@ private:
 				Cube block[2];
 
 				WallData pushWallData;
+
 				//壁の描画でその４方向で描画の仕方が変わるのでその変更用
 				Float4 wallDrawDirection[4] =
 				{
