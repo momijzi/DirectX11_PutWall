@@ -99,7 +99,6 @@ void GameScene::MainTurn()
 																				playerManager.SetPlayerDrawFlag(false);
 
 																				wall.wallData.SetWallData();
-																				wall.wallData.length = 1;
 																				wall.wallData.drawTexFlag = true;
 
 																				wall.SelectLookWall(4.0f, mainCamera.angles.y);
@@ -127,6 +126,7 @@ void GameScene::MainTurn()
 																				//選択した場所で押し出すことが可能なことがわかりました
 																				wall.wallData.drawTexFlag = false;
 																				wall.wallData.checkLengthFlag = true;
+																				wall.wallData.length = 1;
 																				wall.MoveDirectionUpdate();
 																				scene = SET_PUSH_WALL_LENGTH;
 																}
@@ -139,25 +139,25 @@ void GameScene::MainTurn()
 												if (App::GetKeyDown(VK_ESCAPE))
 												{
 																playerManager.ReturnMovePos();
+																if (wall.wallData.drawTexFlag)
+																{
+																				wall.SetPushFlag(wall.wallData.surface, wall.wallData.width, wall.wallData.height, false);
+																}
 																scene = PLAYER_MOVE;
 												}
 												break;
 								case GameScene::SET_PUSH_WALL_LENGTH:
 												//押し出す長さをまだ決めていない
-
 												if (App::GetKeyDown(VK_UP))
 												{
 																if (wall.wallData.length != playerManager.GetCurrentPlayerPushLength())
 																{
-																				wall.wallData.length++;
+																				wall.SetPushWallLength(1, playerManager.GetPlayerPosition(0),playerManager.GetPlayerPosition(1));
 																}
 												}
 												else if (App::GetKeyDown(VK_DOWN))
 												{
-																if (wall.wallData.length > 1)
-																{
-																				wall.wallData.length--;
-																}
+																wall. SetPushWallLength(-1);
 												}
 												if (App::GetKeyDown(VK_RETURN))
 												{
@@ -169,6 +169,13 @@ void GameScene::MainTurn()
 																
 																playerManager.DeliverLength(wall.wallData.length);
 																scene = TURN_END;
+												}
+												else if (App::GetKeyDown(VK_ESCAPE))
+												{
+																wall.wallData.drawTexFlag = true;
+																wall.wallData.checkLengthFlag = false;
+
+																scene = PUSH_WALL_SELECT;
 												}
 												break;
 								case GameScene::TURN_END:
@@ -249,15 +256,15 @@ void GameScene::CameraPositionMove()
 				}
 				if (posUpdate)
 				{
-								if (fabs(mainCamera.position.x) > wall.length)
+								if (fabs(mainCamera.position.x) > wall.length * 2)
 								{
 												if (mainCamera.position.x > 0)
 												{
-																mainCamera.position.x = (float)(wall.length);
+																mainCamera.position.x = (float)(wall.length * 2);
 												}
 												else
 												{
-																mainCamera.position.x = -(float)(wall.length);
+																mainCamera.position.x = -(float)(wall.length * 2);
 												}
 								}
 								if (mainCamera.position.y < 0.5f * wall.blockSize || mainCamera.position.y >(wall.height + 3 + 0.5f) * wall.blockSize)
@@ -272,20 +279,21 @@ void GameScene::CameraPositionMove()
 												}
 								}
 
-								if (fabs(mainCamera.position.z) > wall.length)
+								if (fabs(mainCamera.position.z) > wall.length * 2)
 								{
 												if (mainCamera.position.z > 0)
 												{
-																mainCamera.position.z = (float)(wall.length);
+																mainCamera.position.z = (float)(wall.length * 2);
 												}
 												else
 												{
-																mainCamera.position.z = -(float)(wall.length);
+																mainCamera.position.z = -(float)(wall.length * 2);
 												}
 								}
 				}
 }
 
+//移動キーを押したときにデータを返す
 int GameScene::KeyMoveData()
 {
 				if (App::GetKeyDown(VK_UP))
@@ -306,7 +314,7 @@ int GameScene::KeyMoveData()
 				}
 				return -1;
 }
-
+//初期化
 void GameScene::Release()
 {
 				playerManager.Release();

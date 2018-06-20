@@ -135,6 +135,33 @@ public:
 				{
 								return GetTimer().GetFrameRate();
 				}
+				//UtilityŠÖŒW
+				static bool SameChackFloat2(Float2 value1, Float2 value2)
+				{
+								if (value1.x == value2.x && value1.y == value2.y)
+								{
+												return true;
+								}
+								return false;
+				}
+				static bool SameChackFloat3(Float3 value1,Float3 value2)
+				{
+								if (value1.x == value2.x && value1.y == value2.y && value1.z == value2.z)
+								{
+												return true;
+								}
+								return false;
+				}
+				static bool SameChackFloat4(Float4 value1, Float4 value2)
+				{
+								if (value1.x == value2.x && value1.y == value2.y && value1.z == value2.z && value1.w == value2.w)
+								{
+												return true;
+								}
+								return false;
+				}
+
+
 private:
 				static Window& GetWindow()
 				{

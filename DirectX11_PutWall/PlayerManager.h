@@ -28,6 +28,9 @@ public:
 				}
 				//現在ターンが来ているプレイヤーの押し出せる量
 				int GetCurrentPlayerPushLength() { return player[turn].length; }
+
+				Float3 GetPlayerPosition(int playerNum) { return player[playerNum].position; }
+
 				//UIを描画するために使用
 				Float2 GetPlayerPushLength()
 				{
@@ -76,7 +79,8 @@ private:
 				Cube playerCube[2];
 
 				//MovementRangeで確認する方向に合わせて確認する位置をずらすための配列
-				//初期Directionは右です//また見る方向は反時計回りに変化します
+				//初期Directionは右にしたかったが、wallの選択と違う方式になっているためやむなく変える
+				//また見る方向は反時計回りに変化します
 				//また問題としてyをzとして扱うことになるので注意が必要
 				Float2 SearchDirection[4] =
 				{

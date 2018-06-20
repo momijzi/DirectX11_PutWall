@@ -35,9 +35,9 @@ void PlayerManager::MovementRange(Wall* wall, Float3 movePos, int Direction, int
 								upFlag = true;
 				}
 				//ここから索敵を開始する・・//Dirは索敵する方向 0が上と
-				for (int Dir = 0; Dir < 4; Dir++)
+						//ここで調べる必要のある方向かどうかを調べる
+						for (int Dir = 0; Dir < 4; Dir++)
 				{
-								//ここで調べる必要のある方向かどうかを調べる
 								if (Dir != Direction)
 								{
 												if (wall->GetBlockData(currentPos.x + SearchDirection[Dir].x,
@@ -116,7 +116,7 @@ void PlayerManager::MoveableChack(Wall* wall, int Direction)
 								player[turn].movePosition = 0.0f;
 								return;
 				}
-				for (int y = -1; y < 2; y++)
+				for (int y = 1; y > -2; y--)
 				{
 								if (player[turn].position.y + player[turn].movePosition.y + y > -1)
 								{

@@ -16,9 +16,9 @@ public:
 				//ブロックの基本サイズ
 				const float blockSize = 2.0f;
 				//このゲームで使用される最大のボックスの大きさ
-				static const unsigned int length = 8;
+				static const int length = 8;
 				//マップの高さ　これは9以上にすると壊れるので注意
-				static const unsigned int MaxHeight = 8;
+				static const int MaxHeight = 8;
 				//現在のゲームクリア条件の高さ
 				unsigned int height = 5;
 
@@ -27,13 +27,17 @@ public:
 								WallData() {};
 
 								void SetWallData(int surface = 0, int width = 0, int height = 0, float time = 0.0f);
-								
+								//押し出す面、場所、長さのデータ、押し出す方向
 								int surface = 0;
 								int width = 0;
 								int height = 0;
 								int length = 1;
+								Float3 moveDirection = 0.0f;
 								//位置が確定したときに押し出して出てくる最初のブロックの位置を入れる
-								Float3 initPosition = Float3(0, 0, 0);
+								//これはまだ位置が決定していないブロックの描画に使用する
+								Float3 createInitPosition = Float3(0.0f, 0.0f, 0.0f);
+								//これは押し出す位置が決まった時にデータ格納用データ
+								Float3 setInitiPosition = Float3(0.0f, 0.0f, 0.0f);
 								//MoveWallで主に使用 移動が完了したらfalse また描画でも使用
 								bool moveFlag = false;
 								float time = 0.0f;
@@ -41,7 +45,7 @@ public:
 								bool drawTexFlag = false;
 								bool checkLengthFlag = false;
 								
-								Float3 moveDirection = 0.0f;
+							
 								//short moveDirection[3] = {};
 				};
 				WallData wallData;
@@ -64,32 +68,29 @@ public:
 				};
 
 				//4方面の壁から現在ブロックが出ているかの判断に使用する
-				bool GetPushFlag(int surface, unsigned int width, unsigned int height);
+				bool GetPushFlag(int surface, int width, int height);
 				//押し出した時に指定した場所をtrueに変換する
-				void SetPushFlag(int surface, unsigned int width, unsigned int height, bool flag);
+				void SetPushFlag(int surface, int width, int height, bool flag);
 
 				//BoxDataのblockの指定したデータを呼び出すまたは設定する
-				bool GetBlockData(unsigned int width, unsigned int depth, unsigned int height);
-				void SetBlockData(unsigned int width, unsigned int depth, unsigned int height, bool flag);
+				bool GetBlockData(int width, int depth, int height);
+				void SetBlockData(int width, int depth, int height, bool flag);
 				
 				//BoxDataのplayerMoveFlagの指定したデータを呼び出すまたは設定する
-				bool GetPlayerMoveFlag(unsigned int width, unsigned int depth, unsigned int height);
-				void SetPlayerMoveFlag(unsigned int width, unsigned int depth, unsigned int height,bool flag);
-				
+				bool GetPlayerMoveFlag(int width, int depth, int height);
+				void SetPlayerMoveFlag(int width, int depth, int height,bool flag);
 				//次のターンになった時に次のプレイヤーの移動場所を設定するために初期化
 				void ResetPlayerMoveFlag();
-
 				//初期の選択
 				void SelectLookWall(float height, float angleY);
 				//十字キーでの選択
 				void SelectToWall(int moveDirection = 0);
-		
+				//押し出す場所を設定したときに押し出す方向を出す
 				void MoveDirectionUpdate();
-
-				Float3 GetWallSelectPosition();
-
 				//押し出す壁の初期地点の設定
 				void SetInitialPosition();
+				//ブロックの押し出す量の調整に使用
+				void SetPushWallLength(int addlength,Float3 playerPos1 = (-1.0f, -1.0f, -1.0f), Float3 playerPos2 = (-1.0f, -1.0f, -1.0f));
 				//ブロックの押し出し時の処理
 				void MoveWall();
 
@@ -107,7 +108,7 @@ private:
 				//ブロックが詰まっていく場所　ブロックがある箇所をtrueとする
 				BoxData box[length][length] = {};
 				//描画するデータを作成する//テクスチャ分作成（今回は処理を高速化するために）
-				Plane wall[2];
+				Plane wall[3];
 				Cube block[2];
 
 				WallData pushWallData;
