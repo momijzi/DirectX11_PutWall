@@ -220,7 +220,7 @@ void Wall::SetInitialPosition()
 				//y軸も固定値でずれているのでずらします
 				wallData.setInitiPosition.y -= 0.5f;
 }
-void Wall::SetPushWallLength(int addLength,Float3 playerPos1,Float3 playerPos2)
+void Wall::SetPushWallLength(int addLength,Float3 playerPos1,Float3 playerPos2,bool playerTurn)
 {
 				if(addLength > 0)
 				{
@@ -243,6 +243,54 @@ void Wall::SetPushWallLength(int addLength,Float3 playerPos1,Float3 playerPos2)
 								}
 				}
 				wallData.length += addLength;
+				if (wallData.length == 4 && addLength > 0)
+				{
+								if (playerTurn)
+								{
+												wallData.pushBlockType[wallData.length - 1] = SECOND;
+								}
+								else
+								{
+												wallData.pushBlockType[wallData.length - 1] = FIRST;
+								}
+				}
+				else if(wallData.length > 2 && addLength < 0)
+				{
+								if (wallData.length == 3)
+								{
+												for (int i = 0; i < MaxLength; i++)
+												{
+																if (wallData.pushBlockType[i] == FIRST || wallData.pushBlockType[i] == SECOND)
+																{
+																				wallData.pushBlockType[i] = NORMAL;
+																				break;
+																}
+												}
+								}
+								else
+								{
+												if (wallData.pushBlockType[wallData.length] == FIRST ||
+																wallData.pushBlockType[wallData.length] == SECOND)
+												{
+																wallData.pushBlockType[wallData.length - 1] = wallData.pushBlockType[wallData.length];
+																wallData.pushBlockType[wallData.length] = NORMAL;
+												}
+								}
+				}
+}
+
+void Wall::ChangePushWallLine()
+{
+				//押し出すブロックの並びを変える
+				if (wallData.length > 3)
+				{
+								BlockType moveData = wallData.pushBlockType[0];
+								for (int i = 0; i < wallData.length; i++)
+								{
+												wallData.pushBlockType[i] = wallData.pushBlockType[i + 1];
+								}
+								wallData.pushBlockType[wallData.length - 1] = moveData;
+				}
 }
 
 //設定したブロックの移動
@@ -311,7 +359,7 @@ void Wall::Draw(bool playerMovePosDrawFlag, float playerPosY, float nextPlayerPo
 								for (int i = 0; i < (int)wallData.time + 1; i++)
 								{
 												block[wallData.pushBlockType[i]].position = (wallData.createInitPosition + wallData.moveDirection * (i - wallData.time + 0.5f))* blockSize;
-												block[0].Draw();
+												block[wallData.pushBlockType[i]].Draw();
 								}
 				}
 				//押し出す場所を描画する//これを分けている理由は始まる地点がまるっきり違うため
@@ -319,8 +367,8 @@ void Wall::Draw(bool playerMovePosDrawFlag, float playerPosY, float nextPlayerPo
 				{
 								for (int i = 1; i <= wallData.length; i++)
 								{
-												block[4].position = (wallData.createInitPosition - wallData.moveDirection * (-0.5f + i)) * blockSize;
-												block[4].Draw();
+											 block[wallData.pushBlockType[i - 1]].position = (wallData.createInitPosition - wallData.moveDirection * (-0.5f + i)) * blockSize;
+												block[wallData.pushBlockType[i - 1]].Draw();
 								}
 				}
 				else if (wallData.drawTexFlag != 0)

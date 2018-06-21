@@ -18,7 +18,6 @@ public:
 				int KeyMoveData();
 				//‰Šú‰»
 				void Release();
-
 private:
 				//ƒQ[ƒ€‚Ì—¬‚ê
 				enum GameState { TITLE, CONFIG, PLAY, OVER };

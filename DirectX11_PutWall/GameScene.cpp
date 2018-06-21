@@ -146,14 +146,18 @@ void GameScene::MainTurn()
 												//âüÇµèoÇ∑í∑Ç≥ÇÇ‹ÇæåàÇﬂÇƒÇ¢Ç»Ç¢
 												if (App::GetKeyDown(VK_UP))
 												{
-																if (wall.wallData.length != playerManager.GetCurrentPlayerPushLength())
+																if(wall.wallData.length != playerManager.GetCurrentPlayerPushLength())
 																{
-																				wall.SetPushWallLength(1, playerManager.GetPosition(0),playerManager.GetPosition(1));
+																				wall.SetPushWallLength(1, playerManager.GetPosition(0),playerManager.GetPosition(1),playerManager.GetTurn());
 																}
 												}
-												else if (App::GetKeyDown(VK_DOWN))
+												else if(App::GetKeyDown(VK_DOWN))
 												{
 																wall. SetPushWallLength(-1);
+												}
+												else if(App::GetKeyDown(VK_LEFT))
+												{
+																wall.ChangePushWallLine();
 												}
 												if (App::GetKeyDown(VK_RETURN))
 												{

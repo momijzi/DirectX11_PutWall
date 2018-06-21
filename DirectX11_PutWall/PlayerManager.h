@@ -44,6 +44,8 @@ public:
 								}
 				}
 
+				bool GetTurn() { return turn; }
+
 				//UIを描画するために使用
 				Float2 GetPushLength(){return Float2((float)player[0].length,(float)player[1].length);}
 
@@ -55,7 +57,8 @@ public:
 				//移動した後に再度移動場所を変更したいときこの関数を呼んで戻す
 				void ReturnMovePos();
 
-				//押し出しをしましたので押し出した分を相手に譲渡します
+				//これちょっと変わったので関数名の変更をすること推奨
+				//次のターンに以降するので伸ばせる量にプラスを
 				void DeliverLength(int length);
 
 				//プレイヤーの描画

@@ -92,7 +92,10 @@ public:
 				//押し出す壁の初期地点の設定
 				void SetInitialPosition();
 				//ブロックの押し出す量の調整に使用
-				void SetPushWallLength(int addlength,Float3 playerPos1 = (-1.0f, -1.0f, -1.0f), Float3 playerPos2 = (-1.0f, -1.0f, -1.0f));
+				void SetPushWallLength(int addlength,Float3 playerPos1 = (-1.0f, -1.0f, -1.0f),
+								Float3 playerPos2 = (-1.0f, -1.0f, -1.0f), bool playerTurn = true);
+				//ブロックの状態変更
+				void ChangePushWallLine();
 				//ブロックの押し出し時の処理
 				void MoveWall();
 
