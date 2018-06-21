@@ -10,7 +10,7 @@ UIData::UIData()
 				gameStateUi.scale = Float3(App::GetWindowSize().x / 4, App::GetWindowSize().y / 4, 0);
 
 				numberTex.Load(L"texture/number.png");
-				numberTex.SetDivide(Float2(10.0f, 1.0f));
+				numberTex.SetDivide(Float2(10.0f, 2.0f));
 				CreateNumberUi();
 				numberUi.scale = Float3(App::GetWindowSize().x / 6, App::GetWindowSize().y / 4, 0);
 
@@ -46,7 +46,7 @@ void UIData::DrawNumberUi(Float2 playerPushLength)
 				numberUi.position.y = App::GetWindowSize().y / 2 - numberUi.scale.y / 2;
 				numberUi.DrawSprite();
 
-				CreateNumberUi(Float2((float)playerPushLength.y, 0.0f));
+				CreateNumberUi(Float2((float)playerPushLength.y,1.0f));
 				numberUi.position.x = App::GetWindowSize().x / 2 - numberUi.scale.x / 2;
 				numberUi.position.y = App::GetWindowSize().y / 2 - numberUi.scale.y / 2;
 				numberUi.DrawSprite();
@@ -55,6 +55,6 @@ void UIData::DrawNumberUi(Float2 playerPushLength)
 void UIData::Draw(Float2 playerPushLength)
 {
 				uiCamera.Update(false);
-				DrawStateUi();
+				//DrawStateUi();
 				DrawNumberUi(playerPushLength);
 }

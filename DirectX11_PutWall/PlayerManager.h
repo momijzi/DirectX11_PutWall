@@ -18,24 +18,32 @@ public:
 								player[turn].movePosition = 0.0f;
 								turn = !turn; 
 				}
-				void SetPlayerDrawFlag(bool flag)
+				void SetDrawFlag(bool flag)
 				{
 								player[turn].moveFlag = flag;
 				}
-				bool GetPlayerDrawFlag()
+				bool GetDrawFlag()
 				{
 								return player[turn].moveFlag;
 				}
 				//現在ターンが来ているプレイヤーの押し出せる量
 				int GetCurrentPlayerPushLength() { return player[turn].length; }
-
-				Float3 GetPlayerPosition(int playerNum) { return player[playerNum].position; }
+				//現在ターンが来ているプレイヤーのデータが欲しいのか
+				//それとも違う方が欲しいのかの引数
+				Float3 GetPosition(bool flag) 
+				{
+								if (flag)
+								{
+												return player[turn].position;
+								}
+								else
+								{
+												return player[!turn].position;
+								}
+				}
 
 				//UIを描画するために使用
-				Float2 GetPlayerPushLength()
-				{
-								return Float2((float)player[0].length, (float)player[1].length);
-				}
+				Float2 GetPushLength(){return Float2((float)player[0].length,(float)player[1].length);}
 
 				//移動が完了していたら
 				void MoveableChack(Wall* wall, int Direction);
@@ -71,7 +79,8 @@ private:
 				};
 				Player player[2];
 				//プレイヤーが一ターンに動くことのできるマス数
-				const int MaxMove = 2;
+				const int MaxMove = 3;
+				const int plusPoint = 2;
 				//現在どちらのターンかの判別
 				bool turn;
 

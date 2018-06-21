@@ -29,7 +29,8 @@ void GameScene::SceneManager()
 												//}
 												mainCamera.Update(true);
 												playerManager.Draw(wall.length, wall.blockSize);
-												wall.Draw(playerManager.GetPlayerDrawFlag());
+												wall.Draw(playerManager.GetDrawFlag(),playerManager.GetPosition(true).y, 
+																playerManager.GetPosition(false).y);
 												break;
 								default:
 												//主に描画しか変更がないので一括で変更する
@@ -61,7 +62,7 @@ void GameScene::SceneManager()
 												}
 												break;
 				}
-				uiData.Draw(playerManager.GetPlayerPushLength());
+				uiData.Draw(playerManager.GetPushLength());
 }
 
 void GameScene::MainTurn()
@@ -78,7 +79,7 @@ void GameScene::MainTurn()
 																wall.ResetPlayerMoveFlag();
 																playerManager.NextTurn();
 																playerManager.MovementRange(&wall);
-																playerManager.SetPlayerDrawFlag(true);
+																playerManager.SetDrawFlag(true);
 																scene = PLAYER_MOVE;
 												}
 												break;
@@ -96,14 +97,14 @@ void GameScene::MainTurn()
 												{
 																if (playerManager.MoveFlagChack())
 																{
-																				playerManager.SetPlayerDrawFlag(false);
+																				playerManager.SetDrawFlag(false);
 
 																				wall.wallData.SetWallData();
-																				wall.wallData.drawTexFlag = true;
 
 																				wall.SelectLookWall(4.0f, mainCamera.angles.y);
 																				testDirection = 0;
-																				wall.SelectToWall(testDirection);
+																				wall.SelectToWall(testDirection, playerManager.GetPosition(true).y,
+																								playerManager.GetPosition(false).y);
 
 																				scene = PUSH_WALL_SELECT;
 																}
@@ -117,17 +118,19 @@ void GameScene::MainTurn()
 												testDirection = KeyMoveData() + 1;
 												if (testDirection != 0)
 												{
-																wall.SelectToWall(testDirection);
+																wall.SelectToWall(testDirection, playerManager.GetPosition(true).y,
+																				playerManager.GetPosition(false).y);
 												}
 												if (App::GetKeyDown(VK_RETURN))
 												{
-																if (wall.wallData.drawTexFlag)
+																if (wall.wallData.drawTexFlag == 2)
 																{
 																				//選択した場所で押し出すことが可能なことがわかりました
-																				wall.wallData.drawTexFlag = false;
+																				wall.wallData.drawTexFlag = 0;
 																				wall.wallData.checkLengthFlag = true;
 																				wall.wallData.length = 1;
 																				wall.MoveDirectionUpdate();
+																				wall.SetPushFlag(wall.wallData.surface, wall.wallData.width, wall.wallData.height, true);
 																				scene = SET_PUSH_WALL_LENGTH;
 																}
 																else
@@ -138,11 +141,11 @@ void GameScene::MainTurn()
 												}
 												if (App::GetKeyDown(VK_ESCAPE))
 												{
+																//プレイヤーのpositionをもとに戻して再度プレイヤーの移動選択をできるようにする
 																playerManager.ReturnMovePos();
-																if (wall.wallData.drawTexFlag)
-																{
-																				wall.SetPushFlag(wall.wallData.surface, wall.wallData.width, wall.wallData.height, false);
-																}
+																//選択画面から戻るので壁を描画するように戻す
+																wall.SetPushFlag(wall.wallData.surface, wall.wallData.width, wall.wallData.height, false);
+																
 																scene = PLAYER_MOVE;
 												}
 												break;
@@ -152,7 +155,7 @@ void GameScene::MainTurn()
 												{
 																if (wall.wallData.length != playerManager.GetCurrentPlayerPushLength())
 																{
-																				wall.SetPushWallLength(1, playerManager.GetPlayerPosition(0),playerManager.GetPlayerPosition(1));
+																				wall.SetPushWallLength(1, playerManager.GetPosition(0),playerManager.GetPosition(1));
 																}
 												}
 												else if (App::GetKeyDown(VK_DOWN))
@@ -163,7 +166,7 @@ void GameScene::MainTurn()
 												{
 																//押しだす長さも決まりましたので確認を行います
 																//ここは短いシーンになるのでフラグ管理でいいと思います
-
+																wall.wallData.drawTexFlag = 0;
 																wall.wallData.checkLengthFlag = false;
 																wall.wallData.moveFlag = true;
 																
@@ -172,9 +175,9 @@ void GameScene::MainTurn()
 												}
 												else if (App::GetKeyDown(VK_ESCAPE))
 												{
-																wall.wallData.drawTexFlag = true;
+																wall.wallData.drawTexFlag = 2;
+																wall.SetPushFlag(wall.wallData.surface, wall.wallData.width, wall.wallData.height, false);
 																wall.wallData.checkLengthFlag = false;
-
 																scene = PUSH_WALL_SELECT;
 												}
 												break;

@@ -20,7 +20,7 @@ public:
 				//マップの高さ　これは9以上にすると壊れるので注意
 				static const int MaxHeight = 8;
 				//現在のゲームクリア条件の高さ
-				unsigned int height = 5;
+				unsigned int height = 8;
 
 				struct WallData
 				{
@@ -42,9 +42,9 @@ public:
 								bool moveFlag = false;
 								float time = 0.0f;
 								//このデータが現在存在しているか falseで存在している・・直そう
-								bool drawTexFlag = false;
+								//intでフラグ生成理由は、テクスチャを状況に合わせて変える必要があるため
+								int drawTexFlag = 0;
 								bool checkLengthFlag = false;
-								
 							
 								//short moveDirection[3] = {};
 				};
@@ -84,7 +84,7 @@ public:
 				//初期の選択
 				void SelectLookWall(float height, float angleY);
 				//十字キーでの選択
-				void SelectToWall(int moveDirection = 0);
+				void SelectToWall(int moveDirection, float playerPosY, float nextPlayerPosY);
 				//押し出す場所を設定したときに押し出す方向を出す
 				void MoveDirectionUpdate();
 				//押し出す壁の初期地点の設定
@@ -98,7 +98,7 @@ public:
 				void Release();
 				
 				//ボックスの描画
-				void Draw(bool playerMovePosDrawFlag);
+				void Draw(bool playerMovePosDrawFlag, float playerPosY, float nextPlayerPosY);
 				
 private:
 				Texture wallTex;
@@ -108,7 +108,7 @@ private:
 				//ブロックが詰まっていく場所　ブロックがある箇所をtrueとする
 				BoxData box[length][length] = {};
 				//描画するデータを作成する//テクスチャ分作成（今回は処理を高速化するために）
-				Plane wall[3];
+				Plane wall[5];
 				Cube block[2];
 
 				WallData pushWallData;

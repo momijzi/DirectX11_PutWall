@@ -118,13 +118,17 @@ void PlayerManager::MoveableChack(Wall* wall, int Direction)
 				}
 				for (int y = 1; y > -2; y--)
 				{
-								if (player[turn].position.y + player[turn].movePosition.y + y > -1)
-								{
+								//ステージ外に行かないように制限
+								//height + 1はクリア条件の高さに達したかどうか
+								if (player[turn].position.y + player[turn].movePosition.y + y > -1 &&
+												player[turn].position.y + player[turn].movePosition.y + y < wall->height + 1)
+								{ 
 												if (wall->GetPlayerMoveFlag(
 																player[turn].position.x + player[turn].movePosition.x + SearchDirection[Direction].x,
 																player[turn].position.z + player[turn].movePosition.z + SearchDirection[Direction].y,
 																player[turn].position.y + player[turn].movePosition.y + y))
 												{
+																//移動できることが判明したので移動
 																player[turn].movePosition +=
 																				Float3(
 																								SearchDirection[Direction].x,
@@ -152,7 +156,7 @@ bool PlayerManager::MoveFlagChack()
 
 void PlayerManager::ReturnMovePos()
 {
-				SetPlayerDrawFlag(true);
+				SetDrawFlag(true);
 				player[turn].position -= player[turn].movePosition;
 				player[turn].movePosition = 0.0f;
 }
@@ -160,7 +164,14 @@ void PlayerManager::ReturnMovePos()
 void PlayerManager::DeliverLength(int length)
 {
 				player[turn].length -= length;
-				player[!turn].length += length;
+				if (player[!turn].length + plusPoint > 8)
+				{
+								player[!turn].length = 8;
+				}
+				else
+				{
+								player[!turn].length += plusPoint;
+				}
 }
 
 void PlayerManager::Release(Float3 positionA, Float3 positionB)
@@ -168,12 +179,11 @@ void PlayerManager::Release(Float3 positionA, Float3 positionB)
 				player[0].position = positionA;
 				player[0].movePosition = 0.0f;
 				player[0].moveFlag = false;
-				player[0].length = 6.0f;
+				player[0].length = 3;
 				player[1].position = positionB;
 				player[1].movePosition = 0.0f;
 				player[1].moveFlag = false;
-				player[1].length = 6.0f;
-
+				player[1].length = 3;
 				turn = false;
 }
 
@@ -187,8 +197,8 @@ void PlayerManager::Draw(int boxLength, int blockSize)
 								playerCube[i].Draw();
 								if (player[i].moveFlag)
 								{
-												playerCube[i].position = (player[i].position + player[i].movePosition -
-																Float3(boxLength / 2, 0, boxLength / 2) + 0.5f) * blockSize;
+												playerCube[i].position += player[i].movePosition * blockSize;
+												
 												playerCube[i].Draw();
 								}
 				}
@@ -198,4 +208,5 @@ PlayerManager::Player::Player()
 {
 				position = Float3(0.0f,0.0f,0.0f);
 				movePosition = Float3(0.0f, 0.0f, 0.0f);
+				length = 0.0f;
 }
