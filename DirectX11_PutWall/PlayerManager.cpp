@@ -30,35 +30,41 @@ void PlayerManager::MovementRange(Wall* wall, Float3 movePos, int Direction, int
 								player[turn].position.y + movePos.y, player[turn].position.z + movePos.z);
 
 				bool upFlag = false;//プレイヤーの上にブロックが存在していた時上に上ることができないので処理を少なくする
-				if (wall->GetBlockData(currentPos.x, currentPos.z, currentPos.y + 1))
+				if (wall->GetBlockData(currentPos.x, currentPos.z, currentPos.y + 1) != Wall::BlockType::NON)
 				{
 								upFlag = true;
 				}
 				//ここから索敵を開始する・・//Dirは索敵する方向 0が上と
 						//ここで調べる必要のある方向かどうかを調べる
-						for (int Dir = 0; Dir < 4; Dir++)
+				for (int Dir = 0; Dir < 4; Dir++)
 				{
 								if (Dir != Direction)
 								{
 												if (wall->GetBlockData(currentPos.x + SearchDirection[Dir].x,
-																currentPos.z + SearchDirection[Dir].y, currentPos.y))
+																currentPos.z + SearchDirection[Dir].y, currentPos.y) != Wall::BlockType::NON)
 												{
 																//調べた場所にブロックが存在していた・・これは上に行くチャンス
 																//ただ調べた場所の上にブロックがあった時移動できない
-																if (!upFlag)
+																if ((int)wall->GetBlockData(currentPos.x + SearchDirection[Dir].x,
+																				currentPos.z + SearchDirection[Dir].y, currentPos.y) != (int)turn + 1)
 																{
-																				//上に何もなかったため調べる
-																				if (!wall->GetBlockData(currentPos.x + SearchDirection[Dir].x,
-																								currentPos.z + SearchDirection[Dir].y, currentPos.y + 1))
+																				//相手の出した特殊ブロックではないかどうかを調べる
+																				//特殊ブロックを使用しないならコメントアウトで
+																				if (!upFlag)
 																				{
-																								//なんと上に行くことができることが判明した
-																								wall->SetPlayerMoveFlag(currentPos.x + SearchDirection[Dir].x,
-																												currentPos.z + SearchDirection[Dir].y, currentPos.y + 1, true);
-																								if (moveCount != MaxMove)
+																								//上に何もなかったため調べる
+																								if (wall->GetBlockData(currentPos.x + SearchDirection[Dir].x,
+																												currentPos.z + SearchDirection[Dir].y, currentPos.y + 1) == Wall::BlockType::NON)
 																								{
-																												//そして更なる先を求めて旅に出る・・
-																												MovementRange(wall, Float3(movePos.x + SearchDirection[Dir].x,
-																																movePos.y + 1, movePos.z + SearchDirection[Dir].y),(Dir ^ 2), moveCount + 1);
+																												//なんと上に行くことができることが判明した
+																												wall->SetPlayerMoveFlag(currentPos.x + SearchDirection[Dir].x,
+																																currentPos.z + SearchDirection[Dir].y, currentPos.y + 1, true);
+																												if (moveCount != MaxMove)
+																												{
+																																//そして更なる先を求めて旅に出る・・
+																																MovementRange(wall, Float3(movePos.x + SearchDirection[Dir].x,
+																																				movePos.y + 1, movePos.z + SearchDirection[Dir].y), (Dir ^ 2), moveCount + 1);
+																												}
 																								}
 																				}
 																}
@@ -84,8 +90,9 @@ void PlayerManager::MovementRange(Wall* wall, Float3 movePos, int Direction, int
 																				}
 																				//ここに入る時点でその方向への移動ができることは確定なので床の部分にたどり着いた時は移動可能とする
 																				if (wall->GetBlockData(currentPos.x + SearchDirection[Dir].x,
-																								currentPos.z + SearchDirection[Dir].y, currentPos.y - j)
-																								)
+																								currentPos.z + SearchDirection[Dir].y, currentPos.y - j) != Wall::BlockType::NON &&
+																								wall->GetBlockData(currentPos.x + SearchDirection[Dir].x,
+																												currentPos.z + SearchDirection[Dir].y, currentPos.y - j) != Wall::BlockType::ERRORNUM)
 																				{
 																								//高さ　基点 - j + 1の位置に行くことができることが判明した
 																								wall->SetPlayerMoveFlag(currentPos.x + SearchDirection[Dir].x,

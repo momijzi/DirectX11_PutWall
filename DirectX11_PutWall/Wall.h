@@ -12,11 +12,14 @@ class Wall
 public:
 				Wall();
 				~Wall() {};
-				
+				//先攻の出した特殊ブロックをFIRST,後攻をSECOND
+				//ERRORは,予定外の数値を返したときに返す
+				enum BlockType {NORMAL,FIRST,SECOND,NON = 98,ERRORNUM = 99};
+
 				//ブロックの基本サイズ
 				const float blockSize = 2.0f;
 				//このゲームで使用される最大のボックスの大きさ
-				static const int length = 8;
+				static const int MaxLength = 8;
 				//マップの高さ　これは9以上にすると壊れるので注意
 				static const int MaxHeight = 8;
 				//現在のゲームクリア条件の高さ
@@ -26,44 +29,43 @@ public:
 				{
 								WallData() {};
 
-								void SetWallData(int surface = 0, int width = 0, int height = 0, float time = 0.0f);
+								void ResetWallData(int surface = 0, int width = 0, int height = 0, float time = 0.0f);
 								//押し出す面、場所、長さのデータ、押し出す方向
 								int surface = 0;
 								int width = 0;
 								int height = 0;
 								int length = 1;
+								//何を描画するか。押し出す場所、押し出す地点、押し出しの描画、押し出しの時間、押し出すブロックの種類
+								int drawTexFlag = 0;
+								bool checkLengthFlag = false;
+								bool moveFlag = false;
+								float time = 0.0f;
+								BlockType pushBlockType[Wall::MaxLength];
+
 								Float3 moveDirection = 0.0f;
 								//位置が確定したときに押し出して出てくる最初のブロックの位置を入れる
 								//これはまだ位置が決定していないブロックの描画に使用する
 								Float3 createInitPosition = Float3(0.0f, 0.0f, 0.0f);
 								//これは押し出す位置が決まった時にデータ格納用データ
 								Float3 setInitiPosition = Float3(0.0f, 0.0f, 0.0f);
-								//MoveWallで主に使用 移動が完了したらfalse また描画でも使用
-								bool moveFlag = false;
-								float time = 0.0f;
-								//このデータが現在存在しているか falseで存在している・・直そう
-								//intでフラグ生成理由は、テクスチャを状況に合わせて変える必要があるため
-								int drawTexFlag = 0;
-								bool checkLengthFlag = false;
-							
-								//short moveDirection[3] = {};
 				};
 				WallData wallData;
 
 				struct BoxData
 				{
 								//ブロックが存在しているか
-								char block;
+								BlockType blockType[Wall::MaxHeight];
 								//プレイヤーが移動可能な場所// +1の理由は8段の高さがあってその上がクリアの高さなため
 								bool playerMoveBlock[MaxHeight + 1];
 
 								void Release()
 								{
-												block &= 0;
-												for (int i = 0; i < MaxHeight + 1; i++)
+												for (int i = 0; i < MaxHeight; i++)
 												{
+																blockType[i] = NON;
 																playerMoveBlock[i] = false;
 												}
+												playerMoveBlock[MaxHeight] = false;
 								}
 				};
 
@@ -73,8 +75,8 @@ public:
 				void SetPushFlag(int surface, int width, int height, bool flag);
 
 				//BoxDataのblockの指定したデータを呼び出すまたは設定する
-				bool GetBlockData(int width, int depth, int height);
-				void SetBlockData(int width, int depth, int height, bool flag);
+				BlockType GetBlockData(int width, int depth, int height);
+				void SetBlockData(int width, int depth, int height, BlockType blockType);
 				
 				//BoxDataのplayerMoveFlagの指定したデータを呼び出すまたは設定する
 				bool GetPlayerMoveFlag(int width, int depth, int height);
@@ -104,12 +106,12 @@ private:
 				Texture wallTex;
 
 				//押し出すことのできる場所かどうかの判断に使用  2進数的に管理
-				char pushWallFlag[4][length] = {};
+				char pushWallFlag[4][MaxLength] = {};
 				//ブロックが詰まっていく場所　ブロックがある箇所をtrueとする
-				BoxData box[length][length] = {};
+				BoxData box[MaxLength][MaxLength] = {};
 				//描画するデータを作成する//テクスチャ分作成（今回は処理を高速化するために）
 				Plane wall[5];
-				Cube block[2];
+				Cube block[5];
 
 				WallData pushWallData;
 

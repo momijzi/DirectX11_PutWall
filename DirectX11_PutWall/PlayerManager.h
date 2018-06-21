@@ -18,10 +18,12 @@ public:
 								player[turn].movePosition = 0.0f;
 								turn = !turn; 
 				}
+				//プレイヤーが現在移動場所を選択している状態かをセットする
 				void SetDrawFlag(bool flag)
 				{
 								player[turn].moveFlag = flag;
 				}
+				//上の取得バージョン
 				bool GetDrawFlag()
 				{
 								return player[turn].moveFlag;
@@ -56,6 +58,7 @@ public:
 				//押し出しをしましたので押し出した分を相手に譲渡します
 				void DeliverLength(int length);
 
+				//プレイヤーの描画
 				void Draw(int boxLength, int blockSize);
 
 				//リプレイ時に初期地点に戻すために使う
@@ -79,18 +82,18 @@ private:
 				};
 				Player player[2];
 				//プレイヤーが一ターンに動くことのできるマス数
-				const int MaxMove = 3;
+				const int MaxMove = 2;
 				const int plusPoint = 2;
 				//現在どちらのターンかの判別
 				bool turn;
-
+				//プレイヤー生成
 				Texture playerTex;
 				Cube playerCube[2];
 
 				//MovementRangeで確認する方向に合わせて確認する位置をずらすための配列
 				//初期Directionは右にしたかったが、wallの選択と違う方式になっているためやむなく変える
 				//また見る方向は反時計回りに変化します
-				//また問題としてyをzとして扱うことになるので注意が必要
+				//また問題としてyを数値的にzとして扱うことになるので注意が必要
 				Float2 SearchDirection[4] =
 				{
 								Float2(0.0f, 1.0f), //上

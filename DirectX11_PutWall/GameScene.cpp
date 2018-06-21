@@ -1,6 +1,5 @@
 #include"App.hpp"
 
-//Camera をLookPosで統一してみてもいいかも？
 
 GameScene::GameScene()
 {
@@ -20,15 +19,9 @@ void GameScene::SceneManager()
 												
 												CameraAnglesChangeMouse();
 												CameraPositionMove();
-												
 												MainTurn();
-												//if (App::GetKeyDown(VK_RETURN))//ほんとはここにエンドフラグを//てかここはMainTurnに書かれるべき
-												//{
-												//				uiData.CreateStateUi(Float2(1.0f, 1.0f));
-												//				gameState = OVER;
-												//}
 												mainCamera.Update(true);
-												playerManager.Draw(wall.length, wall.blockSize);
+												playerManager.Draw(wall.MaxLength, wall.blockSize);
 												wall.Draw(playerManager.GetDrawFlag(),playerManager.GetPosition(true).y, 
 																playerManager.GetPosition(false).y);
 												break;
@@ -99,7 +92,7 @@ void GameScene::MainTurn()
 																{
 																				playerManager.SetDrawFlag(false);
 
-																				wall.wallData.SetWallData();
+																				wall.wallData.ResetWallData();
 
 																				wall.SelectLookWall(4.0f, mainCamera.angles.y);
 																				testDirection = 0;
@@ -259,15 +252,15 @@ void GameScene::CameraPositionMove()
 				}
 				if (posUpdate)
 				{
-								if (fabs(mainCamera.position.x) > wall.length * 2)
+								if (fabs(mainCamera.position.x) > wall.MaxLength * 2)
 								{
 												if (mainCamera.position.x > 0)
 												{
-																mainCamera.position.x = (float)(wall.length * 2);
+																mainCamera.position.x = (float)(wall.MaxLength * 2);
 												}
 												else
 												{
-																mainCamera.position.x = -(float)(wall.length * 2);
+																mainCamera.position.x = -(float)(wall.MaxLength * 2);
 												}
 								}
 								if (mainCamera.position.y < 0.5f * wall.blockSize || mainCamera.position.y >(wall.height + 3 + 0.5f) * wall.blockSize)
@@ -282,15 +275,15 @@ void GameScene::CameraPositionMove()
 												}
 								}
 
-								if (fabs(mainCamera.position.z) > wall.length * 2)
+								if (fabs(mainCamera.position.z) > wall.MaxLength * 2)
 								{
 												if (mainCamera.position.z > 0)
 												{
-																mainCamera.position.z = (float)(wall.length * 2);
+																mainCamera.position.z = (float)(wall.MaxLength * 2);
 												}
 												else
 												{
-																mainCamera.position.z = -(float)(wall.length * 2);
+																mainCamera.position.z = -(float)(wall.MaxLength * 2);
 												}
 								}
 				}
