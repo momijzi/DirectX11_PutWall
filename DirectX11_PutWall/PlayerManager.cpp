@@ -14,10 +14,6 @@ PlayerManager::PlayerManager()
 				Release();
 }
 
-void PlayerManager::Behavior()
-{
-				
-}
 //プレイヤーがこのターン移動することのできる場所を設定
 //mocePosが現在の座標の位置からどれだけ変化した地点から見るのかの判定用
 //Directionが判定を行う方向を示す//右に行った後に再度元の位置を調べる必要はないんで・・
@@ -126,9 +122,9 @@ void PlayerManager::MoveableChack(Wall* wall, int Direction)
 				for (int y = 1; y > -2; y--)
 				{
 								//ステージ外に行かないように制限
-								//height + 1はクリア条件の高さに達したかどうか
+								//MaxHeight + 1はクリア条件の高さに達したかどうか
 								if (player[turn].position.y + player[turn].movePosition.y + y > -1 &&
-												player[turn].position.y + player[turn].movePosition.y + y < wall->height + 1)
+												player[turn].position.y + player[turn].movePosition.y + y < wall->MaxHeight + 1)
 								{ 
 												if (wall->GetPlayerMoveFlag(
 																player[turn].position.x + player[turn].movePosition.x + SearchDirection[Direction].x,
@@ -149,10 +145,9 @@ void PlayerManager::MoveableChack(Wall* wall, int Direction)
 }
 bool PlayerManager::MoveFlagChack()
 {
-				if (fabs(player[turn].movePosition.x) + fabs(player[turn].movePosition.y) + fabs(player[turn].movePosition.z) != 0 &&
-								(player[turn].movePosition.x + player[turn].position.x != player[!turn].position.x ||
+				if (player[turn].movePosition.x + player[turn].position.x != player[!turn].position.x ||
 												player[turn].movePosition.y + player[turn].position.y != player[!turn].position.y ||
-												player[turn].movePosition.z + player[turn].position.z != player[!turn].position.z))
+												player[turn].movePosition.z + player[turn].position.z != player[!turn].position.z)
 				{
 								//移動を一マス以上行っている
 								player[turn].position += player[turn].movePosition;
@@ -166,6 +161,14 @@ void PlayerManager::ReturnMovePos()
 				SetDrawFlag(true);
 				player[turn].position -= player[turn].movePosition;
 				player[turn].movePosition = 0.0f;
+}
+
+void PlayerManager::DownPlayer()
+{
+				for (int i = 0; i < 2; i++)
+				{
+								player[i].position.y -= 1;
+				}
 }
 
 void PlayerManager::DeliverLength(int length)
@@ -194,13 +197,14 @@ void PlayerManager::Release(Float3 positionA, Float3 positionB)
 				turn = false;
 }
 
-void PlayerManager::Draw(int boxLength, int blockSize)
+void PlayerManager::Draw(int boxLength, int blockSize,float downPos)
 {
 				for (int i = 0; i < 2; i++)
 				{
 								playerCube[i].scale = blockSize;
 								playerCube[i].position = (player[i].position -
 												Float3(boxLength / 2, 0, boxLength / 2) + 0.5f) * blockSize;
+								playerCube[i].position.y -= downPos * blockSize;
 								playerCube[i].Draw();
 								if (player[i].moveFlag)
 								{

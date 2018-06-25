@@ -15,15 +15,13 @@ public:
 				//先攻の出した特殊ブロックをFIRST,後攻をSECOND
 				//ERRORは,予定外の数値を返したときに返す
 				enum BlockType {NORMAL,FIRST,SECOND,NON = 98,ERRORNUM = 99};
-
+				
 				//ブロックの基本サイズ
 				const float blockSize = 2.0f;
 				//このゲームで使用される最大のボックスの大きさ
 				static const int MaxLength = 8;
 				//マップの高さ　これは9以上にすると壊れるので注意
 				static const int MaxHeight = 8;
-				//現在のゲームクリア条件の高さ
-				unsigned int height = 8;
 
 				struct WallData
 				{
@@ -41,6 +39,17 @@ public:
 								bool moveFlag = false;
 								float time = 0.0f;
 								BlockType pushBlockType[Wall::MaxLength];
+								void PushTypeReset()
+								{
+												for (int i = 0; i < MaxLength; i++)
+												{
+																if (pushBlockType[i] == FIRST || pushBlockType[i] == SECOND)
+																{
+																				pushBlockType[i] = NORMAL;
+																				break;
+																}
+												}
+								}
 
 								Float3 moveDirection = 0.0f;
 								//位置が確定したときに押し出して出てくる最初のブロックの位置を入れる
@@ -54,26 +63,31 @@ public:
 				struct BoxData
 				{
 								//ブロックが存在しているか
-								BlockType blockType[Wall::MaxHeight];
+								BlockType blockType[MaxHeight];
 								//プレイヤーが移動可能な場所// +1の理由は8段の高さがあってその上がクリアの高さなため
 								bool playerMoveBlock[MaxHeight + 1];
 
-								void Release()
+								void DownBlock()
+								{
+												for (int i = 1; i < MaxHeight; i++)
+												{
+																blockType[i - 1] = blockType[i];
+												}
+												//ループで初期化すると毎時やらなければならないため
+												blockType[MaxHeight - 1] = NON;
+								}
+								void ResetBlock()
 								{
 												for (int i = 0; i < MaxHeight; i++)
 												{
 																blockType[i] = NON;
-																playerMoveBlock[i] = false;
 												}
-												playerMoveBlock[MaxHeight] = false;
 								}
 				};
-
-				//4方面の壁から現在ブロックが出ているかの判断に使用する
-				bool GetPushFlag(int surface, int width, int height);
-				//押し出した時に指定した場所をtrueに変換する
-				void SetPushFlag(int surface, int width, int height, bool flag);
-
+				//ブロックの各データを初期化する
+				void ResetBlockType();
+				//次のターンになった時に次のプレイヤーの移動場所を設定するために初期化
+				void ResetPlayerMoveFlag();
 				//BoxDataのblockの指定したデータを呼び出すまたは設定する
 				BlockType GetBlockData(int width, int depth, int height);
 				void SetBlockData(int width, int depth, int height, BlockType blockType);
@@ -81,8 +95,7 @@ public:
 				//BoxDataのplayerMoveFlagの指定したデータを呼び出すまたは設定する
 				bool GetPlayerMoveFlag(int width, int depth, int height);
 				void SetPlayerMoveFlag(int width, int depth, int height,bool flag);
-				//次のターンになった時に次のプレイヤーの移動場所を設定するために初期化
-				void ResetPlayerMoveFlag();
+				
 				//初期の選択
 				void SelectLookWall(float height, float angleY);
 				//十字キーでの選択
@@ -98,23 +111,21 @@ public:
 				void ChangePushWallLine();
 				//ブロックの押し出し時の処理
 				void MoveWall();
-
+				//沈んだ後の状態にセットしなおす
+				void DownData();
 				//初期化関数
 				void Release();
-				
 				//ボックスの描画
-				void Draw(bool playerMovePosDrawFlag, float playerPosY, float nextPlayerPosY);
+				void Draw(bool playerMovePosDrawFlag,float downPos,float playerPosY, float nextPlayerPosY);
 				
 private:
-				Texture wallTex;
-
-				//押し出すことのできる場所かどうかの判断に使用  2進数的に管理
-				char pushWallFlag[4][MaxLength] = {};
 				//ブロックが詰まっていく場所　ブロックがある箇所をtrueとする
 				BoxData box[MaxLength][MaxLength] = {};
 				//描画するデータを作成する//テクスチャ分作成（今回は処理を高速化するために）
+				Texture wallTex;
+				Texture blockTex;
 				Plane wall[5];
-				Cube block[5];
+				Cube block[6];
 
 				WallData pushWallData;
 

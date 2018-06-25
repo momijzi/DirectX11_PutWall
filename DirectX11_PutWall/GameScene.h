@@ -25,7 +25,7 @@ private:
 
 				//プレイ中の基本的な流れ
 				enum Scene { TURN_FIRST, PLAYER_MOVE, PUSH_WALL_SELECT, SET_PUSH_WALL_LENGTH,
-								CAMERA_MOVE_CHACK, TURN_END };
+								 TURN_END,DROP_CHACK,DROP_ANIMATION};
 				Scene scene = TURN_FIRST;
 
 				//カメラ生成
@@ -39,7 +39,14 @@ private:
 				UIData uiData;
 				//カメラの移動を行う（完全ではないｙ軸が明らかおかしいので）
 				Move move;
-				
 				//Wallの押し出しを行う処理の試験用に使用
 				int testDirection = 0;
+				//残り何ターンで沈むか
+				const int downLimit = 3;
+				//経過ターン
+				int currentTurn = 0;
+				//沈む速度の設定
+				const int downTime = 2;
+				//落ちてからの時間経過を保持する
+				float downTimeCount = 0;
 };

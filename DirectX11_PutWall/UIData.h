@@ -13,9 +13,9 @@ public:
 				//現在の状態の描画、デバックで使用
 				void DrawStateUi();
 				//引数は残りの押し出せる量
-				void DrawNumberUi(Float2 playerPushLength);
+				void DrawNumberUi(Float2 playerPushLength, int drowLimitCount);
 				//上の描画を一括で行うまとめたもの
-				void Draw(Float2 playerPushLength);
+				void Draw(Float2 playerPushLength,int drowLimitCount);
 private:
 				//2Dデータを描画するカメラ
 				Camera uiCamera;

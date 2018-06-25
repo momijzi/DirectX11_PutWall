@@ -1,6 +1,5 @@
 #include"App.hpp"
 
-
 GameScene::GameScene()
 {
 				App::Initialize();
@@ -9,6 +8,7 @@ GameScene::GameScene()
 				App::SetMousePosition(0.0f, 0.0f);
 
 				mainCamera.position = Float3(0.0f, 10.0f, 0.0f);
+				currentTurn = downLimit;
 }
 
 void GameScene::SceneManager()
@@ -21,8 +21,8 @@ void GameScene::SceneManager()
 												CameraPositionMove();
 												MainTurn();
 												mainCamera.Update(true);
-												playerManager.Draw(wall.MaxLength, wall.blockSize);
-												wall.Draw(playerManager.GetDrawFlag(),playerManager.GetPosition(true).y, 
+												playerManager.Draw(wall.MaxLength, wall.blockSize,downTimeCount / downTime);
+												wall.Draw(playerManager.GetDrawFlag(), downTimeCount / downTime,playerManager.GetPosition(true).y,
 																playerManager.GetPosition(false).y);
 												break;
 								default:
@@ -55,7 +55,7 @@ void GameScene::SceneManager()
 												}
 												break;
 				}
-				uiData.Draw(playerManager.GetPushLength());
+				uiData.Draw(playerManager.GetPushLength(),currentTurn);
 }
 
 void GameScene::MainTurn()
@@ -123,7 +123,6 @@ void GameScene::MainTurn()
 																				wall.wallData.checkLengthFlag = true;
 																				wall.wallData.length = 1;
 																				wall.MoveDirectionUpdate();
-																				wall.SetPushFlag(wall.wallData.surface, wall.wallData.width, wall.wallData.height, true);
 																				scene = SET_PUSH_WALL_LENGTH;
 																}
 																else
@@ -136,9 +135,7 @@ void GameScene::MainTurn()
 												{
 																//プレイヤーのpositionをもとに戻して再度プレイヤーの移動選択をできるようにする
 																playerManager.ReturnMovePos();
-																//選択画面から戻るので壁を描画するように戻す
-																wall.SetPushFlag(wall.wallData.surface, wall.wallData.width, wall.wallData.height, false);
-																
+
 																scene = PLAYER_MOVE;
 												}
 												break;
@@ -146,16 +143,16 @@ void GameScene::MainTurn()
 												//押し出す長さをまだ決めていない
 												if (App::GetKeyDown(VK_UP))
 												{
-																if(wall.wallData.length != playerManager.GetCurrentPlayerPushLength())
+																if (wall.wallData.length != playerManager.GetCurrentPlayerPushLength())
 																{
-																				wall.SetPushWallLength(1, playerManager.GetPosition(0),playerManager.GetPosition(1),playerManager.GetTurn());
+																				wall.SetPushWallLength(1, playerManager.GetPosition(0), playerManager.GetPosition(1), playerManager.GetTurn());
 																}
 												}
-												else if(App::GetKeyDown(VK_DOWN))
+												else if (App::GetKeyDown(VK_DOWN))
 												{
-																wall. SetPushWallLength(-1);
+																wall.SetPushWallLength(-1);
 												}
-												else if(App::GetKeyDown(VK_LEFT))
+												else if (App::GetKeyDown(VK_LEFT))
 												{
 																wall.ChangePushWallLine();
 												}
@@ -166,28 +163,56 @@ void GameScene::MainTurn()
 																wall.wallData.drawTexFlag = 0;
 																wall.wallData.checkLengthFlag = false;
 																wall.wallData.moveFlag = true;
-																
+
 																playerManager.DeliverLength(wall.wallData.length);
 																scene = TURN_END;
 												}
 												else if (App::GetKeyDown(VK_ESCAPE))
 												{
 																wall.wallData.drawTexFlag = 2;
-																wall.SetPushFlag(wall.wallData.surface, wall.wallData.width, wall.wallData.height, false);
 																wall.wallData.checkLengthFlag = false;
+																wall.wallData.PushTypeReset();
 																scene = PUSH_WALL_SELECT;
 												}
 												break;
 								case GameScene::TURN_END:
 												//ターンエンドの宣言をする場所　ここでfalseを返せばMoveChackに移動
-								
+
 												//引数に選択している情報を入れればおけ
 												wall.MoveWall();
 												if (!wall.wallData.moveFlag)
 												{
 																scene = TURN_FIRST;
+																if (!playerManager.GetTurn())
+																{
+																				currentTurn--;
+																				scene = DROP_CHACK;
+																}
 												}
-								break;
+												break;
+								case GameScene::DROP_CHACK:
+												if (currentTurn != 0)
+												{
+																//残り経過時間の描画をする
+																scene = TURN_FIRST;
+												}
+												else
+												{
+																scene = DROP_ANIMATION;
+												}
+												break;
+								case GameScene::DROP_ANIMATION:
+												downTimeCount += App::GetDeltaTime();
+												//dropTimeのスピードで落とす
+												if (!(downTimeCount < downTime))
+												{
+																downTimeCount = 0.0f;
+																currentTurn = downLimit;
+																wall.DownData();
+																playerManager.DownPlayer();
+																scene = TURN_FIRST;
+												}
+												break;
 				}
 }
 
@@ -267,7 +292,7 @@ void GameScene::CameraPositionMove()
 																mainCamera.position.x = -(float)(wall.MaxLength * 2);
 												}
 								}
-								if (mainCamera.position.y < 0.5f * wall.blockSize || mainCamera.position.y >(wall.height + 3 + 0.5f) * wall.blockSize)
+								if (mainCamera.position.y < 0.5f * wall.blockSize || mainCamera.position.y >(wall.MaxHeight + 3 + 0.5f) * wall.blockSize)
 								{
 												if (mainCamera.position.y < 0.5f * wall.blockSize)
 												{
@@ -275,10 +300,9 @@ void GameScene::CameraPositionMove()
 												}
 												else
 												{
-																mainCamera.position.y = (float)((wall.height + 3 + 0.5f) * wall.blockSize);
+																mainCamera.position.y = (float)((wall.MaxHeight + 3 + 0.5f) * wall.blockSize);
 												}
 								}
-
 								if (fabs(mainCamera.position.z) > wall.MaxLength * 2)
 								{
 												if (mainCamera.position.z > 0)

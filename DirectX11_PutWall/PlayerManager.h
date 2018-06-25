@@ -6,8 +6,6 @@ public:
 				PlayerManager();
 				~PlayerManager() {};
 
-				//プレイヤーの行動　引数にどちらのターンかをboolで入れる
-				void Behavior();
 				//プレイヤーがこのターン移動できる場所を検索
 				void MovementRange(Wall* wall, Float3 movePos = Float3(0.0f,0.0f,0.0f),
 								int Direction = -1, int moveCount = 1);
@@ -47,7 +45,7 @@ public:
 				bool GetTurn() { return turn; }
 
 				//UIを描画するために使用
-				Float2 GetPushLength(){return Float2((float)player[0].length,(float)player[1].length);}
+				Float2 GetPushLength() { return Float2((float)player[0].length, (float)player[1].length); }
 
 				//移動が完了していたら
 				void MoveableChack(Wall* wall, int Direction);
@@ -57,12 +55,15 @@ public:
 				//移動した後に再度移動場所を変更したいときこの関数を呼んで戻す
 				void ReturnMovePos();
 
+				//ステージが下降した時
+				void DownPlayer();
+
 				//これちょっと変わったので関数名の変更をすること推奨
 				//次のターンに以降するので伸ばせる量にプラスを
 				void DeliverLength(int length);
 
 				//プレイヤーの描画
-				void Draw(int boxLength, int blockSize);
+				void Draw(int boxLength, int blockSize,float downPos);
 
 				//リプレイ時に初期地点に戻すために使う
 				void Release(Float3 positionA = Float3(3.0, 0.0f, 4.0f),
@@ -85,8 +86,8 @@ private:
 				};
 				Player player[2];
 				//プレイヤーが一ターンに動くことのできるマス数
-				const int MaxMove = 2;
-				const int plusPoint = 2;
+				const int MaxMove = 3;
+				const int plusPoint = 3;
 				//現在どちらのターンかの判別
 				bool turn;
 				//プレイヤー生成

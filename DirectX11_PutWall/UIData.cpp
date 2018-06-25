@@ -37,7 +37,7 @@ void UIData::DrawStateUi()
 				gameStateUi.position.y = App::GetWindowSize().y / 2 - numberUi.scale.y / 2;//+は上に行く　何座標系だったか……調べる！
 				gameStateUi.DrawSprite();
 }
-void UIData::DrawNumberUi(Float2 playerPushLength)
+void UIData::DrawNumberUi(Float2 playerPushLength,int drowLimitCount)
 {
 				//現在のプレイヤーの残り押し出せる量
 				//プレイヤーAのデータ左上に
@@ -50,11 +50,16 @@ void UIData::DrawNumberUi(Float2 playerPushLength)
 				numberUi.position.x = App::GetWindowSize().x / 2 - numberUi.scale.x / 2;
 				numberUi.position.y = App::GetWindowSize().y / 2 - numberUi.scale.y / 2;
 				numberUi.DrawSprite();
+
+				CreateNumberUi(Float2((float)drowLimitCount, 1.0f));
+				numberUi.position.x = 0.0f;
+				numberUi.position.y = App::GetWindowSize().y / 2 - numberUi.scale.y / 2;
+				numberUi.DrawSprite();
 }
 
-void UIData::Draw(Float2 playerPushLength)
+void UIData::Draw(Float2 playerPushLength,int drowLimitCount)
 {
 				uiCamera.Update(false);
+				DrawNumberUi(playerPushLength, drowLimitCount);
 				//DrawStateUi();
-				DrawNumberUi(playerPushLength);
 }

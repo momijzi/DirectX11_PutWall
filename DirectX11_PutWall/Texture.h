@@ -38,7 +38,8 @@ public:
 				//6面全部のデータを変更する
 				void SetNumUvAll(Float2 numUv);
 
-				//前面のuv設定
+				//指定した方向のデータを設定
+				//前,後,左,右,上,下
 				void SetNumUv(Float2 numUV,int num)
 				{
 								uvData.numUv[num] = numUV;
