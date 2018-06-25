@@ -63,22 +63,27 @@ public:
 				struct BoxData
 				{
 								//ブロックが存在しているか
-								BlockType blockType[MaxHeight];
+								BlockType blockType[MaxHeight + 1];
 								//プレイヤーが移動可能な場所// +1の理由は8段の高さがあってその上がクリアの高さなため
 								bool playerMoveBlock[MaxHeight + 1];
 
 								void DownBlock()
 								{
-												for (int i = 1; i < MaxHeight; i++)
+												for (int i = 1; i <= MaxHeight; i++)
 												{
 																blockType[i - 1] = blockType[i];
 												}
 												//ループで初期化すると毎時やらなければならないため
-												blockType[MaxHeight - 1] = NON;
+												blockType[MaxHeight] = NON;
+												if (blockType[0] == NON)
+												{
+																blockType[0] = NORMAL;
+												}
 								}
 								void ResetBlock()
 								{
-												for (int i = 0; i < MaxHeight; i++)
+												blockType[0] = NORMAL;
+												for (int i = 1; i <= MaxHeight; i++)
 												{
 																blockType[i] = NON;
 												}
@@ -126,9 +131,6 @@ private:
 				Texture blockTex;
 				Plane wall[5];
 				Cube block[6];
-
-				WallData pushWallData;
-
 				//壁の描画でその４方向で描画の仕方が変わるのでその変更用
 				Float4 wallDrawDirection[4] =
 				{

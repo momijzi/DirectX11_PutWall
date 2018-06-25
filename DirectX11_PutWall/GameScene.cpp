@@ -160,7 +160,7 @@ void GameScene::MainTurn()
 												{
 																//押しだす長さも決まりましたので確認を行います
 																//ここは短いシーンになるのでフラグ管理でいいと思います
-																wall.wallData.drawTexFlag = 0;
+																wall.wallData.drawTexFlag = false;
 																wall.wallData.checkLengthFlag = false;
 																wall.wallData.moveFlag = true;
 

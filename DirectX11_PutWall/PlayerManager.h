@@ -66,8 +66,8 @@ public:
 				void Draw(int boxLength, int blockSize,float downPos);
 
 				//リプレイ時に初期地点に戻すために使う
-				void Release(Float3 positionA = Float3(3.0, 0.0f, 4.0f),
-								Float3 positionB = Float3(4.0, 0.0f, 3.0f));
+				void Release(Float3 positionA = Float3(3.0, 1.0f, 4.0f),
+								Float3 positionB = Float3(4.0, 1.0f, 3.0f));
 
 private:
 				struct Player

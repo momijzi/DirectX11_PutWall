@@ -56,10 +56,7 @@ void Wall::ResetBlockType()
 				{
 								for (int z = 0; z < MaxLength; z++)
 								{
-												for (int y = 0; y < MaxHeight; y++)
-												{
-																box[x][z].blockType[y] = NON;
-												}
+												box[x][z].ResetBlock();
 								}
 				}
 }
@@ -69,7 +66,7 @@ void Wall::ResetPlayerMoveFlag()
 				{
 								for (int z = 0; z < MaxLength; z++)
 								{
-												for (int y = 0; y < MaxHeight; y++)
+												for (int y = 0; y <= MaxHeight; y++)
 												{
 																box[x][z].playerMoveBlock[y] = false;
 												}
@@ -166,8 +163,8 @@ void Wall::SelectToWall(int moveDirection, float playerPosY, float nextPlayerPos
 				}
 				SetInitialPosition();
 				//押し出すことが可能な高さかどうか
-				if ((playerPosY + 1 >= wallData.height || nextPlayerPosY + 1 >= wallData.height) &&
-								playerPosY - 1 <= wallData.height)
+				if ((playerPosY + 1 > wallData.height || nextPlayerPosY + 1 > wallData.height) &&
+								playerPosY - 2 <= wallData.height)
 				{
 								//押し出す先にデータが存在するか
 								wallData.drawTexFlag = 2;
@@ -191,7 +188,7 @@ void Wall::SetInitialPosition()
 								((MaxLength >> 1) * wallDrawDirection[wallData.surface].x + //x軸が固定値の時に使われる
 								(wallData.width - (MaxLength >> 1) + 0.5f) * wallDrawDirection[wallData.surface].y),//x軸が変動するときに使用する
 								
-								wallData.height + 0.5f,
+								wallData.height + 1.5f,
 								
 								(MaxLength >> 1) * wallDrawDirection[wallData.surface].z + //z軸が固定値の時に使われる
 								((wallData.width - (MaxLength >> 1) + 0.5f) * wallDrawDirection[wallData.surface].w));
@@ -357,7 +354,7 @@ void Wall::Draw(bool playerMovePosDrawFlag,float downPos, float playerPosY, floa
 				{
 								for (int z = -halfLength; z < halfLength; z++)
 								{
-												for (int y = 0; y < MaxHeight; y++)
+												for (int y = 0; y <= MaxHeight; y++)
 												{
 																//プレイヤーの行くことのできる場所を描画
 																if (GetPlayerMoveFlag(x + halfLength, z + halfLength, y + 1) && playerMovePosDrawFlag)
@@ -377,20 +374,6 @@ void Wall::Draw(bool playerMovePosDrawFlag,float downPos, float playerPosY, floa
 																				}
 																}
 												}
-												//床の描画
-												//配列を床無しで考えていたのでここで条件つけて描画はんてい
-												//上がプレイヤーがその場所に移動できるかの判定　描画を変える
-												if (GetPlayerMoveFlag(x + halfLength, z + halfLength, 0) && playerMovePosDrawFlag)
-												{
-																block[3].position = Float3(x + 0.5f, -0.5f, z + 0.5f) * blockSize;
-																block[3].Draw();
-												}
-												else
-												{
-																block[0].position = Float3(x + 0.5f, -0.5f, z + 0.5f) * blockSize;
-																block[0].position.y -= downPos;
-																block[0].Draw();
-												}
 								}
 				}
 
@@ -406,7 +389,7 @@ void Wall::Draw(bool playerMovePosDrawFlag,float downPos, float playerPosY, floa
 												wall[i].angles.y = 90.0f * (-surface + 1);
 								}
 								//偶数前提のマップで作成
-								for (int y = 0; y < MaxHeight + 1; y++)
+								for (int y = 1; y <= MaxHeight + 1; y++)
 								{
 												if ((playerPosY + 1 >= y || nextPlayerPosY + 1 >= y) &&
 																playerPosY - 1 <= y)
@@ -421,7 +404,7 @@ void Wall::Draw(bool playerMovePosDrawFlag,float downPos, float playerPosY, floa
 												{
 																for (int i = 0; i < 2; i++)
 																{
-																				if (y == MaxHeight)
+																				if (y == MaxHeight + 1)
 																				{
 																								//length + z　と　length + xが端 xとzを0からとする
 																								wall[2].position = Float3(
