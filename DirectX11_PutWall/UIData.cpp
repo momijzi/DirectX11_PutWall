@@ -7,12 +7,12 @@ UIData::UIData()
 				gameStateTex.Load(L"texture/testTex.png");
 				gameStateTex.SetDivide(Float2(2.0f, 2.0f));
 				CreateStateUi();
-				gameStateUi.scale = Float3(App::GetWindowSize().x / 4, App::GetWindowSize().y / 4, 0);
+				gameStateUi.scale = Float3(App::GetWindowSize().x / 6, App::GetWindowSize().y / 6, 0);
 
 				numberTex.Load(L"texture/number.png");
 				numberTex.SetDivide(Float2(10.0f, 2.0f));
 				CreateNumberUi();
-				numberUi.scale = Float3(App::GetWindowSize().x / 6, App::GetWindowSize().y / 4, 0);
+				numberUi.scale = Float3(App::GetWindowSize().x / 9, App::GetWindowSize().y / 6, 0);
 
 				uiCamera.position = Float3(0.0f, 0.0f, -1.0f);
 }
@@ -33,8 +33,8 @@ void UIData::DrawStateUi()
 {
 				//この中で画面のどの位置に描画するか決めること
 				//ウィンドウサイズの変更にも対応できるように
-				gameStateUi.position.x = 0.0f;
-				gameStateUi.position.y = App::GetWindowSize().y / 2 - numberUi.scale.y / 2;//+は上に行く　何座標系だったか……調べる！
+				gameStateUi.position.x = -App::GetWindowSize().x / 2 + gameStateUi.scale.x / 2;
+				gameStateUi.position.y = -App::GetWindowSize().y / 2 + gameStateUi.scale.y / 2;//+は上に行く　何座標系だったか……調べる！
 				gameStateUi.DrawSprite();
 }
 void UIData::DrawNumberUi(Float2 playerPushLength,int drowLimitCount)
@@ -61,5 +61,5 @@ void UIData::Draw(Float2 playerPushLength,int drowLimitCount)
 {
 				uiCamera.Update(false);
 				DrawNumberUi(playerPushLength, drowLimitCount);
-				//DrawStateUi();
+			 DrawStateUi();
 }

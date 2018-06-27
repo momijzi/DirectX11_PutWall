@@ -24,8 +24,8 @@ private:
 				GameState gameState = TITLE;
 
 				//プレイ中の基本的な流れ
-				enum Scene { TURN_FIRST, PLAYER_MOVE, PUSH_WALL_SELECT, SET_PUSH_WALL_LENGTH,
-								 TURN_END,DROP_CHACK,DROP_ANIMATION};
+				enum Scene { TURN_FIRST, PUSH_WALL_SELECT, SET_PUSH_WALL_LENGTH,
+								PUSH_WALL, PLAYER_MOVE,TURN_END, DROP_CHACK, DROP_ANIMATION};
 				Scene scene = TURN_FIRST;
 
 				//カメラ生成
@@ -34,7 +34,7 @@ private:
 				//壁と中のブロックを主に描画する
 				Wall wall;
 				//プレイヤーの移動などの処理を行う
-				PlayerManager playerManager;
+				PlayerManager pMana;
 				//UIを描画するときに使用する　ただし中身で宣言したUI描画するだけ
 				UIData uiData;
 				//カメラの移動を行う（完全ではないｙ軸が明らかおかしいので）
@@ -42,11 +42,23 @@ private:
 				//Wallの押し出しを行う処理の試験用に使用
 				int testDirection = 0;
 				//残り何ターンで沈むか
-				const int downLimit = 5;
+				const int downLimit = 3;
 				//経過ターン
 				int currentTurn = 0;
 				//沈む速度の設定
 				const int downTime = 2;
 				//落ちてからの時間経過を保持する
 				float downTimeCount = 0;
+
+				MediaFoundation bgm;
+				XAudio2 se;
+
+				MediaFoundation::AudioData bgm_title;
+				MediaFoundation::AudioData bgm_main;
+
+				XAudio2::WaveData se_ok;
+				XAudio2::WaveData se_select;
+				XAudio2::WaveData se_cancel;
+				XAudio2::WaveData se_move;
+				XAudio2::WaveData se_stop;
 };

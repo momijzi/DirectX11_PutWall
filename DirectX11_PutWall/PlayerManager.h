@@ -11,7 +11,7 @@ public:
 								int Direction = -1, int moveCount = 1);
 
 				//次のプレイヤーのターンにする
-				void NextTurn() 
+				void NextTurn()
 				{ 
 								player[turn].movePosition = 0.0f;
 								turn = !turn; 
@@ -28,17 +28,16 @@ public:
 				}
 				//現在ターンが来ているプレイヤーの押し出せる量
 				int GetCurrentPlayerPushLength() { return player[turn].length; }
-				//現在ターンが来ているプレイヤーのデータが欲しいのか
-				//それとも違う方が欲しいのかの引数
-				Float3 GetPosition(bool flag) 
+				//turnが来ているプレイヤーの座標か来てない座標か指定して渡す
+				Float3 GetPosition(bool flag)
 				{
 								if (flag)
 								{
-												return player[turn].position;
+												return Float3(player[turn].position);
 								}
 								else
 								{
-												return player[!turn].position;
+												return Float3(player[!turn].position);
 								}
 				}
 
@@ -52,11 +51,9 @@ public:
 				
 				//一マス以上の移動をしているか
 				bool MoveFlagChack();
-				//移動した後に再度移動場所を変更したいときこの関数を呼んで戻す
-				void ReturnMovePos();
 
 				//ステージが下降した時
-				void DownPlayer();
+				bool DownPlayer();
 
 				//これちょっと変わったので関数名の変更をすること推奨
 				//次のターンに以降するので伸ばせる量にプラスを
@@ -86,7 +83,7 @@ private:
 				};
 				Player player[2];
 				//プレイヤーが一ターンに動くことのできるマス数
-				const int MaxMove = 3;
+				const int MaxMove = 2;
 				const int plusPoint = 3;
 				//現在どちらのターンかの判別
 				bool turn;

@@ -74,47 +74,43 @@ void Wall::ResetPlayerMoveFlag()
 				}
 }
 
-Wall::BlockType Wall::GetBlockData(int width, int depth, int height)
+Wall::BlockType Wall::GetBlockData(Float3 pos)
 {
-				if (!(width < MaxLength) || !(depth < MaxLength) || width < 0 || depth < 0)
+				if (!(pos.x < MaxLength) || !(pos.z < MaxLength) || pos.x < 0 || pos.z < 0 )
 				{
 								//例外処理
 								return ERRORNUM;
 				}
-				if (height >= this->MaxHeight)
-				{
-								return NON;
-				}
-				return box[width][depth].blockType[height];
+				return box[(int)pos.x][(int)pos.z].blockType[(int)pos.y];
 }
 
-void Wall::SetBlockData(int width, int depth, int height, BlockType blockType)
+void Wall::SetBlockData(Float3 pos, BlockType blockType)
 {
-				if (!(width < MaxLength) || !(depth < MaxLength) || height >= this->MaxHeight)
+				if (!(pos.x < MaxLength) || !(pos.z < MaxLength) || pos.x < 0 || pos.z < 0 || pos.y > this->MaxHeight)
 				{
 								//例外処理
 								return;
 				}
-				box[width][depth].blockType[height] = blockType;
+				box[(int)pos.x][(int)pos.z].blockType[(int)pos.y] = blockType;
 }
 
-bool Wall::GetPlayerMoveFlag(int width, int depth, int height)
+bool Wall::GetPlayerMoveFlag(Float3 pos)
 {
-				if (!(width < MaxLength) || !(depth < MaxLength) || width < 0 || depth < 0 || height > this->MaxHeight)
+				if (!(pos.x < MaxLength) || !(pos.z < MaxLength) || pos.x < 0 || pos.z < 0)
 				{
 								//例外処理
 								return false;
 				}
-				return box[width][depth].playerMoveBlock[height];
+				return box[(int)pos.x][(int)pos.z].playerMoveBlock[(int)pos.y];
 }
-void Wall::SetPlayerMoveFlag(int width, int depth, int height,bool flag)
+void Wall::SetPlayerMoveFlag(Float3 pos)
 {
-				if (width >= MaxLength || depth >= MaxLength || width < 0 || depth < 0 || height > this->MaxHeight)
+				if (!(pos.x < MaxLength) || !(pos.z < MaxLength) || pos.x < 0 || pos.z < 0)
 				{
 								//例外処理
 								return;
 				}
-				box[width][depth].playerMoveBlock[height] = flag;
+				box[(int)pos.x][(int)pos.z].playerMoveBlock[(int)pos.y] = true;
 }
 
 void Wall::SelectLookWall(float playerHeight, float angleY)
@@ -125,11 +121,14 @@ void Wall::SelectLookWall(float playerHeight, float angleY)
 								angleY += ((-(int)angleY / 360) + 1) * 360;
 				}
 				wallData.surface = (360 - ((int)angleY + 225) % 360) / 90;
-				wallData.width = MaxLength / (int)blockSize;
+				wallData.width = MaxLength / (int)blockSize - 1;
 				wallData.height = (int)playerHeight;
+				MoveDirectionUpdate();
 }
 
-void Wall::SelectToWall(int moveDirection, float playerPosY, float nextPlayerPosY)
+//y軸の座標いけない場所に行こうとしたとき
+//いけないようにSEを流すのでboolを返して判断
+bool Wall::SelectToWall(int moveDirection, Float2 bothPlayerPosY)
 {
 				wallData.height -= ((moveDirection & 2)*(moveDirection & 1)) - (moveDirection & 1);
 				wallData.width -= ((((moveDirection - 1) & 2)*((moveDirection - 1) & 1)) - ((moveDirection - 1) & 1)) *
@@ -139,11 +138,13 @@ void Wall::SelectToWall(int moveDirection, float playerPosY, float nextPlayerPos
 				{
 								wallData.width = (!(bool)(wallData.surface & 2))*(MaxLength - 1);
 								wallData.surface += ((((wallData.surface + 1) & 3) >> 1) << 1) - 1;
+								MoveDirectionUpdate();
 				}
 				else if (wallData.width >= MaxLength)
 				{
 								wallData.width = (!(bool)(wallData.surface & 2))*(MaxLength - 1);
 								wallData.surface -= ((((wallData.surface + 1) & 3) >> 1) << 1) - 1;
+								MoveDirectionUpdate();
 				}
 				if (wallData.surface < 0)
 				{
@@ -156,21 +157,30 @@ void Wall::SelectToWall(int moveDirection, float playerPosY, float nextPlayerPos
 				if (wallData.height < 0)
 				{
 								wallData.height = 0;
+								return false;
 				}
-				else if (wallData.height > this->MaxHeight - 1)
+				//-2の理由　床が0番地に存在しているので１上がっているため-1
+				//ゴールの高さは押し出せないようにするのでMaxHeightの高さは押し出せないので-1 イコール-2
+				//雑だ・・直す時間ないので一旦保留、あとで正規に直すべし
+				else if (wallData.height > this->MaxHeight - 2)
 				{
-								wallData.height = this->MaxHeight - 1;
+								wallData.height = this->MaxHeight - 2;
+								return false;
 				}
 				SetInitialPosition();
 				//押し出すことが可能な高さかどうか
-				if ((playerPosY + 1 > wallData.height || nextPlayerPosY + 1 > wallData.height) &&
-								playerPosY - 2 <= wallData.height)
+				if ((bothPlayerPosY.x + 1 > wallData.height || bothPlayerPosY.y + 1 > wallData.height) &&
+								bothPlayerPosY.x - 2 <= wallData.height)
 				{
-								//押し出す先にデータが存在するか
-								wallData.drawTexFlag = 2;
-								return;
+								if (GetBlockData(wallData.setInitiPosition - wallData.moveDirection) == NON)
+								{
+												//押し出す先にデータが存在するか
+												wallData.drawTexFlag = 2;
+												return true;
+								}
 				}
 				wallData.drawTexFlag = 1;
+				return true;
 }
 void Wall::MoveDirectionUpdate()
 {
@@ -217,7 +227,7 @@ void Wall::SetPushWallLength(int addLength,Float3 playerPos1,Float3 playerPos2,b
 												return;
 								}
 								Float3 chackPos = wallData.setInitiPosition - wallData.moveDirection * (wallData.length + addLength);
-								if (GetBlockData((int)chackPos.x, (int)chackPos.z, (int)chackPos.y) != NON ||
+								if (GetBlockData(chackPos) != NON ||
 												App::SameChackFloat3(chackPos, playerPos1) || App::SameChackFloat3(chackPos, playerPos2))
 								{
 												return;
@@ -281,7 +291,7 @@ void Wall::MoveWall()
 				{
 								return;
 				}
-				wallData.time += App::GetDeltaTime();
+				wallData.time += App::GetDeltaTime() * wallData.length;
 				
 				if (wallData.time > wallData.length)
 				{
@@ -293,8 +303,7 @@ void Wall::MoveWall()
 												//initPositionのあり方を変えてもいい
 												wallData.setInitiPosition -= wallData.moveDirection;
 
-												SetBlockData((int)wallData.setInitiPosition.x , (int)wallData.setInitiPosition.z, 
-																(int)wallData.setInitiPosition.y, wallData.pushBlockType[i - 1]);
+												SetBlockData(wallData.setInitiPosition, wallData.pushBlockType[i - 1]);
 								}
 								wallData.moveFlag = false;
 				}
@@ -316,7 +325,7 @@ void Wall::Release()
 				ResetBlockType();
 }
 
-void Wall::Draw(bool playerMovePosDrawFlag,float downPos, float playerPosY, float nextPlayerPosY)
+void Wall::Draw(bool playerMovePosDrawFlag,float downPos, Float2 bothPlayerPosY)
 {
 				downPos *= blockSize;
 				int halfLength = MaxLength >> 1;
@@ -354,19 +363,20 @@ void Wall::Draw(bool playerMovePosDrawFlag,float downPos, float playerPosY, floa
 				{
 								for (int z = -halfLength; z < halfLength; z++)
 								{
+												//到達地点の高さ+ 床が必要なので床の+1
 												for (int y = 0; y <= MaxHeight; y++)
 												{
 																//プレイヤーの行くことのできる場所を描画
-																if (GetPlayerMoveFlag(x + halfLength, z + halfLength, y + 1) && playerMovePosDrawFlag)
+																if (GetPlayerMoveFlag(Float3(x + halfLength, y + 1, z + halfLength)) && playerMovePosDrawFlag)
 																{
 																				block[box[x + halfLength][z + halfLength].blockType[y] + 3].position = (Float3(x, y, z) + 0.5f) * blockSize;
 																				block[box[x + halfLength][z + halfLength].blockType[y] + 3].Draw();
 																}
 																//中に存在しているブロックを生成する
 																//bit分だけ左シフトしてその場所の数値でflag判断
-																else if (y < MaxHeight)
+																else
 																{
-																				if (GetBlockData(x + halfLength, z + halfLength, y) != Wall::BlockType::NON)
+																				if (GetBlockData(Float3(x + halfLength,y, z + halfLength)) != Wall::BlockType::NON)
 																				{
 																								block[box[x + halfLength][z + halfLength].blockType[y]].position = (Float3(x, y, z) + 0.5f) * blockSize;
 																								block[box[x + halfLength][z + halfLength].blockType[y]].position.y -= downPos;
@@ -389,10 +399,12 @@ void Wall::Draw(bool playerMovePosDrawFlag,float downPos, float playerPosY, floa
 												wall[i].angles.y = 90.0f * (-surface + 1);
 								}
 								//偶数前提のマップで作成
-								for (int y = 1; y <= MaxHeight + 1; y++)
+								//到達地点の高さ+ 床が必要なので床の+1
+								//ゴールとなる高さに描画をしないといけないため
+								for (int y = 0; y <= MaxHeight; y++)
 								{
-												if ((playerPosY + 1 >= y || nextPlayerPosY + 1 >= y) &&
-																playerPosY - 1 <= y)
+												if ((bothPlayerPosY.x + 1 >= y || bothPlayerPosY.y + 1 >= y) &&
+																bothPlayerPosY.x - 1 <= y)
 												{
 																pushWallType = true;
 												}
@@ -404,7 +416,7 @@ void Wall::Draw(bool playerMovePosDrawFlag,float downPos, float playerPosY, floa
 												{
 																for (int i = 0; i < 2; i++)
 																{
-																				if (y == MaxHeight + 1)
+																				if (y == MaxHeight)
 																				{
 																								//length + z　と　length + xが端 xとzを0からとする
 																								wall[2].position = Float3(

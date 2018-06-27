@@ -194,4 +194,6 @@ private:
 #include "Move.hpp"
 #include "Wall.h"
 #include "PlayerManager.h"
+#include "MediaFoundation.h"
+#include "XAudio2.h"
 #include "GameScene.h"

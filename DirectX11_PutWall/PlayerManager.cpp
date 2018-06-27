@@ -26,7 +26,7 @@ void PlayerManager::MovementRange(Wall* wall, Float3 movePos, int Direction, int
 								player[turn].position.y + movePos.y, player[turn].position.z + movePos.z);
 
 				bool upFlag = false;//プレイヤーの上にブロックが存在していた時上に上ることができないので処理を少なくする
-				if (wall->GetBlockData(currentPos.x, currentPos.z, currentPos.y + 1) != Wall::BlockType::NON)
+				if (wall->GetBlockData(currentPos + Float3(0.0f,1.0f,0.0f)) != Wall::BlockType::NON)
 				{
 								upFlag = true;
 				}
@@ -36,25 +36,25 @@ void PlayerManager::MovementRange(Wall* wall, Float3 movePos, int Direction, int
 				{
 								if (Dir != Direction)
 								{
-												if (wall->GetBlockData(currentPos.x + SearchDirection[Dir].x,
-																currentPos.z + SearchDirection[Dir].y, currentPos.y) != Wall::BlockType::NON)
+												if (wall->GetBlockData(currentPos +
+																Float3(SearchDirection[Dir].x, 0, SearchDirection[Dir].y)) != Wall::BlockType::NON)
 												{
 																//調べた場所にブロックが存在していた・・これは上に行くチャンス
 																//ただ調べた場所の上にブロックがあった時移動できない
-																if ((int)wall->GetBlockData(currentPos.x + SearchDirection[Dir].x,
-																				currentPos.z + SearchDirection[Dir].y, currentPos.y) != (int)turn + 1)
+																if ((int)wall->GetBlockData(currentPos +
+																				Float3(SearchDirection[Dir].x, 0, SearchDirection[Dir].y)) != (int)turn + 1)
 																{
 																				//相手の出した特殊ブロックではないかどうかを調べる
 																				//特殊ブロックを使用しないならコメントアウトで
 																				if (!upFlag)
 																				{
 																								//上に何もなかったため調べる
-																								if (wall->GetBlockData(currentPos.x + SearchDirection[Dir].x,
-																												currentPos.z + SearchDirection[Dir].y, currentPos.y + 1) == Wall::BlockType::NON)
+																								if (wall->GetBlockData(currentPos +
+																												Float3(SearchDirection[Dir].x, 1, SearchDirection[Dir].y)) == Wall::BlockType::NON)
 																								{
 																												//なんと上に行くことができることが判明した
-																												wall->SetPlayerMoveFlag(currentPos.x + SearchDirection[Dir].x,
-																																currentPos.z + SearchDirection[Dir].y, currentPos.y + 1, true);
+																												wall->SetPlayerMoveFlag(currentPos +
+																																Float3(SearchDirection[Dir].x, 1, SearchDirection[Dir].y));
 																												if (moveCount != MaxMove)
 																												{
 																																//そして更なる先を求めて旅に出る・・
@@ -71,11 +71,11 @@ void PlayerManager::MovementRange(Wall* wall, Float3 movePos, int Direction, int
 																//上に何もなかったため調べる
 																for (int j = 1; j < 3; j++)
 																{
-																				if (currentPos.y - j < 0)
+																				if (currentPos.y - j <	1)
 																				{
 																								//高さ　基点 - j + 1の位置に行くことができることが判明した
-																								wall->SetPlayerMoveFlag(currentPos.x + SearchDirection[Dir].x,
-																												currentPos.z + SearchDirection[Dir].y, currentPos.y - j + 1, true);
+																								wall->SetPlayerMoveFlag(currentPos +
+																												Float3(SearchDirection[Dir].x, -j + 1, SearchDirection[Dir].y));
 																								if (moveCount != MaxMove)
 																								{
 																												//そして更なる先を求めて旅に出る・・
@@ -85,14 +85,12 @@ void PlayerManager::MovementRange(Wall* wall, Float3 movePos, int Direction, int
 																								break;
 																				}
 																				//ここに入る時点でその方向への移動ができることは確定なので床の部分にたどり着いた時は移動可能とする
-																				if (wall->GetBlockData(currentPos.x + SearchDirection[Dir].x,
-																								currentPos.z + SearchDirection[Dir].y, currentPos.y - j) != Wall::BlockType::NON &&
-																								wall->GetBlockData(currentPos.x + SearchDirection[Dir].x,
-																												currentPos.z + SearchDirection[Dir].y, currentPos.y - j) != Wall::BlockType::ERRORNUM)
+																				if (wall->GetBlockData(currentPos + 
+																								Float3(SearchDirection[Dir].x,- j, SearchDirection[Dir].y)) != Wall::BlockType::NON)
 																				{
 																								//高さ　基点 - j + 1の位置に行くことができることが判明した
-																								wall->SetPlayerMoveFlag(currentPos.x + SearchDirection[Dir].x,
-																												currentPos.z + SearchDirection[Dir].y, currentPos.y - j + 1, true);
+																								wall->SetPlayerMoveFlag(currentPos + 
+																												Float3(SearchDirection[Dir].x, -j + 1, SearchDirection[Dir].y));
 																								if (moveCount != MaxMove)
 																								{
 																												//そして更なる先を求めて旅に出る・・
@@ -109,35 +107,21 @@ void PlayerManager::MovementRange(Wall* wall, Float3 movePos, int Direction, int
 
 void PlayerManager::MoveableChack(Wall* wall, int Direction)
 {
-				//現在地にも戻れるようにするのだが・・
-				//これは汚い気がする・・どうにか修正をしていくなりよ
-				if (player[turn].position.x + player[turn].movePosition.x + SearchDirection[Direction].x == player[turn].position.x &&
-								player[turn].position.z + player[turn].movePosition.z + SearchDirection[Direction].y == player[turn].position.z &&
-								player[turn].position.y + player[turn].movePosition.y - player[turn].position.y <  2 &&
-								player[turn].position.y + player[turn].movePosition.y - player[turn].position.y > -2)
-				{
-								player[turn].movePosition = 0.0f;
-								return;
-				}
 				for (int y = 1; y > -2; y--)
 				{
 								//ステージ外に行かないように制限
 								//MaxHeight + 1はクリア条件の高さに達したかどうか
 								if (player[turn].position.y + player[turn].movePosition.y + y > -1 &&
 												player[turn].position.y + player[turn].movePosition.y + y < wall->MaxHeight + 1)
-								{ 
-												if (wall->GetPlayerMoveFlag(
-																player[turn].position.x + player[turn].movePosition.x + SearchDirection[Direction].x,
-																player[turn].position.z + player[turn].movePosition.z + SearchDirection[Direction].y,
-																player[turn].position.y + player[turn].movePosition.y + y))
+								{
+												//横にブロックが存在した時は上にしか行けないようにする
+												//またないときはfor(int i = 0;i < 2;i++)で同じ高さとその下を調べる
+												if (wall->GetPlayerMoveFlag(player[turn].position+ player[turn].movePosition +
+																Float3(SearchDirection[Direction].x, y, SearchDirection[Direction].y)))
 												{
 																//移動できることが判明したので移動
-																player[turn].movePosition +=
-																				Float3(
-																								SearchDirection[Direction].x,
-																								y,
-																								SearchDirection[Direction].y
-																				);
+																player[turn].movePosition += 
+																				Float3(SearchDirection[Direction].x, y, SearchDirection[Direction].y);
 																return;
 												}
 								}
@@ -145,30 +129,36 @@ void PlayerManager::MoveableChack(Wall* wall, int Direction)
 }
 bool PlayerManager::MoveFlagChack()
 {
-				if (player[turn].movePosition.x + player[turn].position.x != player[!turn].position.x ||
-												player[turn].movePosition.y + player[turn].position.y != player[!turn].position.y ||
-												player[turn].movePosition.z + player[turn].position.z != player[!turn].position.z)
+				//移動先に敵プレイヤーが存在しているか確認
+				if (!App::SameChackFloat3(player[turn].position, player[!turn].position))
 				{
-								//移動を一マス以上行っている
+								//居なかったので移動可能です
 								player[turn].position += player[turn].movePosition;
+								player[turn].movePosition = 0.0f;
 								return true;
 				}
 				return false;
 }
+//
+//void PlayerManager::ReturnMovePos()
+//{
+//				SetDrawFlag(true);
+//				player[turn].position -= player[turn].movePosition;
+//				player[turn].movePosition = 0.0f;
+//}
 
-void PlayerManager::ReturnMovePos()
+bool PlayerManager::DownPlayer()
 {
-				SetDrawFlag(true);
-				player[turn].position -= player[turn].movePosition;
-				player[turn].movePosition = 0.0f;
-}
-
-void PlayerManager::DownPlayer()
-{
+				bool flag = false;
 				for (int i = 0; i < 2; i++)
 				{
 								player[i].position.y -= 1;
+								if (player[i].position.y == 0)
+								{
+												flag = true;
+								}
 				}
+				return flag;
 }
 
 void PlayerManager::DeliverLength(int length)
@@ -203,15 +193,9 @@ void PlayerManager::Draw(int boxLength, int blockSize,float downPos)
 				{
 								playerCube[i].scale = blockSize;
 								playerCube[i].position = (player[i].position -
-												Float3(boxLength / 2, 0, boxLength / 2) + 0.5f) * blockSize;
+												Float3(boxLength / 2, 0, boxLength / 2) + 0.5f + player[i].movePosition) * blockSize;
 								playerCube[i].position.y -= downPos * blockSize;
 								playerCube[i].Draw();
-								if (player[i].moveFlag)
-								{
-												playerCube[i].position += player[i].movePosition * blockSize;
-												
-												playerCube[i].Draw();
-								}
 				}
 }
 

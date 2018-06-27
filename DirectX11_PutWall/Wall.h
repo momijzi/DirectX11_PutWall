@@ -94,17 +94,17 @@ public:
 				//次のターンになった時に次のプレイヤーの移動場所を設定するために初期化
 				void ResetPlayerMoveFlag();
 				//BoxDataのblockの指定したデータを呼び出すまたは設定する
-				BlockType GetBlockData(int width, int depth, int height);
-				void SetBlockData(int width, int depth, int height, BlockType blockType);
+				BlockType GetBlockData(Float3 pos);
+				void SetBlockData(Float3 pos, BlockType blockType);
 				
 				//BoxDataのplayerMoveFlagの指定したデータを呼び出すまたは設定する
-				bool GetPlayerMoveFlag(int width, int depth, int height);
-				void SetPlayerMoveFlag(int width, int depth, int height,bool flag);
+				bool GetPlayerMoveFlag(Float3 pos);
+				void SetPlayerMoveFlag(Float3 pos);
 				
 				//初期の選択
 				void SelectLookWall(float height, float angleY);
 				//十字キーでの選択
-				void SelectToWall(int moveDirection, float playerPosY, float nextPlayerPosY);
+				bool SelectToWall(int moveDirection, Float2 bothPlayerPosY);
 				//押し出す場所を設定したときに押し出す方向を出す
 				void MoveDirectionUpdate();
 				//押し出す壁の初期地点の設定
@@ -121,7 +121,7 @@ public:
 				//初期化関数
 				void Release();
 				//ボックスの描画
-				void Draw(bool playerMovePosDrawFlag,float downPos,float playerPosY, float nextPlayerPosY);
+				void Draw(bool playerMovePosDrawFlag,float downPos, Float2 bothPlayerPosY);
 				
 private:
 				//ブロックが詰まっていく場所　ブロックがある箇所をtrueとする
@@ -151,6 +151,8 @@ private:
 								Float4(0.0f, 1.0f, 1.0f, 0.0f),//上
 								Float4(-1.0f, 0.0f, 0.0f, 1.0f),//左
 								Float4(0.0f, 1.0f,-1.0f, 0.0f)	//下
-				}*/
+				}
+				*/
+				
 };
 
