@@ -178,9 +178,22 @@ void GameScene::MainTurn()
 												if (moveDirection != -1)
 												{
 																se.Play(se_select);
+																//ここで現在のカメラの角度からみてプレイヤーの移動をしたいので移動方向を直す
+																for (int i = 1; i <= 4; i++)
+																{
+																				if (mainCamera.angles.y - (i * 90.0f) < -45.0f)
+																				{
+																								moveDirection -= i - 1;
+																								if (moveDirection < 0)
+																								{
+																												//0以下の時0～4に戻す必要があるため3に戻す
+																												moveDirection += 4;
+																								}
+																								break;
+																				}
+																}
 																pMana.MoveableChack(&wall, moveDirection);
 												}
-
 												if (App::GetKeyDown(VK_RETURN))
 												{
 																if (pMana.MoveFlagChack())
@@ -248,15 +261,31 @@ void GameScene::CameraAnglesChangeMouse()
 								{
 												App::SetMousePosition(0.0f, 0.0f);
 								}
+
 								mainCamera.angles += Float3(
 												-App::GetMousePosition().y,
 												App::GetMousePosition().x,
-												0.0f)*0.1f;
-								move.angles += Float3(
-								-App::GetMousePosition().y,
-								App::GetMousePosition().x,
-								0.0f)*0.1f;
-
+												0.0f)*angleSpeed;
+								
+								//回転で315を超えた時-45.0に戻す、逆もしかり
+								//中途半端な数値の理由は、プレイヤーなどの移動方向を調整するときに-45.0されている数値の方が都合がいいから
+								if (mainCamera.angles.y < -45.0)
+								{
+												mainCamera.angles.y = 315.0f;
+								}
+								else if (mainCamera.angles.y > 315.0f)
+								{
+												mainCamera.angles.y = -45.0f;
+								}
+								//カメラのアングルを制限
+								if (mainCamera.angles.x < -45.0f)
+								{
+												mainCamera.angles.x = -45.0f;
+								}
+								else if (mainCamera.angles.x > 45.0f)
+								{
+												mainCamera.angles.x = 45.0f;
+								}
 								App::SetMousePosition(0.0f, 0.0f);
 				}
 }
@@ -283,23 +312,23 @@ void GameScene::CameraPositionMove()
 				{
 								if (App::GetKey('W'))
 								{
-												mainCamera.position = move.MovePos(mainCamera.position, true, false, false, true);
+												mainCamera.position = move.MovePos(mainCamera.position, mainCamera.angles,moveSpeed,true, false, false, true);
 												posUpdate = true;
 								}
 								else if (App::GetKey('S'))
 								{
-												mainCamera.position = move.MovePos(mainCamera.position, false, false, false, true);
+												mainCamera.position = move.MovePos(mainCamera.position, mainCamera.angles, moveSpeed, false, false, false, true);
 												posUpdate = true;
 								}
 
 								if (App::GetKey('D'))
 								{
-												mainCamera.position = move.MovePos(mainCamera.position, true, true, false, false);
+												mainCamera.position = move.MovePos(mainCamera.position, mainCamera.angles, moveSpeed, true, true, false, false);
 												posUpdate = true;
 								}
 								else if (App::GetKey('A'))
 								{
-												mainCamera.position = move.MovePos(mainCamera.position, false, true, false, false);
+												mainCamera.position = move.MovePos(mainCamera.position, mainCamera.angles, moveSpeed, false, true, false, false);
 												posUpdate = true;
 								}
 				}

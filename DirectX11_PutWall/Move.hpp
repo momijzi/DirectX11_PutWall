@@ -1,12 +1,6 @@
 class Move
 {
 public:
-				Float3 position;
-				Float3 angles;
-
-				//これは使う側で設定すべき
-				const float speed = 0.1f;
-
 				Move()
 				{
 								App::Initialize();
@@ -34,7 +28,7 @@ public:
 				//初期の移動方向は右である
 				//moveには、0か１を入れる
 				//move.yは、そもそも縦軸の移動をするのかどうかのための処理
-				Float3 MovePos(Float3 pos, bool Direction = true, bool x = false, bool y = false, bool z = false)
+				Float3 MovePos(Float3 pos,Float3 angles,float speed, bool Direction = true, bool x = false, bool y = false, bool z = false)
 				{
 								if (Direction) {
 												pos += Float3

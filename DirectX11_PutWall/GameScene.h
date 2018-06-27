@@ -31,6 +31,8 @@ private:
 				//カメラ生成
 				//3D空間を描画に使用するカメラ
 				Camera mainCamera;
+				const float moveSpeed = 0.1f;
+				const float angleSpeed = 0.05f;
 				//壁と中のブロックを主に描画する
 				Wall wall;
 				//プレイヤーの移動などの処理を行う
