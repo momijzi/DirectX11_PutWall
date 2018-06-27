@@ -196,4 +196,5 @@ private:
 #include "PlayerManager.h"
 #include "MediaFoundation.h"
 #include "XAudio2.h"
+#include "Ray.h"
 #include "GameScene.h"

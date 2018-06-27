@@ -4,24 +4,28 @@ UIData::UIData()
 {
 				App::Initialize();
 
-				gameStateTex.Load(L"texture/testTex.png");
-				gameStateTex.SetDivide(Float2(2.0f, 2.0f));
-				CreateStateUi();
-				gameStateUi.scale = Float3(App::GetWindowSize().x / 6, App::GetWindowSize().y / 6, 0);
+				gameTitleTex.Load(L"texture/title.png");
+				gameTitleUi.Create(&gameTitleTex);
+				gameTitleUi.scale = Float3(App::GetWindowSize().x, App::GetWindowSize().y, 0);
 
 				numberTex.Load(L"texture/number.png");
 				numberTex.SetDivide(Float2(10.0f, 2.0f));
 				CreateNumberUi();
 				numberUi.scale = Float3(App::GetWindowSize().x / 9, App::GetWindowSize().y / 6, 0);
 
+				//ここのスケールはtextureから出したいな（出せるし……）
+				//でもスクリーンの大きさ変えたら・・うぅ・・
+				cutinTex.Load(L"texture/cutinTex.png");
+				cutinTex.SetDivide(Float2(1.0f, 3.0f));
+				cutinUi.Create(&cutinTex);
+				cutinUi.scale = Float3(256, 64, 0);
+				cutinUi.position.y = 0;
+				countTime = 0.0f;
+
 				uiCamera.position = Float3(0.0f, 0.0f, -1.0f);
 }
 
-void UIData::CreateStateUi(Float2 numUv)
-{
-				gameStateTex.SetNumUv(numUv, 0);
-				gameStateUi.Create(&gameStateTex);
-}
+
 
 void UIData::CreateNumberUi(Float2 numUv)
 {
@@ -29,13 +33,15 @@ void UIData::CreateNumberUi(Float2 numUv)
 				numberUi.Create(&numberTex);
 }
 
-void UIData::DrawStateUi()
+void UIData::CreateCutinUi(Float2 numUv)
 {
-				//この中で画面のどの位置に描画するか決めること
-				//ウィンドウサイズの変更にも対応できるように
-				gameStateUi.position.x = -App::GetWindowSize().x / 2 + gameStateUi.scale.x / 2;
-				gameStateUi.position.y = -App::GetWindowSize().y / 2 + gameStateUi.scale.y / 2;//+は上に行く　何座標系だったか……調べる！
-				gameStateUi.DrawSprite();
+				cutinTex.SetNumUv(numUv, 0);
+				cutinUi.Create(&cutinTex);
+}
+
+void UIData::DrawTitleUi()
+{
+				gameTitleUi.DrawSprite();
 }
 void UIData::DrawNumberUi(Float2 playerPushLength,int drowLimitCount)
 {
@@ -56,10 +62,48 @@ void UIData::DrawNumberUi(Float2 playerPushLength,int drowLimitCount)
 				numberUi.position.y = App::GetWindowSize().y / 2 - numberUi.scale.y / 2;
 				numberUi.DrawSprite();
 }
-
-void UIData::Draw(Float2 playerPushLength,int drowLimitCount)
+bool UIData::Cutin(int num)
+{
+				if (countTime == 0)
+				{
+								CreateCutinUi(Float2(0.0f, (float)num));
+				}
+				countTime += App::GetDeltaTime();
+				switch ((int)countTime)
+				{
+								case 0:
+												cutinUi.position.x = App::GetWindowSize().x / 4 * 3 * countTime - App::GetWindowSize().x / 4 * 3;
+												break;
+								case 1:
+												cutinUi.position.x = 0;
+												break;
+								case 2:
+												cutinUi.position.x = App::GetWindowSize().x / 4 * 3 * (countTime - 2);
+												break;
+								default:
+												countTime = 0;
+												return true;
+												break;
+				}
+				return false;
+}
+void UIData::Draw(int gameState,Float2 playerPushLength,int drowLimitCount)
 {
 				uiCamera.Update(false);
-				DrawNumberUi(playerPushLength, drowLimitCount);
-			 DrawStateUi();
+				switch (gameState)
+				{
+								case 0://TITLE
+												DrawTitleUi();
+												break;
+								case 1://PLAY
+												DrawNumberUi(playerPushLength, drowLimitCount);
+												if (countTime != 0)
+												{
+																cutinUi.Draw();
+												}
+												break;
+								case 2://OVER
+												DrawNumberUi(playerPushLength, drowLimitCount);
+												break;
+				}
 }

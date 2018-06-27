@@ -20,7 +20,7 @@ public:
 				void Release();
 private:
 				//ゲームの流れ
-				enum GameState { TITLE, CONFIG, PLAY, OVER };
+				enum GameState { TITLE, PLAY, OVER };
 				GameState gameState = TITLE;
 
 				//プレイ中の基本的な流れ
@@ -42,7 +42,7 @@ private:
 				//Wallの押し出しを行う処理の試験用に使用
 				int testDirection = 0;
 				//残り何ターンで沈むか
-				const int downLimit = 3;
+				const int downLimit = 1;
 				//経過ターン
 				int currentTurn = 0;
 				//沈む速度の設定
@@ -61,4 +61,6 @@ private:
 				XAudio2::WaveData se_cancel;
 				XAudio2::WaveData se_move;
 				XAudio2::WaveData se_stop;
+
+				Ray ray;
 };

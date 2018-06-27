@@ -126,9 +126,7 @@ void Wall::SelectLookWall(float playerHeight, float angleY)
 				MoveDirectionUpdate();
 }
 
-//y軸の座標いけない場所に行こうとしたとき
-//いけないようにSEを流すのでboolを返して判断
-bool Wall::SelectToWall(int moveDirection, Float2 bothPlayerPosY)
+bool Wall::SelectToWall(int moveDirection,Float3 firstPlayerPos,Float3 secondPlayerPos)
 {
 				wallData.height -= ((moveDirection & 2)*(moveDirection & 1)) - (moveDirection & 1);
 				wallData.width -= ((((moveDirection - 1) & 2)*((moveDirection - 1) & 1)) - ((moveDirection - 1) & 1)) *
@@ -169,10 +167,12 @@ bool Wall::SelectToWall(int moveDirection, Float2 bothPlayerPosY)
 				}
 				SetInitialPosition();
 				//押し出すことが可能な高さかどうか
-				if ((bothPlayerPosY.x + 1 > wallData.height || bothPlayerPosY.y + 1 > wallData.height) &&
-								bothPlayerPosY.x - 2 <= wallData.height)
+				if ((firstPlayerPos.y + 1 > wallData.height || secondPlayerPos.y + 1 > wallData.height) &&
+								firstPlayerPos.y - 2 <= wallData.height)
 				{
-								if (GetBlockData(wallData.setInitiPosition - wallData.moveDirection) == NON)
+								if (GetBlockData(wallData.setInitiPosition - wallData.moveDirection) == NON &&
+												!App::SameChackFloat3(firstPlayerPos, wallData.setInitiPosition - wallData.moveDirection) &&
+												!App::SameChackFloat3(secondPlayerPos, wallData.setInitiPosition - wallData.moveDirection))
 								{
 												//押し出す先にデータが存在するか
 												wallData.drawTexFlag = 2;
@@ -363,8 +363,26 @@ void Wall::Draw(bool playerMovePosDrawFlag,float downPos, Float2 bothPlayerPosY)
 				{
 								for (int z = -halfLength; z < halfLength; z++)
 								{
-												//到達地点の高さ+ 床が必要なので床の+1
-												for (int y = 0; y <= MaxHeight; y++)
+												//床の描画　処理が少し違うので
+												//プレイヤーの行くことのできる場所を描画
+												if (GetPlayerMoveFlag(Float3(x + halfLength, 1, z + halfLength)) && playerMovePosDrawFlag)
+												{
+																block[box[x + halfLength][z + halfLength].blockType[0] + 3].position = (Float3(x, 0, z) + 0.5f) * blockSize;
+																block[box[x + halfLength][z + halfLength].blockType[0] + 3].Draw();
+												}
+												//上にブロックが存在しているとき、落下処理が入るので処理変える
+												else 
+												{
+																block[box[x + halfLength][z + halfLength].blockType[0]].position = (Float3(x, 0, z) + 0.5f) * blockSize;
+																if (GetBlockData(Float3(x + halfLength, 1, z + halfLength)) != Wall::BlockType::NON)
+																{
+																				block[box[x + halfLength][z + halfLength].blockType[0]].position.y -= downPos;
+																}
+																
+																block[box[x + halfLength][z + halfLength].blockType[0]].Draw();
+												}
+
+												for (int y = 1; y <= MaxHeight; y++)
 												{
 																//プレイヤーの行くことのできる場所を描画
 																if (GetPlayerMoveFlag(Float3(x + halfLength, y + 1, z + halfLength)) && playerMovePosDrawFlag)
@@ -401,7 +419,7 @@ void Wall::Draw(bool playerMovePosDrawFlag,float downPos, Float2 bothPlayerPosY)
 								//偶数前提のマップで作成
 								//到達地点の高さ+ 床が必要なので床の+1
 								//ゴールとなる高さに描画をしないといけないため
-								for (int y = 0; y <= MaxHeight; y++)
+								for (int y = 1; y <= MaxHeight; y++)
 								{
 												if ((bothPlayerPosY.x + 1 >= y || bothPlayerPosY.y + 1 >= y) &&
 																bothPlayerPosY.x - 1 <= y)

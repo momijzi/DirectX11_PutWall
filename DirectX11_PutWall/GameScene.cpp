@@ -25,14 +25,15 @@ GameScene::GameScene()
 void GameScene::SceneManager()
 {
 				bgm.UpDate();
+				CameraAnglesChangeMouse();
+				CameraPositionMove();
+				
 				switch (gameState)
 				{
 								case GameState::PLAY:
-												
-												CameraAnglesChangeMouse();
-												CameraPositionMove();
 												MainTurn();
 												mainCamera.Update(true);
+												ray.Draw();
 												pMana.Draw(wall.MaxLength, wall.blockSize,downTimeCount / downTime);
 												wall.Draw(pMana.GetDrawFlag(), downTimeCount / downTime, Float2(pMana.GetPosition(true).y, pMana.GetPosition(false).y));
 												break;
@@ -43,32 +44,17 @@ void GameScene::SceneManager()
 																if (gameState == TITLE)
 																{
 																				bgm.Play(bgm_main);
-																				uiData.CreateStateUi(Float2(0.0f, 1.0f));
+																				Release();
 																				gameState = PLAY;
 																}
 																else if (gameState == OVER)
 																{
-																				uiData.CreateStateUi(Float2(0.0f, 0.0f));
-																				Release();
-																				gameState = TITLE;
-																}
-												}
-												else if (App::GetKeyDown(VK_SPACE))
-												{
-																if (gameState != CONFIG)
-																{
-																				uiData.CreateStateUi(Float2(1.0f, 0.0f));
-																				gameState = CONFIG;
-																}
-																else
-																{
-																				uiData.CreateStateUi(Float2(0.0f, 0.0f));
 																				gameState = TITLE;
 																}
 												}
 												break;
 				}
-				uiData.Draw(pMana.GetPushLength(),currentTurn);
+				uiData.Draw((int)gameState,pMana.GetPushLength(),currentTurn);
 }
 
 //移動　→　押し出し
@@ -79,18 +65,16 @@ void GameScene::MainTurn()
 				switch (scene)
 				{
 								case GameScene::TURN_FIRST:
-												//ここにアニメーション（先攻のターンみたいな）を入れたい所
-
 												//次のプレイヤーが移動できる場所を格納
 												//ここにアニメーションが終わった時にsceneが変わるようにするflagを入れる
-												if (true)
+												if (uiData.Cutin(pMana.GetTurn()))
 												{
 																pMana.NextTurn();
 
 																wall.wallData.ResetWallData();
 																wall.SelectLookWall(pMana.GetPosition(true).y - 1, mainCamera.angles.y);
 																testDirection = 0;
-																wall.SelectToWall(testDirection,Float2(pMana.GetPosition(true).y, pMana.GetPosition(false).y));
+																wall.SelectToWall(testDirection,pMana.GetPosition(true), pMana.GetPosition(false));
 																scene = PUSH_WALL_SELECT;
 												}
 												break;
@@ -100,7 +84,7 @@ void GameScene::MainTurn()
 												testDirection = KeyMoveData() + 1;
 												if (testDirection != 0)
 												{
-																if (wall.SelectToWall(testDirection, Float2(pMana.GetPosition(true).y, pMana.GetPosition(false).y)))
+																if (wall.SelectToWall(testDirection, pMana.GetPosition(true), pMana.GetPosition(false)))
 																{
 																				//指定した方向に行くことが可能
 																				se.Play(se_select);
@@ -128,6 +112,7 @@ void GameScene::MainTurn()
 																				se.Play(se_cancel);	
 																}
 												}
+												ray.UpDate(mainCamera.position, wall.wallData.createInitPosition * wall.blockSize);
 												break;
 								case GameScene::SET_PUSH_WALL_LENGTH:
 												//押し出す長さをまだ決めていない
@@ -204,7 +189,6 @@ void GameScene::MainTurn()
 																				
 																				if (pMana.GetPosition(true).y == wall.MaxHeight)
 																				{
-																								uiData.CreateStateUi(Float2(1.0f, 1.0f));
 																								gameState = OVER;
 																								break;
 																				}
@@ -240,12 +224,14 @@ void GameScene::MainTurn()
 												//dropTimeのスピードで落とす
 												if (!(downTimeCount < downTime))
 												{
+																//落下が終わった
+																se.Play(se_stop);
+
 																downTimeCount = 0.0f;
 																currentTurn = downLimit;
 																wall.DownData();
 																if (pMana.DownPlayer())
 																{
-																				uiData.CreateStateUi(Float2(1.0f, 1.0f));
 																				gameState = OVER;
 																}
 																scene = TURN_FIRST;
@@ -380,6 +366,6 @@ int GameScene::KeyMoveData()
 void GameScene::Release()
 {
 				currentTurn = downLimit;
-				pMana.Release();
+				pMana.Release(wall.MaxLength);
 				wall.Release();
 }

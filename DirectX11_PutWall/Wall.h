@@ -19,9 +19,9 @@ public:
 				//ブロックの基本サイズ
 				const float blockSize = 2.0f;
 				//このゲームで使用される最大のボックスの大きさ
-				static const int MaxLength = 8;
+				static const int MaxLength = 6;
 				//マップの高さ　これは9以上にすると壊れるので注意
-				static const int MaxHeight = 8;
+				static const int MaxHeight = 6;
 
 				struct WallData
 				{
@@ -69,16 +69,16 @@ public:
 
 								void DownBlock()
 								{
-												for (int i = 1; i <= MaxHeight; i++)
+												if (blockType[1] != NON)
 												{
-																blockType[i - 1] = blockType[i];
+																blockType[0] = blockType[1];
+												}
+												for (int i = 1; i < MaxHeight; i++)
+												{
+																blockType[i] = blockType[i + 1];
 												}
 												//ループで初期化すると毎時やらなければならないため
 												blockType[MaxHeight] = NON;
-												if (blockType[0] == NON)
-												{
-																blockType[0] = NORMAL;
-												}
 								}
 								void ResetBlock()
 								{
@@ -101,11 +101,13 @@ public:
 				bool GetPlayerMoveFlag(Float3 pos);
 				void SetPlayerMoveFlag(Float3 pos);
 				
-				//初期の選択
+				//初期の壁選択の設定
 				void SelectLookWall(float height, float angleY);
 				//十字キーでの選択
-				bool SelectToWall(int moveDirection, Float2 bothPlayerPosY);
-				//押し出す場所を設定したときに押し出す方向を出す
+				//y軸の座標いけない場所に行こうとしたとき
+				//いけないようにSEを流すのでboolを返して判断
+				bool SelectToWall(int moveDirection, Float3 firstPlayerPos, Float3 secondPlayerPos);
+				//押し出す面に合わせて押し出す方向を設定する
 				void MoveDirectionUpdate();
 				//押し出す壁の初期地点の設定
 				void SetInitialPosition();
@@ -153,6 +155,5 @@ private:
 								Float4(0.0f, 1.0f,-1.0f, 0.0f)	//下
 				}
 				*/
-				
 };
 

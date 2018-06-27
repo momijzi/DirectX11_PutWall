@@ -10,8 +10,6 @@ PlayerManager::PlayerManager()
 				playerCube[0].Create(&playerTex, 1);
 				playerTex.SetNumUvAll(Float2(1.0f,0.0f));
 				playerCube[1].Create(&playerTex, 1);
-
-				Release();
 }
 
 //プレイヤーがこのターン移動することのできる場所を設定
@@ -174,16 +172,16 @@ void PlayerManager::DeliverLength(int length)
 				}
 }
 
-void PlayerManager::Release(Float3 positionA, Float3 positionB)
+void PlayerManager::Release(float mapLength)
 {
-				player[0].position = positionA;
+				player[0].position = Float3(mapLength /2 - 1,1.0f, mapLength/ 2);
 				player[0].movePosition = 0.0f;
 				player[0].moveFlag = false;
-				player[0].length = 3;
-				player[1].position = positionB;
+				player[0].length = 2;
+				player[1].position = Float3(mapLength / 2, 1.0f, mapLength / 2 - 1);
 				player[1].movePosition = 0.0f;
 				player[1].moveFlag = false;
-				player[1].length = 3;
+				player[1].length = 2;
 				turn = false;
 }
 
