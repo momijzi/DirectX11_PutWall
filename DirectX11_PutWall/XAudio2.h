@@ -39,6 +39,7 @@ public:
 								LONG readlen;
 
 								WaveData();
+								~WaveData();
 
 								//SEì«Ç›çûÇ›
 								bool Load(const TCHAR *lpFileName);

@@ -19,6 +19,12 @@ XAudio2::WaveData::WaveData()
 				cnt = 0;
 }
 
+XAudio2::WaveData::~WaveData()
+{
+				if (buf != NULL) { delete[] buf; }
+				if (g_hmmio != NULL) { mmioClose(g_hmmio, 0); }
+}
+
 //SE“Ç‚Ýž‚Ý
 bool XAudio2::WaveData::Load(const TCHAR *lpFileName)
 {
@@ -137,9 +143,7 @@ void XAudio2::Play(WaveData waveData)
 //‰ð•úˆ—
 void XAudio2::Release()
 {
-				if (wave.buf != NULL) { delete[] wave.buf; }
 				if (g_lpSourceVoice != NULL) { g_lpSourceVoice->DestroyVoice(); }
 				if (g_lpMasterVoice != NULL) { g_lpMasterVoice->DestroyVoice(); }
 				if (g_lpXAudio != NULL) { g_lpXAudio->Release(); }
-				if (wave.g_hmmio != NULL) { mmioClose(wave.g_hmmio, 0); }
 }
