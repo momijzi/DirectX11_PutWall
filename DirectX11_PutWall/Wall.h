@@ -88,6 +88,13 @@ public:
 																blockType[i] = NON;
 												}
 								}
+								void Release()
+								{
+												for (int i = 0; i <= MaxHeight; i++)
+												{
+																blockType[i] = NON;
+												}
+								}
 				};
 				//ブロックの各データを初期化する
 				void ResetBlockType();

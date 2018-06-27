@@ -44,7 +44,7 @@ private:
 				//Wallの押し出しを行う処理の試験用に使用
 				int testDirection = 0;
 				//残り何ターンで沈むか
-				const int downLimit = 1;
+				const int downLimit = 4;
 				//経過ターン
 				int currentTurn = 0;
 				//沈む速度の設定
