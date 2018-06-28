@@ -49,7 +49,7 @@ public:
 				bool Create();
 
 				//SEÄ¶
-				void Play(WaveData waveData);
+				void Play(const WaveData& waveData);
 
 				//‰ğ•úˆ—
 				void Release();

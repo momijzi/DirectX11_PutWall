@@ -19,9 +19,9 @@ public:
 				//ブロックの基本サイズ
 				const float blockSize = 2.0f;
 				//このゲームで使用される最大のボックスの大きさ
-				static const int MaxLength = 6;
+				static const int MaxLength = 8;
 				//マップの高さ　これは9以上にすると壊れるので注意
-				static const int MaxHeight = 6;
+				static const int MaxHeight = 8;
 
 				struct WallData
 				{

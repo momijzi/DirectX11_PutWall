@@ -184,9 +184,10 @@ bool Wall::SelectToWall(int moveDirection,Float3 firstPlayerPos,Float3 secondPla
 }
 void Wall::MoveDirectionUpdate()
 {
-				wallData.moveDirection.x = ((wallData.surface + 1) & 1)*(~(wallData.surface & 2) + 2);//moveDirection[0] = (((Direction + 1) % 2)*((Direction / 2) * 2 - 1));
-				wallData.moveDirection.y = 0;//今は縦にブロックを伸ばすことが無いため0を格納している
-				wallData.moveDirection.z = ((wallData.surface & 1))*(~(wallData.surface & 2) + 2);
+				//floatに対してintを入れているのは、扱ううえでFloat3の方が扱いやすいから
+				wallData.moveDirection.x = (float)(((wallData.surface + 1) & 1)*(~(wallData.surface & 2) + 2));//moveDirection[0] = (((Direction + 1) % 2)*((Direction / 2) * 2 - 1));
+				wallData.moveDirection.y = 0.0f;//今は縦にブロックを伸ばすことが無いため0を格納している
+				wallData.moveDirection.z = (float)(((wallData.surface & 1))*(~(wallData.surface & 2) + 2));
 }
 
 //移動させるブロックの初期位置の設定
@@ -226,7 +227,7 @@ void Wall::SetPushWallLength(int addLength,Float3 playerPos1,Float3 playerPos2,b
 								{
 												return;
 								}
-								Float3 chackPos = wallData.setInitiPosition - wallData.moveDirection * (wallData.length + addLength);
+								Float3 chackPos = wallData.setInitiPosition - wallData.moveDirection * (float)(wallData.length + addLength);
 								if (GetBlockData(chackPos) != NON ||
 												App::SameChackFloat3(chackPos, playerPos1) || App::SameChackFloat3(chackPos, playerPos2))
 								{
@@ -365,38 +366,45 @@ void Wall::Draw(bool playerMovePosDrawFlag,float downPos, Float2 bothPlayerPosY)
 								{
 												//床の描画　処理が少し違うので
 												//プレイヤーの行くことのできる場所を描画
-												if (GetPlayerMoveFlag(Float3(x + halfLength, 1, z + halfLength)) && playerMovePosDrawFlag)
+												if (GetPlayerMoveFlag(Float3((float)(x + halfLength), 1.0f, (float)(z + halfLength))) && playerMovePosDrawFlag)
 												{
-																block[box[x + halfLength][z + halfLength].blockType[0] + 3].position = (Float3(x, 0, z) + 0.5f) * blockSize;
+																block[box[x + halfLength][z + halfLength].blockType[0] + 3].position = 
+																				(Float3((float)x, 0.0f, (float)z) + 0.5f) * blockSize;
+
 																block[box[x + halfLength][z + halfLength].blockType[0] + 3].Draw();
 												}
 												//上にブロックが存在しているとき、落下処理が入るので処理変える
 												else 
 												{
-																block[box[x + halfLength][z + halfLength].blockType[0]].position = (Float3(x, 0, z) + 0.5f) * blockSize;
-																if (GetBlockData(Float3(x + halfLength, 1, z + halfLength)) != Wall::BlockType::NON)
+																block[box[x + halfLength][z + halfLength].blockType[0]].position = 
+																				(Float3((float)x, 0.0f, (float)z) + 0.5f) * blockSize;
+
+																if (GetBlockData(Float3((float)(x + halfLength),1.0f, (float)(z + halfLength))) != Wall::BlockType::NON)
 																{
 																				block[box[x + halfLength][z + halfLength].blockType[0]].position.y -= downPos;
 																}
-																
 																block[box[x + halfLength][z + halfLength].blockType[0]].Draw();
 												}
 
 												for (int y = 1; y <= MaxHeight; y++)
 												{
 																//プレイヤーの行くことのできる場所を描画
-																if (GetPlayerMoveFlag(Float3(x + halfLength, y + 1, z + halfLength)) && playerMovePosDrawFlag)
+																if (GetPlayerMoveFlag(Float3((float)(x + halfLength), (float)y + 1.0f, (float)(z + halfLength))) && playerMovePosDrawFlag)
 																{
-																				block[box[x + halfLength][z + halfLength].blockType[y] + 3].position = (Float3(x, y, z) + 0.5f) * blockSize;
+																				block[box[x + halfLength][z + halfLength].blockType[y] + 3].position =
+																								(Float3((float)x, (float)y, (float)z) + 0.5f) * blockSize;
+
 																				block[box[x + halfLength][z + halfLength].blockType[y] + 3].Draw();
 																}
 																//中に存在しているブロックを生成する
 																//bit分だけ左シフトしてその場所の数値でflag判断
 																else
 																{
-																				if (GetBlockData(Float3(x + halfLength,y, z + halfLength)) != Wall::BlockType::NON)
+																				if (GetBlockData(Float3((float)(x + halfLength), (float)y, (float)(z + halfLength))) != Wall::BlockType::NON)
 																				{
-																								block[box[x + halfLength][z + halfLength].blockType[y]].position = (Float3(x, y, z) + 0.5f) * blockSize;
+																								block[box[x + halfLength][z + halfLength].blockType[y]].position = 
+																												(Float3((float)x, (float)y, (float)z) + 0.5f) * blockSize;
+
 																								block[box[x + halfLength][z + halfLength].blockType[y]].position.y -= downPos;
 																								block[box[x + halfLength][z + halfLength].blockType[y]].Draw();
 																				}

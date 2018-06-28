@@ -91,7 +91,7 @@ bool XAudio2::Create()
 }
 
 //SEçƒê∂
-void XAudio2::Play(WaveData waveData)
+void XAudio2::Play(const WaveData& waveData)
 {
 				wave = waveData;
 

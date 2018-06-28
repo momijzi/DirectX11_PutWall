@@ -163,38 +163,38 @@ void Cube::CreateCube(Texture::UvData uvData, int normal, Float2 size, bool soul
 				//ëO
 				CreatePlane(uvData.uv, uvData.numUv[0],//uv
 								size, Float3(0.0f, 0.0f, -0.5f), false,
-								Float3(1.0f, 0.0f, 0.0f) * normal,	//x Ç±Ç±Ç…-1Ç©ÇØÇƒÇ‚ÇÈÇ∆ñ@ê¸Ç™ãtì]Ç∑ÇÈ
+								Float3(1.0f, 0.0f, 0.0f) * (float)normal,	//x Ç±Ç±Ç…-1Ç©ÇØÇƒÇ‚ÇÈÇ∆ñ@ê¸Ç™ãtì]Ç∑ÇÈ
 								Float3(0.0f, 1.0f, 0.0f),										//y
 								Float3(0.0f, 0.0f, 1.0f));									//z
 
 																																											//å„
 				CreatePlane(uvData.uv, uvData.numUv[1],
 								size, Float3(0.0f, 0.0f, 0.5f), false,
-								Float3(-1.0f, 0.0f, 0.0f)* normal,
+								Float3(-1.0f, 0.0f, 0.0f)* (float)normal,
 								Float3(0.0f, 1.0f, 0.0f),
 								Float3(0.0f, 0.0f, -1.0f));
 				//ç∂
 				CreatePlane(uvData.uv, uvData.numUv[2],
 								size, Float3(0.5f, 0.0f, 0.0f), false,
-								Float3(0.0f, 0.0f, 1.0f)* normal,
+								Float3(0.0f, 0.0f, 1.0f)* (float)normal,
 								Float3(0.0f, 1.0f, 0.0f),
 								Float3(-1.0f, 0.0f, 0.0f));
 				//âE
 				CreatePlane(uvData.uv, uvData.numUv[3],
 								size, Float3(-0.5f, 0.0f, 0.0f), false,
-								Float3(0.0f, 0.0f, -1.0f)* normal,
+								Float3(0.0f, 0.0f, -1.0f)* (float)normal,
 								Float3(0.0f, 1.0f, 0.0f),
 								Float3(1.0f, 0.0f, 0.0f));
 				//è„
 				CreatePlane(uvData.uv, uvData.numUv[4],
 								size, Float3(0.0f, 0.5f, 0.0f), false,
-								Float3(1.0f, 0.0f, 0.0f)* normal,
+								Float3(1.0f, 0.0f, 0.0f)* (float)normal,
 								Float3(0.0f, 0.0f, 1.0f),
 								Float3(0.0f, -1.0f, 0.0f));
 				//â∫
 				CreatePlane(uvData.uv, uvData.numUv[5],
 								size, Float3(0.0f, -0.5f, 0.0f), false,
-								Float3(1.0f, 0.0f, 0.0f)* normal,
+								Float3(1.0f, 0.0f, 0.0f)* (float)normal,
 								Float3(0.0f, 0.0f, -1.0f),
 								Float3(0.0f, 1.0f, 0.0f));
 }
