@@ -12,12 +12,14 @@ GameScene::GameScene()
 
 				bgm_title.Load(L"music/BGM/bgm_title.mp3");
 				bgm_main.Load(L"music/BGM/bgm_main.mp3");
+				bgm_end.Load(L"music/BGM/bgm_end.mp3");
 
 				se_ok.Load("music/SE/se_ok.wav");
 				se_cancel.Load("music/SE/se_cancel.wav");
 				se_select.Load("music/SE/se_select.wav");
 				se_move.Load("music/SE/se_move.wav");
 				se_stop.Load("music/SE/se_stop.wav");
+				se_cutin.Load("music/SE/se_cutin.wav");
 
 				bgm.Play(bgm_title);
 }
@@ -34,8 +36,8 @@ void GameScene::SceneManager()
 												MainTurn();
 												mainCamera.Update(true);
 												ray.Draw();
-												pMana.Draw(wall.MaxLength, wall.blockSize,downTimeCount / downTime);
-												wall.Draw(pMana.GetDrawFlag(), downTimeCount / downTime, Float2(pMana.GetPosition(true).y, pMana.GetPosition(false).y));
+												pMana.Draw(wall.MaxLength, wall.blockSize,downTimeCount / (float)downTime);
+												wall.Draw(pMana.GetDrawFlag(), downTimeCount / downTime, Float2(pMana.GetPosition(true).y, pMana.GetPosition(false).y),pMana.GetTurn());
 												break;
 								default:
 												//主に描画しか変更がないので一括で変更する
@@ -49,12 +51,13 @@ void GameScene::SceneManager()
 																}
 																else if (gameState == OVER)
 																{
+																				bgm.Play(bgm_title);
 																				gameState = TITLE;
 																}
 												}
 												break;
 				}
-				uiData.Draw((int)gameState,pMana.GetPushLength(),currentTurn);
+				uiData.Draw((int)gameState,pMana.GetPushLength(),currentTurn,pMana.GetTurn());
 }
 
 //移動　→　押し出し
@@ -65,16 +68,20 @@ void GameScene::MainTurn()
 				switch (scene)
 				{
 								case GameScene::TURN_FIRST:
+												//カットインの音～
+												if (uiData.GetCountTime() == 0)
+												{
+																se.Play(se_cutin);
+												}
 												//次のプレイヤーが移動できる場所を格納
 												//ここにアニメーションが終わった時にsceneが変わるようにするflagを入れる
 												if (uiData.Cutin(pMana.GetTurn()))
 												{
-																pMana.NextTurn();
-
+																pMana.PlusPushLength(wall.MaxLength);
 																wall.wallData.ResetWallData();
 																wall.SelectLookWall(pMana.GetPosition(true).y - 1, mainCamera.angles.y);
 																testDirection = 0;
-																wall.SelectToWall(testDirection,pMana.GetPosition(true), pMana.GetPosition(false));
+																wall.SelectToWall(testDirection, pMana.GetPosition(true), pMana.GetPosition(false));
 																scene = PUSH_WALL_SELECT;
 												}
 												break;
@@ -84,24 +91,20 @@ void GameScene::MainTurn()
 												testDirection = KeyMoveData() + 1;
 												if (testDirection != 0)
 												{
-																if (wall.SelectToWall(testDirection, pMana.GetPosition(true), pMana.GetPosition(false)))
+																wall.SelectToWall(testDirection, pMana.GetPosition(true), pMana.GetPosition(false));
+																if (wall.wallData.drawTexFlag)
 																{
 																				//指定した方向に行くことが可能
 																				se.Play(se_select);
 																}
-																else
-																{
-																				//指定した方向に行けない
-																				se.Play(se_cancel);
-																}
 												}
 												if (App::GetKeyDown(VK_RETURN))
 												{
-																if (wall.wallData.drawTexFlag == 2)
+																if (wall.wallData.drawTexFlag)
 																{
 																				se.Play(se_ok);
 																				//選択した場所で押し出すことが可能なことがわかりました
-																				wall.wallData.drawTexFlag = 0;
+																				wall.wallData.drawTexFlag = false;
 																				wall.wallData.checkLengthFlag = true;
 																				wall.wallData.length = 1;
 																				scene = SET_PUSH_WALL_LENGTH;
@@ -115,21 +118,37 @@ void GameScene::MainTurn()
 												ray.UpDate(mainCamera.position, wall.wallData.createInitPosition * wall.blockSize);
 												break;
 								case GameScene::SET_PUSH_WALL_LENGTH:
-												//押し出す長さをまだ決めていない
+												//押し出す長さを変えます UPは,伸ばす、DOWNは,戻す
 												if (App::GetKeyDown(VK_UP))
 												{
-																if (wall.wallData.length != pMana.GetCurrentPlayerPushLength())
+																if (wall.wallData.length != pMana.GetCurrentTurnPushLength())
 																{
-																				se.Play(se_select);
-																				wall.SetPushWallLength(1, pMana.GetPosition(true),
-																								pMana.GetPosition(false), pMana.GetTurn());
+																				//押し戻せるかの処理すでに戻せる限界にあるかどうかのチェック
+																				if (wall.SetPushWallLength(1, pMana.GetPosition(true),
+																								pMana.GetPosition(false), pMana.GetTurn()))
+																				{
+																								se.Play(se_select);
+																				}
+																				else
+																				{
+																								se.Play(se_cancel);
+																				}
 																}
 												}
 												else if (App::GetKeyDown(VK_DOWN))
 												{
-																se.Play(se_select);
-																wall.SetPushWallLength(-1);
+																//押し戻せるかの処理すでに戻せる限界にあるかどうかのチェック
+																if (wall.SetPushWallLength(-1))
+																{
+																				se.Play(se_select);
+																}
+																else
+																{
+																				se.Play(se_cancel);
+																}
 												}
+												//特殊ブロックの配置セット
+												//一方向にしているのは二方向処理して混乱しないようにするため
 												else if (App::GetKeyDown(VK_LEFT))
 												{
 																se.Play(se_select);
@@ -139,17 +158,15 @@ void GameScene::MainTurn()
 												{
 																//押しだす長さも決まりましたので確認を行います
 																//ここは短いシーンになるのでフラグ管理でいいと思います
-																wall.wallData.drawTexFlag = false;
 																wall.wallData.checkLengthFlag = false;
 																wall.wallData.moveFlag = true;
 
-																pMana.DeliverLength(wall.wallData.length);
 																scene = PUSH_WALL;
 												}
 												else if (App::GetKeyDown(VK_ESCAPE))
 												{
 																se.Play(se_cancel);
-																wall.wallData.drawTexFlag = 2;
+																wall.wallData.drawTexFlag = true;
 																wall.wallData.checkLengthFlag = false;
 																wall.wallData.PushTypeReset();
 																scene = PUSH_WALL_SELECT;
@@ -161,10 +178,15 @@ void GameScene::MainTurn()
 												{
 																se.Play(se_stop);
 
+																//出した分だけ押し出せる長さを引く
+																pMana.SetPushLength(wall.wallData.length);
+
+																//プレイヤーの移動場所の設定
 																wall.ResetPlayerMoveFlag();
 																wall.SetPlayerMoveFlag(pMana.GetPosition(true));
 																pMana.MovementRange(&wall);
 																pMana.SetDrawFlag(true);
+																
 
 																scene = PLAYER_MOVE;
 												}
@@ -202,10 +224,12 @@ void GameScene::MainTurn()
 																				
 																				if (pMana.GetPosition(true).y == wall.MaxHeight)
 																				{
+																								bgm.Play(bgm_end);
 																								gameState = OVER;
 																								break;
 																				}
-
+																				//次のターンに変更
+																				pMana.NextTurn();
 																				pMana.SetDrawFlag(false);
 																				scene = TURN_FIRST;
 																				if (!pMana.GetTurn())
@@ -245,6 +269,7 @@ void GameScene::MainTurn()
 																wall.DownData();
 																if (pMana.DownPlayer())
 																{
+																				bgm.Play(bgm_end);
 																				gameState = OVER;
 																}
 																scene = TURN_FIRST;
@@ -282,9 +307,9 @@ void GameScene::CameraAnglesChangeMouse()
 								{
 												mainCamera.angles.x = -45.0f;
 								}
-								else if (mainCamera.angles.x > 45.0f)
+								else if (mainCamera.angles.x > 60.0f)
 								{
-												mainCamera.angles.x = 45.0f;
+												mainCamera.angles.x = 60.0f;
 								}
 								App::SetMousePosition(0.0f, 0.0f);
 				}
@@ -293,9 +318,9 @@ void GameScene::CameraAnglesChangeMouse()
 //このデータはカメラの移動なのであとでCameraMoveに移すべし
 void GameScene::CameraPositionMove()
 {
+				//カメラの移動があったかどうかの判定用
 				bool posUpdate = false;
 				//カメラの移動
-
 				if (App::GetKey(VK_SHIFT))
 				{
 								if (App::GetKey('W'))
@@ -332,6 +357,7 @@ void GameScene::CameraPositionMove()
 												posUpdate = true;
 								}
 				}
+				//カメラの移動を確認したら移動が制限以上の場所に行っていないかを判定
 				if (posUpdate)
 				{
 								if (fabs(mainCamera.position.x) > wall.MaxLength * 2)
@@ -370,7 +396,7 @@ void GameScene::CameraPositionMove()
 				}
 }
 
-//移動キーを押したときにデータを返す
+//移動キーを押したときに方向に応じてデータを返す
 int GameScene::KeyMoveData()
 {
 				if (App::GetKeyDown(VK_UP))
@@ -395,6 +421,6 @@ int GameScene::KeyMoveData()
 void GameScene::Release()
 {
 				currentTurn = downLimit;
-				pMana.Release(wall.MaxLength);
+				pMana.Release((float)wall.MaxLength);
 				wall.Release();
 }

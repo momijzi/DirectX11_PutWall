@@ -135,6 +135,26 @@ void Texture::Load(const wchar_t* const filePath)
 								&samplerDesc,
 								&samplerState
 				);
+
+				D3D11_BLEND_DESC blendStateDesc = {};
+				blendStateDesc.AlphaToCoverageEnable = false;
+				blendStateDesc.IndependentBlendEnable = false;
+				for (int i = 0; i < 8; i++)
+				{
+								blendStateDesc.RenderTarget[i].BlendEnable = true;
+								blendStateDesc.RenderTarget[i].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+								blendStateDesc.RenderTarget[i].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+								blendStateDesc.RenderTarget[i].BlendOp = D3D11_BLEND_OP_ADD;
+								blendStateDesc.RenderTarget[i].SrcBlendAlpha = D3D11_BLEND_ONE;
+								blendStateDesc.RenderTarget[i].DestBlendAlpha = D3D11_BLEND_ZERO;
+								blendStateDesc.RenderTarget[i].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+								blendStateDesc.RenderTarget[i].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+				}
+
+				App::GetGraohicsDevice().CreateBlendState(&blendStateDesc, &blendState);
+
+				float blendFactor[4] = { D3D11_BLEND_ZERO,D3D11_BLEND_ZERO ,D3D11_BLEND_ZERO ,D3D11_BLEND_ZERO };
+				App::GetGraphicsContext().OMSetBlendState(blendState, blendFactor, 0xffffffff);
 }
 
 void Texture::Attach(int slot)

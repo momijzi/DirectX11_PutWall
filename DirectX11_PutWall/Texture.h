@@ -22,7 +22,7 @@ public:
 								Float2 uv;			//画像分割数 1から分割数-1
 								Float2 numUv[6];	//分割した場合どこを描画するか(四角の場合に6面違うテクスチャを使う可能性があるため配列6)
 
-																									//初期化
+								//初期化
 								UvData()
 								{
 												uv = Float2(1.0f, 1.0f);
@@ -63,4 +63,5 @@ private:
 				ATL::CComPtr<ID3D11Texture2D> texture = nullptr;
 				ATL::CComPtr<ID3D11ShaderResourceView> shaderResourceView = nullptr;
 				ATL::CComPtr<ID3D11SamplerState> samplerState = nullptr;
+				ATL::CComPtr<ID3D11BlendState> blendState = nullptr;
 };

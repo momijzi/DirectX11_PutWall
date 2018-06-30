@@ -124,9 +124,10 @@ void Wall::SelectLookWall(float playerHeight, float angleY)
 				wallData.width = MaxLength / (int)blockSize - 1;
 				wallData.height = (int)playerHeight;
 				MoveDirectionUpdate();
+				SetInitialPosition();
 }
 
-bool Wall::SelectToWall(int moveDirection,Float3 firstPlayerPos,Float3 secondPlayerPos)
+void Wall::SelectToWall(int moveDirection, Float3 firstPlayerPos, Float3 secondPlayerPos)
 {
 				wallData.height -= ((moveDirection & 2)*(moveDirection & 1)) - (moveDirection & 1);
 				wallData.width -= ((((moveDirection - 1) & 2)*((moveDirection - 1) & 1)) - ((moveDirection - 1) & 1)) *
@@ -152,35 +153,32 @@ bool Wall::SelectToWall(int moveDirection,Float3 firstPlayerPos,Float3 secondPla
 				{
 								wallData.surface = 0;
 				}
-				if (wallData.height < 0)
+				if (!(firstPlayerPos.y - 2 <= wallData.height)  || wallData.height < 0)
 				{
-								wallData.height = 0;
-								return false;
+								wallData.height += 1;
+								return;
 				}
 				//-2の理由　床が0番地に存在しているので１上がっているため-1
 				//ゴールの高さは押し出せないようにするのでMaxHeightの高さは押し出せないので-1 イコール-2
 				//雑だ・・直す時間ないので一旦保留、あとで正規に直すべし
-				else if (wallData.height > this->MaxHeight - 2)
+				//playerPosは初期座標がwallDataより1高いためそこに注意　ここは絶対に直すべき矛盾である
+				else if ((!(firstPlayerPos.y + 1 > wallData.height) && !(secondPlayerPos.y + 1 > wallData.height)) || wallData.height >= this->MaxHeight - 1)
 				{
-								wallData.height = this->MaxHeight - 2;
-								return false;
+								wallData.height -= 1;
+								return;
 				}
 				SetInitialPosition();
 				//押し出すことが可能な高さかどうか
-				if ((firstPlayerPos.y + 1 > wallData.height || secondPlayerPos.y + 1 > wallData.height) &&
-								firstPlayerPos.y - 2 <= wallData.height)
+
+				if (GetBlockData(wallData.setInitiPosition - wallData.moveDirection) == NON &&
+								!App::SameChackFloat3(firstPlayerPos, wallData.setInitiPosition - wallData.moveDirection) &&
+								!App::SameChackFloat3(secondPlayerPos, wallData.setInitiPosition - wallData.moveDirection))
 				{
-								if (GetBlockData(wallData.setInitiPosition - wallData.moveDirection) == NON &&
-												!App::SameChackFloat3(firstPlayerPos, wallData.setInitiPosition - wallData.moveDirection) &&
-												!App::SameChackFloat3(secondPlayerPos, wallData.setInitiPosition - wallData.moveDirection))
-								{
-												//押し出す先にデータが存在するか
-												wallData.drawTexFlag = 2;
-												return true;
-								}
+								//押し出す先にデータが存在するか
+								wallData.drawTexFlag = true;
+								return;
 				}
-				wallData.drawTexFlag = 1;
-				return true;
+				wallData.drawTexFlag = false;
 }
 void Wall::MoveDirectionUpdate()
 {
@@ -219,26 +217,26 @@ void Wall::SetInitialPosition()
 				//y軸も固定値でずれているのでずらします
 				wallData.setInitiPosition.y -= 0.5f;
 }
-void Wall::SetPushWallLength(int addLength,Float3 playerPos1,Float3 playerPos2,bool playerTurn)
+bool Wall::SetPushWallLength(int addLength,Float3 playerPos1,Float3 playerPos2,bool playerTurn)
 {
 				if(addLength > 0)
 				{
 								if (wallData.length >= MaxLength)
 								{
-												return;
+												return false;
 								}
 								Float3 chackPos = wallData.setInitiPosition - wallData.moveDirection * (float)(wallData.length + addLength);
 								if (GetBlockData(chackPos) != NON ||
 												App::SameChackFloat3(chackPos, playerPos1) || App::SameChackFloat3(chackPos, playerPos2))
 								{
-												return;
+												return false;
 								}
 				}
 				else
 				{
 								if (wallData.length == 1)
 								{
-												return;
+												return false;
 								}
 				}
 				wallData.length += addLength;
@@ -269,6 +267,7 @@ void Wall::SetPushWallLength(int addLength,Float3 playerPos1,Float3 playerPos2,b
 												}
 								}
 				}
+				return true;
 }
 
 void Wall::ChangePushWallLine()
@@ -326,7 +325,7 @@ void Wall::Release()
 				ResetBlockType();
 }
 
-void Wall::Draw(bool playerMovePosDrawFlag,float downPos, Float2 bothPlayerPosY)
+void Wall::Draw(bool playerMovePosDrawFlag,float downPos, Float2 bothPlayerPosY,bool turn)
 {
 				downPos *= blockSize;
 				int halfLength = MaxLength >> 1;
@@ -351,12 +350,12 @@ void Wall::Draw(bool playerMovePosDrawFlag,float downPos, Float2 bothPlayerPosY)
 												block[wallData.pushBlockType[i - 1]].Draw();
 								}
 				}
-				else if (wallData.drawTexFlag != 0)
+				else if (wallData.drawTexFlag)
 				{
 								//wallData.drawTexFlagが１の時はブロックを押し出すことが不可能なのでテクスチャを変える
-								wall[wallData.drawTexFlag + 2].angles.y = 90.0f * (-wallData.surface + 1);
-								wall[wallData.drawTexFlag + 2].position = wallData.createInitPosition * blockSize;
-								wall[wallData.drawTexFlag + 2].Draw();
+								wall[turn + 3].angles.y = 90.0f * (-wallData.surface + 1);
+								wall[turn + 3].position = wallData.createInitPosition * blockSize;
+								wall[turn + 3].Draw();
 				}
 			
 				//中のブロックの描画

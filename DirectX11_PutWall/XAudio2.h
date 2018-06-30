@@ -37,12 +37,15 @@ public:
 								UINT32 buflen;
 								UINT32 cnt;
 								LONG readlen;
+								bool exist = true;
 
 								WaveData();
 								~WaveData();
 
 								//SE“Ç‚İ‚İ
 								bool Load(const TCHAR *lpFileName);
+
+								void Release();
 				};
 
 				//‰Šúİ’è

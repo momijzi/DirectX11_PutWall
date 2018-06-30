@@ -123,36 +123,6 @@ void Mesh::Draw()
 				}
 }
 
-void Plane::DrawSprite()
-{
-				if (vertexBuffer == nullptr)
-								return;
-				//これ多分axis無いと意味がないと思われ、、、
-				constant.world = DirectX::XMMatrixTranspose(
-								DirectX::XMMatrixScaling(scale.x, scale.y, scale.z)*
-								DirectX::XMMatrixRotationX(DirectX::XMConvertToRadians(angles.x))*
-								DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(angles.y))*
-								DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(angles.z))*
-								DirectX::XMMatrixTranslation(position.x, position.y, position.z));
-
-				material.Attach();
-
-				UINT stride = sizeof(Vertex);
-				UINT offset = 0;
-				App::GetGraphicsContext().IASetVertexBuffers(0, 1, &vertexBuffer.p,
-								&stride, &offset);
-
-				if (indexBuffer == nullptr)
-				{
-								App::GetGraphicsContext().Draw(vertices.size(), 0);
-				}
-				else
-				{
-								App::GetGraphicsContext().IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-								App::GetGraphicsContext().DrawIndexed(indices.size(), 0, 0);
-				}
-}
-
 void Cube::CreateCube(Texture::UvData uvData, int normal, Float2 size, bool souldClear)
 {
 				if (souldClear)

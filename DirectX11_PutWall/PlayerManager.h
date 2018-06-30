@@ -6,45 +6,30 @@ public:
 				PlayerManager();
 				~PlayerManager() {};
 
-				//プレイヤーがこのターン移動できる場所を検索
-				void MovementRange(Wall* wall, Float3 movePos = Float3(0.0f,0.0f,0.0f),
-								int Direction = -1, int moveCount = 1);
-
-				//次のプレイヤーのターンにする
-				void NextTurn()
-				{ 
-								player[turn].movePosition = 0.0f;
-								turn = !turn; 
-				}
 				//プレイヤーが現在移動場所を選択している状態かをセットする
-				void SetDrawFlag(bool flag)
-				{
-								player[turn].moveFlag = flag;
-				}
+				void SetDrawFlag(bool flag) { player[turn].moveFlag = flag; }
 				//上の取得バージョン
-				bool GetDrawFlag()
-				{
-								return player[turn].moveFlag;
-				}
+				bool GetDrawFlag() { return player[turn].moveFlag; }
 				//現在ターンが来ているプレイヤーの押し出せる量
-				int GetCurrentPlayerPushLength() { return player[turn].length; }
+				int GetCurrentTurnPushLength() { return player[turn].length; }
+				//壁を押し出したので押し出した分だけ引く
+				void SetPushLength(int length) { player[turn].length -= length; }
+				//引数に現在のステージの大きさを入れておく
+				//これでステージの大きさを最大保持量として保管する
+				void PlusPushLength(int wallLength);
+			
 				//turnが来ているプレイヤーの座標か来てない座標か指定して渡す
-				Float3 GetPosition(bool flag)
-				{
-								if (flag)
-								{
-												return Float3(player[turn].position);
-								}
-								else
-								{
-												return Float3(player[!turn].position);
-								}
-				}
-
+				Float3 GetPosition(bool flag);
+				
+				//現在ターンがきているプレイヤーの取得
 				bool GetTurn() { return turn; }
 
 				//UIを描画するために使用
 				Float2 GetPushLength() { return Float2((float)player[0].length, (float)player[1].length); }
+
+				//プレイヤーがこのターン移動できる場所を検索
+				void MovementRange(Wall* wall, Float3 movePos = Float3(0.0f, 0.0f, 0.0f),
+								int Direction = -1, int moveCount = 1);
 
 				//移動が完了していたら
 				void MoveableChack(Wall* wall, int Direction);
@@ -55,9 +40,12 @@ public:
 				//ステージが下降した時
 				bool DownPlayer();
 
-				//これちょっと変わったので関数名の変更をすること推奨
-				//次のターンに以降するので伸ばせる量にプラスを
-				void DeliverLength(int length);
+				//次のプレイヤーのターンにする
+				void NextTurn()
+				{
+								player[turn].movePosition = 0.0f;
+								turn = !turn;
+				}
 
 				//プレイヤーの描画
 				void Draw(int boxLength, int blockSize,float downPos);

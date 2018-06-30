@@ -21,8 +21,10 @@ XAudio2::WaveData::WaveData()
 
 XAudio2::WaveData::~WaveData()
 {
-				if (buf != NULL) { delete[] buf; }
-				if (g_hmmio != NULL) { mmioClose(g_hmmio, 0); }
+				if (exist)
+				{
+								Release();
+				}
 }
 
 //SE“Ç‚Ýž‚Ý
@@ -72,6 +74,12 @@ bool XAudio2::WaveData::Load(const TCHAR *lpFileName)
 				return true;
 }
 
+void XAudio2::WaveData::Release()
+{
+				if (buf != NULL) { delete[] buf; }
+				if (g_hmmio != NULL) { mmioClose(g_hmmio, 0); }
+}
+
 //‰ŠúÝ’è
 bool XAudio2::Create()
 {
@@ -94,6 +102,7 @@ bool XAudio2::Create()
 void XAudio2::Play(const WaveData& waveData)
 {
 				wave = waveData;
+				wave.exist = false;
 
 				hr = g_lpXAudio->CreateSourceVoice(&g_lpSourceVoice, &wave.g_wfx, XAUDIO2_VOICE_NOPITCH, XAUDIO2_DEFAULT_FREQ_RATIO, NULL, NULL, NULL);
 				if (FAILED(hr))

@@ -57,12 +57,14 @@ private:
 
 				MediaFoundation::AudioData bgm_title;
 				MediaFoundation::AudioData bgm_main;
+				MediaFoundation::AudioData bgm_end;
 
 				XAudio2::WaveData se_ok;
 				XAudio2::WaveData se_select;
 				XAudio2::WaveData se_cancel;
 				XAudio2::WaveData se_move;
 				XAudio2::WaveData se_stop;
+				XAudio2::WaveData se_cutin;
 
 				Ray ray;
 };

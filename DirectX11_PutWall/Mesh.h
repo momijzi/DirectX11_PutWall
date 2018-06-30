@@ -58,8 +58,6 @@ public:
 								CreatePlane(tex->GetUvData().uv, tex->GetUvData().numUv[0]);
 								Apply();
 				}
-				//2Dのテクスチャを描画するときに使用する
-				void DrawSprite();
 };
 
 class Cube : public Mesh

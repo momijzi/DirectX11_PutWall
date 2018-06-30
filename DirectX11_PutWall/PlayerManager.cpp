@@ -12,6 +12,27 @@ PlayerManager::PlayerManager()
 				playerCube[1].Create(&playerTex, 1);
 }
 
+void PlayerManager::PlusPushLength(int wallLength)
+{
+				player[turn].length += plusPoint;
+				if (player[turn].length > wallLength)
+				{
+								player[turn].length = wallLength;
+				}
+}
+
+Float3 PlayerManager::GetPosition(bool flag)
+{
+				if (flag)
+				{
+								return Float3(player[turn].position);
+				}
+				else
+				{
+								return Float3(player[!turn].position);
+				}
+}
+
 //プレイヤーがこのターン移動することのできる場所を設定
 //mocePosが現在の座標の位置からどれだけ変化した地点から見るのかの判定用
 //Directionが判定を行う方向を示す//右に行った後に再度元の位置を調べる必要はないんで・・
@@ -128,7 +149,7 @@ void PlayerManager::MoveableChack(Wall* wall, int Direction)
 bool PlayerManager::MoveFlagChack()
 {
 				//移動先に敵プレイヤーが存在しているか確認
-				if (!App::SameChackFloat3(player[turn].position, player[!turn].position))
+				if (!App::SameChackFloat3(player[turn].position + player[turn].movePosition, player[!turn].position))
 				{
 								//居なかったので移動可能です
 								player[turn].position += player[turn].movePosition;
@@ -159,42 +180,35 @@ bool PlayerManager::DownPlayer()
 				return flag;
 }
 
-void PlayerManager::DeliverLength(int length)
-{
-				player[turn].length -= length;
-				if (player[!turn].length + plusPoint > 8)
-				{
-								player[!turn].length = 8;
-				}
-				else
-				{
-								player[!turn].length += plusPoint;
-				}
-}
-
 void PlayerManager::Release(float mapLength)
 {
-				player[0].position = Float3(mapLength /2 - 1,1.0f, mapLength/ 2);
+				player[0].position = Float3(mapLength / 2.0f - 1.0f,1.0f, mapLength/ 2.0f);
 				player[0].movePosition = 0.0f;
 				player[0].moveFlag = false;
-				player[0].length = 2;
-				player[1].position = Float3(mapLength / 2, 1.0f, mapLength / 2 - 1);
+				player[0].length = 0;
+				player[1].position = Float3(mapLength / 2.0f, 1.0f, mapLength / 2.0f - 1.0f);
 				player[1].movePosition = 0.0f;
 				player[1].moveFlag = false;
 				player[1].length = 2;
 				turn = false;
 }
 
-void PlayerManager::Draw(int boxLength, int blockSize,float downPos)
+void PlayerManager::Draw(int boxLength, int blockSize, float downPos)
 {
-				for (int i = 0; i < 2; i++)
-				{
-								playerCube[i].scale = (float)blockSize;
-								playerCube[i].position = (player[i].position -
-												Float3((float)boxLength / 2.0f, 0.0f, (float)boxLength / 2.0f) + 0.5f + player[i].movePosition) * (float)blockSize;
-								playerCube[i].position.y -= downPos * (float)blockSize;
-								playerCube[i].Draw();
-				}
+				//描画を分けている理由は
+				//現在ターンが来ているプレイヤーを先に描画することで
+				//次のプレイヤーより上に描画するため
+				playerCube[turn].scale = (float)blockSize;
+				playerCube[turn].position = (player[turn].position -
+								Float3((float)boxLength / 2.0f, 0.0f, (float)boxLength / 2.0f) + 0.5f + player[turn].movePosition) * (float)blockSize;
+				playerCube[turn].position.y -= downPos * (float)blockSize;
+				playerCube[turn].Draw();
+
+				playerCube[!turn].scale = (float)blockSize;
+				playerCube[!turn].position = (player[!turn].position -
+								Float3((float)boxLength / 2.0f, 0.0f, (float)boxLength / 2.0f) + 0.5f + player[!turn].movePosition) * (float)blockSize;
+				playerCube[!turn].position.y -= downPos * (float)blockSize;
+				playerCube[!turn].Draw();
 }
 
 PlayerManager::Player::Player()

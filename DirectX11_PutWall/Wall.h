@@ -34,7 +34,7 @@ public:
 								int height = 0;
 								int length = 1;
 								//何を描画するか。押し出す場所、押し出す地点、押し出しの描画、押し出しの時間、押し出すブロックの種類
-								int drawTexFlag = 0;
+								bool drawTexFlag = false;
 								bool checkLengthFlag = false;
 								bool moveFlag = false;
 								float time = 0.0f;
@@ -113,13 +113,13 @@ public:
 				//十字キーでの選択
 				//y軸の座標いけない場所に行こうとしたとき
 				//いけないようにSEを流すのでboolを返して判断
-				bool SelectToWall(int moveDirection, Float3 firstPlayerPos, Float3 secondPlayerPos);
+				void SelectToWall(int moveDirection, Float3 firstPlayerPos, Float3 secondPlayerPos);
 				//押し出す面に合わせて押し出す方向を設定する
 				void MoveDirectionUpdate();
 				//押し出す壁の初期地点の設定
 				void SetInitialPosition();
 				//ブロックの押し出す量の調整に使用
-				void SetPushWallLength(int addlength,Float3 playerPos1 = (-1.0f, -1.0f, -1.0f),
+				bool SetPushWallLength(int addlength,Float3 playerPos1 = (-1.0f, -1.0f, -1.0f),
 								Float3 playerPos2 = (-1.0f, -1.0f, -1.0f), bool playerTurn = true);
 				//ブロックの状態変更
 				void ChangePushWallLine();
@@ -130,7 +130,7 @@ public:
 				//初期化関数
 				void Release();
 				//ボックスの描画
-				void Draw(bool playerMovePosDrawFlag,float downPos, Float2 bothPlayerPosY);
+				void Draw(bool playerMovePosDrawFlag,float downPos, Float2 bothPlayerPosY, bool turn);
 				
 private:
 				//ブロックが詰まっていく場所　ブロックがある箇所をtrueとする

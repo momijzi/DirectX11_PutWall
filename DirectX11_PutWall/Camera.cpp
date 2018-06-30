@@ -10,7 +10,7 @@ Camera::Camera(Float4 color)
 				clearColor[1] = color.y;
 				clearColor[2] = color.z;
 				clearColor[3] = color.w;
-				isDepthTest = true;
+			 isDepthTest = true;
 				fieldOfView = 60.0f;
 				nearClip = 0.1f;
 				farClip = 1000.0f;
