@@ -37,6 +37,7 @@ public:
 								UINT32 buflen;
 								UINT32 cnt;
 								LONG readlen;
+								float volume;
 								bool exist = true;
 
 								WaveData();
@@ -44,6 +45,7 @@ public:
 
 								//SEì«Ç›çûÇ›
 								bool Load(const TCHAR *lpFileName);
+								void SetVolume(float volumeNum) { volume = volumeNum; }
 
 								void Release();
 				};

@@ -15,6 +15,9 @@ public:
 
 				struct AudioData
 				{
+								float volume = 1.0f;
+								void SetVolume(float volumeNum) { volume = volumeNum; }
+
 								bool Load(const wchar_t* const filePath);
 								IMFPMediaPlayer *g_pPlayer = nullptr;
 				};
@@ -33,6 +36,8 @@ public:
 
 				//‰¹ŠyI—¹
 				void Stop();
+
+				void SetVolume(float volume);
 
 private:
 				//Œ»İ‚ÌBGM‚Ìó‘Ô‚ª“ü‚é

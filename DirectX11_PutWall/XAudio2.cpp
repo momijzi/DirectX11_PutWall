@@ -17,6 +17,7 @@ XAudio2::WaveData::WaveData()
 {
 				buf = NULL;
 				cnt = 0;
+				volume = 1.0f;
 }
 
 XAudio2::WaveData::~WaveData()
@@ -71,6 +72,7 @@ bool XAudio2::WaveData::Load(const TCHAR *lpFileName)
 				{
 								return false;
 				}
+
 				return true;
 }
 
@@ -109,6 +111,8 @@ void XAudio2::Play(const WaveData& waveData)
 				{
 								return;
 				}
+
+				g_lpSourceVoice->SetVolume(wave.volume);
 
 				memset(&bufinfo, 0x00, sizeof(bufinfo));
 				bufinfo.Flags = ((UINT32)wave.readlen >= wave.buflen) ? 0 : XAUDIO2_END_OF_STREAM;

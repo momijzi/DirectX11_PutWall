@@ -15,6 +15,7 @@ GameScene::GameScene()
 				bgm_end.Load(L"music/BGM/bgm_end.mp3");
 
 				se_ok.Load("music/SE/se_ok.wav");
+				se_ok.SetVolume(0.5f);
 				se_cancel.Load("music/SE/se_cancel.wav");
 				se_select.Load("music/SE/se_select.wav");
 				se_move.Load("music/SE/se_move.wav");

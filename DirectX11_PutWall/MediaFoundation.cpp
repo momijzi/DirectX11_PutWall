@@ -26,7 +26,6 @@ bool MediaFoundation::AudioData::Load(const wchar_t* const filePath)
 				return true;
 }
 
-
 //毎フレーム更新、音楽が鳴りやんだらループ
 void MediaFoundation::UpDate()
 {
@@ -52,6 +51,7 @@ void MediaFoundation::Play(AudioData &audio)
 								}
 				}
 				pAudioData = audio.g_pPlayer;
+				SetVolume(audio.volume);
 				pAudioData->Play();
 }
 
@@ -85,5 +85,13 @@ void MediaFoundation::Stop()
 				{
 								pAudioData->Stop();
 								pAudioData = nullptr;
+				}
+}
+
+void MediaFoundation::SetVolume(float volume)
+{
+				if (pAudioData)
+				{
+								pAudioData->SetVolume(volume);
 				}
 }
